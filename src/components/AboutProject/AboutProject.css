@@ -1,0 +1,176 @@
+.about-project {
+  padding: 110px 70px;
+  box-sizing: border-box;
+}
+
+.about-project__title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 27px;
+  letter-spacing: -0.04em;
+  margin: 0;
+  padding-bottom: 23px;
+  border-bottom: 1px solid #000;
+}
+
+.about-project__content {
+  padding: 0;
+  margin: 0;
+  padding-top: 70px;
+  display: flex;
+}
+
+.about-project__content_item {
+  list-style: none;
+}
+
+.about-project__content_item:nth-child(2) {
+  padding-left: 52px;
+}
+
+.content_item__subtitle {
+  margin: 0;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.04em;
+}
+
+.content_item__paragraph {
+  margin: 0;
+  margin-top: 26px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.timeline__wrapper{
+  margin-top: 110px;
+  display: flex;
+}
+
+.timeline__span {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+}
+
+.timeline__span_backend {
+  width: 20%;
+}
+
+.timeline__span_frontend {
+  width: 80%;
+}
+
+.timeline__span-period {
+  margin: 0;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timeline__span-period_one-week {
+  background-color: #2be080;
+}
+
+.timeline__span-period_four-week {
+  background-color: #f2f2f2;
+}
+
+.timeline__title {
+  margin: 0;
+  margin-top: 14px;
+  color: #a0a0a0;
+}
+
+@media screen and (max-width: 768px) {
+  .about-project {
+    padding: 90px 50px;
+  }
+
+  .about-project__content_item:nth-child(2) {
+    padding-left: 33px;
+  }
+
+  .content_item__paragraph {
+    margin-top: 22px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .timeline__wrapper{
+    margin-top: 93px;
+  }
+
+  .timeline__span_backend {
+    width: 20.9%;
+  }
+}
+
+@media screen and (max-width: 670px) {
+  .about-project {
+    padding: 70px 18px;
+  }
+
+  .title {
+    font-size: 18px;
+    line-height: 22px;
+    padding-bottom: 28px;
+  }
+
+  .about-project__content {
+    padding-top: 60px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .about-project__content_item {
+    margin-right: 0;
+    margin-bottom: 56px;
+  }
+
+  .about-project__content_item:nth-child(2) {
+    padding-left: 0;
+  }
+
+  .content_item__subtitle {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .content_item__paragraph {
+    margin-top: 16px;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .timeline__wrapper{
+    margin-top: 4px;
+  }
+
+  .timeline__span {
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .timeline__span_backend {
+    width: 35%;
+  }
+
+  .timeline__span_frontend {
+    width: 65%;
+  }
+
+  .timeline__title {
+    margin-top: 8px;
+  }
+}
