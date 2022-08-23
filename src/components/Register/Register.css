@@ -79,7 +79,7 @@
 .register__button {
   height: 45px;
   width: 396px;
-  background-color: #3456F3;
+  background-color: #2BE080;
   color: #fff;
   font-weight: 500;
   font-size: 14px;
@@ -106,7 +106,7 @@
 
 .register-link__text {
   text-decoration: none;
-  color: #3456F3;
+  color: #2BE080;
 }
 
 .register-link__text:hover {

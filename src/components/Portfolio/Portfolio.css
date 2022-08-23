@@ -30,7 +30,7 @@
 
 .website__list-item-link {
   text-decoration: none;
-  color: black;
+  color: #000;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -75,7 +75,7 @@
   }
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (min-width: 320px) {
   .portfolio {
     margin-top: 69px;
   }

@@ -5,10 +5,10 @@ export const MoviesCard = ({ movie, type }) => {
 
   return (
     <section className='movie-card'>
-      <img className='movie__image' src={image} alt={nameRU} />
       <div className='movie__info'>
-        <div className='movie__text'>
+        <div className='movie__description'>
           <h1 className='movie__title'>{nameRU}</h1>
+          <p className='movie__duration'>1ч 42м</p>
         </div>
         {type === 'all' ? (
           save ? (
@@ -29,9 +29,7 @@ export const MoviesCard = ({ movie, type }) => {
           ></button>
         )}
       </div>
-      <div className='movie__title-line'></div>
-      <p className='movie__duration'>1ч 42м</p>
+      <img className='movie__image' src={image} alt={nameRU} />
     </section>
   );
 };
-

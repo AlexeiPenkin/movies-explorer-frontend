@@ -13,12 +13,13 @@ export const SearchForm = () => {
           />
         <button className='search-form__button' type='button'></button>
         </div>
-      </form>
-      <label className='checkbox__label'>
+        <label className='checkbox__label'>
           <input className='checkbox' type='checkbox' value='short' />
+          <span className='checkbox__pseudo-element'></span>
           Короткометражки
-          <span className='checkbox__pseudo'></span>
         </label>
+        {/* <div className='search-form__bottom-line'></div> */}
+      </form>
     </section>
   );
 };

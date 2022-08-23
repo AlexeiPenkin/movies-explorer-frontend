@@ -1,16 +1,16 @@
-import { HeaderMovies } from '../HeaderMovies/HeaderMovies';
+import { HeaderPages } from '../HeaderPages/HeaderPages';
 import { SearchForm } from '../SearchForm/SearchForm';
 import { Preloader } from '../Preloader/Preloader';
 import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
 import { moviesList } from '../../utils/moviesList';
 import { Footer } from '../Footer/Footer';
 import './Movies.css';
-
+ 
 export const Movies = () => {
   const preLoading = false;
   return (
     <>
-      <HeaderMovies />
+      <HeaderPages />
       <main className='movies'>
         <SearchForm />
         {preLoading ? (

@@ -1,0 +1,44 @@
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 16px;
+  margin-top: -3px;
+}
+ 
+.menu__link {
+  text-decoration: none;
+  color: #000;
+}
+
+.menu__link:hover {
+  opacity: 0.8;
+}
+
+.signin-button {
+  width: 76px;
+  height: 32px;
+  background-color: #2be080;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 30px;
+}
+
+@media screen and (max-width: 320px) {
+  .menu {
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  .signin-button {
+    width: 54px;
+    height: 26px;
+    margin-left: 14px;
+  }
+}

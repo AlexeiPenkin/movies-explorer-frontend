@@ -1,29 +1,29 @@
 .navigation {
-  width: 100%;
-  min-height: 66px;
-  background-color: #000;
-  margin-top: 224px;
-
+  margin-top: 151px;
+  margin-bottom: 30px;
 }
 
 .navigation__block {
-  min-height: 66px;
-  margin: auto;
-  padding: 0;
+  width: 308px;
   display: flex;
   flex-direction: row;
-  width: 308px;
+  margin: 0;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+
   justify-content: space-between;
 }
 
 .navigation__block-item {
-  list-style: none;
-  width: 75px;
-  height: 66px;
-  border-radius: 10px;
+  width: 96px;
+  height: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #e8e8e8;
+  border-radius: 10px;
+  list-style: none;
   cursor: pointer;
 }
 
@@ -32,12 +32,12 @@
 }
 
 .navigation__item-link {
-  color: #fff;
+  text-decoration: none;
+  color: #000;
   font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
-  align-items: center;
 }
 
 @media screen and (max-width: 768px) {

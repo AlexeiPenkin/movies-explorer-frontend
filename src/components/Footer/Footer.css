@@ -1,5 +1,5 @@
 .footer {
-  background-color: #fff;
+  background-color: #fafafa;
   padding: 79px 70px 20px;
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
   margin: 0;
   width: 100%;
   font-weight: 400;
-  color: #A0A0A0;
+  color: #a0a0a0;
   padding-bottom: 20px;
   border-bottom: 1px solid #e8e8e8;
   text-align: center;
@@ -37,6 +37,7 @@
   margin: 0;
   margin-top: 20px;
 }
+
 .footer__block {
   margin: 0;
   margin-top: 20px;
@@ -56,7 +57,7 @@
 
 .footer__block-link {
   text-decoration: none;
-  color: black;
+  color: #000;
 }
 
 @media screen and (max-width: 768px) {
@@ -67,11 +68,11 @@
   }
 }
 
-@media screen and (max-width: 767px) { /* 670 */
+@media screen and (max-width: 670px) {
   .footer {
-    padding: 79px 10px 10px;
     font-size: 12px;
     line-height: 15px;
+    padding: 79px 10px 10px;
   }
 
   .footer__title {

@@ -1,21 +1,22 @@
 .more-movies {
+  /* width: 1280px; */
   height: 166px;
   display: flex;
   justify-content: center;
 }
 
 .more-movies__button {
-  width: 1140px;
+  width: 320px;
   height: 36px;
-  border: none;
-  background: #F9F9F9;
-  border-radius: 6px;
   font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
-  cursor: pointer;
+  background: unset;
+  border: 2px solid #e8e8e8;
+  border-radius: 5px;
   margin-top: 50px;
+  cursor: pointer;
 }
 
 .more-movies__button:hover {
