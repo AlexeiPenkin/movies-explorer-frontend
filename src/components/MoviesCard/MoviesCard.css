@@ -44,6 +44,7 @@
 
 .movie__button_type_close {
   background-image: url('../../image/close-button.svg');
+  background-repeat: no-repeat;
 }
 
 .movie__button_type_active {

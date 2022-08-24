@@ -1,6 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../image/logo.svg';
-import { useState } from 'react';
 import classNames from 'classnames';
 import './Register.css';
 
@@ -30,14 +30,75 @@ export const Register = () => {
     error: messageError.password,
   });
 
-  const handleInputChange = (evt) => {
-    const { name, value } = evt.target;
-    setValue((prev) => ({ ...prev, [name]: value }));
-    setMessageError((prev) => ({
-      ...prev,
-      [name]: evt.target.validationMessage,
-    }));
-  };
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [ inputEmailErrorText, setInputEmailErrorText ] = useState('Вы пропустили это поле.');
+  const [ inputPasswordErrorText, setInputPasswordErrorText ] = useState('Вы пропустили это поле.');
+  const [ inputEmailValid, setInputEmailValid ] = useState(true);
+  const [ inputPasswordValid, setInputPasswordValid ] = useState(true);
+  const [ formValid, setFormValid ] = useState(false);
+
+  const submitButtonClassName = `register__button ${formValid ? '' : 'register__submit_disabled'}`;
+  const inputEmailClassName = `register__input register__input_type_email ${inputEmailValid ? '' : 'register__input_type_error'}`;
+  const inputEmailErrorClassName = `register__input-error ${inputEmailValid ? '' : 'register__input-error_visible'}`;
+  const inputPasswordClassName = `register__input register__input_type_password ${inputPasswordValid ? '' : 'register__input_type_error'}`;
+  const inputPasswordErrorClassName = `register__input-error ${inputPasswordValid ? '' : 'register__input-error_visible'}`;
+
+  // const handleInputChange = (evt) => {
+  //   const { name, value } = evt.target;
+  //   setValue((prev) => ({ ...prev, [name]: value }));
+  //   setMessageError((prev) => ({
+  //     ...prev,
+  //     [name]: evt.target.validationMessage,
+  //   }));
+  // };
+
+  function handleNameChange(e) {
+    setEmail(e.target.value);
+    setInputEmailValid(e.target.validity.valid);
+    setInputEmailErrorText(e.target.validationMessage);
+    if (e.target.validity.valid && inputPasswordValid && password !== '') {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
+    }
+  }
+
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+    setInputEmailValid(e.target.validity.valid);
+    setInputEmailErrorText(e.target.validationMessage);
+    if (e.target.validity.valid && inputPasswordValid && password !== '') {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
+    }
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
+    setInputPasswordValid(e.target.validity.valid);
+    setInputPasswordErrorText(e.target.validationMessage);
+    if (e.target.validity.valid && inputEmailValid && email !== '') {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
+    }
+  }
+
+  useEffect(() => {
+    setFormValid(false);
+  }, []);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    Register({email, password});
+    // if (props.regStatus) {
+    //   setEmail('');
+    //   setPassword('');
+    // }
+  }
 
   return (
     <section className='register'>
@@ -63,10 +124,10 @@ export const Register = () => {
                 minLength={2}
                 maxLength={100}
                 value={value.name}
-                onChange={handleInputChange}
+                onChange={handleNameChange}
               />
               {messageError.name && (
-                <span className='register__span-error'>{messageError.name}</span>
+                <span className='register__span-error'>{inputEmailErrorText}</span>
               )}
             </fieldset>
           )}
@@ -79,7 +140,7 @@ export const Register = () => {
               name='email'
               required
               value={value.email}
-              onChange={handleInputChange}
+              onChange={handleEmailChange}
             />
             {messageError.email && (
               <span className='register__span-error'>{messageError.email}</span>
@@ -95,16 +156,16 @@ export const Register = () => {
               value={value.password}
               required
               minLength={8}
-              onChange={handleInputChange}
+              onChange={handlePasswordChange}
             />
             {messageError.password && (
-              <span className='register__span-error'>{messageError.password}</span>
+              <span className='register__span-error'>{inputPasswordErrorText}</span>
             )}
           </fieldset>
 
         </div>
 
-        <button type='submit' className='register__button'>{button}</button>
+        <button className={submitButtonClassName} type="submit" disabled={formValid ? false : true}></button>
 
         <p className='register__text'>
           {text}
