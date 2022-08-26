@@ -1,104 +1,75 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../image/logo.svg';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import './Register.css';
 
-const type = 'signup';
-const title = 'Добро пожаловать!';
-const button = 'Зарегистрироваться';
-const text = `Уже зарегистрированы? `;
+export const Register = (formAccept, onClick, messageAcceptError) => {
+  const type = 'signup';
+  const title = 'Добро пожаловать!';
+  const button = 'Зарегистрироваться';
+  const text = `Уже зарегистрированы? `;
 
-export const Register = () => {
   const [messageError, setMessageError] = useState({
     name: '',
     email: '',
     password: '',
   });
-  const [value, setValue] = useState({
+  const [userData, setUserData] = useState({
     name: '',
     email: '',
     password: '',
   });
-  const classErrorName = classNames(`register__input`, {
-    error: messageError.name,
+
+  const [formValid, setFormValid] = useState(false);
+
+  const classErrorName = classNames(`register__input`, { error: messageError.name });
+  const classErrorEmail = classNames(`register__input`, { error: messageError.email });
+  const classErrorPassword = classNames(`register__input`, { error: messageError.password });
+
+  const submitButtonClassName = classNames(`register__button`, {
+    form__button_disable: !formValid,
+    'register__button_disable register__button_span-text': !formAccept,
   });
-  const classErrorEmail = classNames(`register__input`, {
-    error: messageError.email,
-  });
-  const classErrorPassword = classNames(`register__input`, {
-    error: messageError.password,
-  });
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const handleInputChange = (evt) => {
+    const { name, value } = evt.target;
+    setUserData((prev) => ({ ...prev, [name]: value }));
+    setMessageError((prev) => ({
+      ...prev,
+      [name]: evt.target.validationMessage,
+    }));
+  };
 
-  const [ inputEmailErrorText, setInputEmailErrorText ] = useState('Вы пропустили это поле.');
-  const [ inputPasswordErrorText, setInputPasswordErrorText ] = useState('Вы пропустили это поле.');
-  const [ inputEmailValid, setInputEmailValid ] = useState(true);
-  const [ inputPasswordValid, setInputPasswordValid ] = useState(true);
-  const [ formValid, setFormValid ] = useState(false);
-
-  const submitButtonClassName = `register__button ${formValid ? '' : 'register__submit_disabled'}`;
-  const inputEmailClassName = `register__input register__input_type_email ${inputEmailValid ? '' : 'register__input_type_error'}`;
-  const inputEmailErrorClassName = `register__input-error ${inputEmailValid ? '' : 'register__input-error_visible'}`;
-  const inputPasswordClassName = `register__input register__input_type_password ${inputPasswordValid ? '' : 'register__input_type_error'}`;
-  const inputPasswordErrorClassName = `register__input-error ${inputPasswordValid ? '' : 'register__input-error_visible'}`;
-
-  // const handleInputChange = (evt) => {
-  //   const { name, value } = evt.target;
-  //   setValue((prev) => ({ ...prev, [name]: value }));
-  //   setMessageError((prev) => ({
-  //     ...prev,
-  //     [name]: evt.target.validationMessage,
-  //   }));
-  // };
-
-  function handleNameChange(e) {
-    setEmail(e.target.value);
-    setInputEmailValid(e.target.validity.valid);
-    setInputEmailErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputPasswordValid && password !== '') {
-      setFormValid(true);
+  const handleRegistration = (e) => {
+    if (type === 'signin' && (!userData.password || !userData.email)) {
+      return;
+    } else if (
+      type === 'signup' &&
+      (!userData.name || !userData.password || !userData.email)
+    ) {
+      return;
     } else {
-      setFormValid(false);
+      return onClick(userData);
     }
-  }
-
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-    setInputEmailValid(e.target.validity.valid);
-    setInputEmailErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputPasswordValid && password !== '') {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }
-
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-    setInputPasswordValid(e.target.validity.valid);
-    setInputPasswordErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputEmailValid && email !== '') {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }
-
+  };
+  
   useEffect(() => {
-    setFormValid(false);
-  }, []);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    Register({email, password});
-    // if (props.regStatus) {
-    //   setEmail('');
-    //   setPassword('');
-    // }
-  }
+    if (type === 'signup') {
+      if (messageError.name || messageError.email || messageError.password) {
+        return setFormValid(false);
+      } else if (!userData.name || !userData.password || !userData.email) {
+        return setFormValid(false);
+      }
+    } else if (type === 'signin') {
+      if (messageError.email || messageError.password) {
+        return setFormValid(false);
+      } else if (!userData.password || !userData.email) {
+        return setFormValid(false);
+      }
+    }
+    setFormValid(true);
+  }, [messageError, userData, type]);
 
   return (
     <section className='register'>
@@ -122,12 +93,12 @@ export const Register = () => {
                 pattern='^[A-Za-zА-Яа-яЁё /s -]+$'
                 required
                 minLength={2}
-                maxLength={100}
-                value={value.name}
-                onChange={handleNameChange}
+                maxLength={40}
+                value={userData.name}
+                onChange={handleInputChange}
               />
               {messageError.name && (
-                <span className='register__span-error'>{inputEmailErrorText}</span>
+                <span className='register__span-error'>{messageError.name}</span>
               )}
             </fieldset>
           )}
@@ -139,8 +110,8 @@ export const Register = () => {
               type='email'
               name='email'
               required
-              value={value.email}
-              onChange={handleEmailChange}
+              value={userData.email}
+              onChange={handleInputChange}
             />
             {messageError.email && (
               <span className='register__span-error'>{messageError.email}</span>
@@ -153,19 +124,27 @@ export const Register = () => {
               className={classErrorPassword}
               type='password'
               name='password'
-              value={value.password}
+              value={userData.password}
               required
               minLength={8}
-              onChange={handlePasswordChange}
+              onChange={handleInputChange}
             />
             {messageError.password && (
-              <span className='register__span-error'>{inputPasswordErrorText}</span>
+              <span className='register__span-error'>{messageError.password}</span>
             )}
           </fieldset>
 
         </div>
 
-        <button className={submitButtonClassName} type="submit" disabled={formValid ? false : true}></button>
+        {!formAccept && <span className='register__error'>{messageAcceptError}</span>}
+
+        <button
+          type='submit'
+          className={submitButtonClassName}
+          onClick={handleRegistration}
+          disabled={!formValid}
+          >{button}
+        </button>
 
         <p className='register__text'>
           {text}

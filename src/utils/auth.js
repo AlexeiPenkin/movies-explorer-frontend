@@ -1,44 +1,53 @@
-export const baseUrl = 'https://auth.nomoreparties.co';
+import { BASE_URL_MAIN } from '../utils/constants';
 
-export function checkResponse(res) {
-  if (res.ok) {
-    return res.json();
+// Обработка ответа от сервера
+const getResponse = (response) => {
+  try {
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    return response.json();
+  } catch (err) {
+    return err;
   }
-  return Promise.reject(res.status);
-}
-
-export function register(name, email, password) {
-  return fetch(`${baseUrl}/signup`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ name, email, password })
-	})
-    .then(checkResponse)
 };
 
-export function authorize(email, password) {
-  return fetch(`${baseUrl}/signin`, {
+// Регистрация
+export const signupFetch = async (authData) => {
+  const response = await fetch(`${BASE_URL_MAIN}/signup`, {
     method: 'POST',
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password })
-  })
-    .then(checkResponse)
+    body: JSON.stringify(authData),
+  });
+
+  return await getResponse(response);
 };
 
-export function getContent(token) {
-  return fetch(`${baseUrl}/users/me`, {
-    method: 'GET',
+// Авторизация
+export const signinFetch = async (authData) => {
+  const response = await fetch(`${BASE_URL_MAIN}/signin`, {
+    method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  })
-    .then(checkResponse)
+    },
+    body: JSON.stringify(authData),
+  });
+
+  return await getResponse(response);
+};
+
+// Проверка валидности токена
+export const validJWTFetch = async () => {
+  const response = await fetch(`${BASE_URL_MAIN}/users/me`, {
+    method: 'GET',
+    headers: {
+      authorization: `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await getResponse(response);
 };

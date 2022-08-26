@@ -1,4 +1,4 @@
-import { HeaderPages } from '../HeaderPages/HeaderPages';
+import { Header } from '../Header/Header';
 import { React } from 'react'; 
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ export const Profile = () => {
 
   return (
     <>
-      <HeaderPages />
+      <Header />
       <main className='profile'>
         <h1 className='profile__title'>{`Привет, ${name}!`}</h1>
         <form className='profile__form'>

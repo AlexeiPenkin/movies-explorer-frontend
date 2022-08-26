@@ -23,23 +23,32 @@ export const NavigationMovies = () => {
       )} 
       <nav className='movies-navigation__menu'>
         <div className='movies-navigation__links'>
+
           <NavLink
             to='/movies'
-            className='movies-navigation__link movies-navigation__link_active'>
-              Фильмы
+            className={({ isActive }) =>
+              isActive ? 'movies-navigation__link movies-navigation__link_active' : 'movies-navigation__link'}
+          >
+            Фильмы
           </NavLink>
+
           <NavLink
             to='/saved-movies'
-            className='movies-navigation__link movies-navigation__link_active'>
-              Сохранённые фильмы
+            className={({ isActive }) =>
+              isActive ? 'movies-navigation__link movies-navigation__link_active' : 'movies-navigation__link'}
+          >
+            Сохранённые фильмы
           </NavLink>
+
         </div>
 
         <NavLink
           to='/profile'
           className='movies-navigation__link movies-navigation__link_profile'
-        >Аккаунт
+        >
+          Аккаунт
         </NavLink>
+
       </nav>
     </>
   );

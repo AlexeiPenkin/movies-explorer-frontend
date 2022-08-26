@@ -11,21 +11,30 @@ export const NavigationHiddenMenu = ({ closeMenu }) => {
 
           <Link
             to='/'
-            className='burger-menu__link link_active'
+            className={({ isActive }) =>
+              isActive
+                ? 'burger-menu__link link_active' : 'burger-menu__link'
+            }
             onClick={closeMenu}>
               Главная
           </Link>
 
           <Link
             to='/movies'
-            className='burger-menu__link link_active'
+            className={({ isActive }) =>
+              isActive
+                ? 'burger-menu__link link_active' : 'burger-menu__link'
+            }
             onClick={closeMenu}>
               Фильмы
           </Link>
 
           <Link
             to='/saved-movies'
-            className='burger-menu__link link_active'
+            className={({ isActive }) =>
+              isActive
+                ? 'burger-menu__link link_active' : 'burger-menu__link'
+            }
             onClick={closeMenu}>
               Сохранённые фильмы
           </Link>

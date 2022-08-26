@@ -125,6 +125,17 @@
   color: #FF3055;
 }
 
+.register__error {
+  color: #ff004c;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  cursor: default;
+}
+
 @media screen and (max-width: 768px) {
   .register {
     padding-top: 232px;

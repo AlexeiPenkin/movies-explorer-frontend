@@ -1,34 +1,34 @@
 import { Link } from 'react-router-dom';
 import logo from '../../image/logo.svg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import './Login.css';
 
-const type = 'signin';
-const title = 'Мы рады,что Вы опять с нами!';
-const button = 'Войти';
-const text = `Еще не зарегистрированы? `;
-
-export const Login = () => {
+export const Login = (formAccept, onClick, messageAcceptError) => {
+  const type = 'signin';
+  const title = 'Мы рады,что Вы опять с нами!';
+  const button = 'Войти';
+  const text = `Еще не зарегистрированы? `;
+  
   const [messageError, setMessageError] = useState({
     email: '',
     password: '',
   });
-  const [value, setValue] = useState({
+  const [userData, setValue] = useState({
     email: '',
     password: '',
   });
 
+  const [formValid, setFormValid] = useState(false);
   
-  const classErrorName = classNames(`login__input`, {
-    error: messageError.name,
-  });
-  const classErrorEmail = classNames(`login__input`, {
-    error: messageError.email,
-  });
-  const classErrorPassword = classNames(`login__input`, {
-    error: messageError.password,
-  });
+  const classErrorName = classNames(`login__input`, { error: messageError.name });
+  const classErrorEmail = classNames(`login__input`, { error: messageError.email });
+  const classErrorPassword = classNames(`login__input`, { error: messageError.password });
+
+  const submitButtonClassName = classNames(`login__button`, {
+    form__button_disable: !formValid,
+    'login__button_disable login__button_span-text': !formAccept,
+  })
 
   const handleInputChange = (evt) => {
     const { name, value } = evt.target;
@@ -38,6 +38,36 @@ export const Login = () => {
       [name]: evt.target.validationMessage,
     }));
   };
+
+    const handleRegistration = (e) => {
+    if (type === 'signin' && (!userData.password || !userData.email)) {
+      return;
+    } else if (
+      type === 'signup' &&
+      (!userData.name || !userData.password || !userData.email)
+    ) {
+      return;
+    } else {
+      return onClick(userData);
+    }
+  };
+  
+  useEffect(() => {
+    if (type === 'signup') {
+      if (messageError.name || messageError.email || messageError.password) {
+        return setFormValid(false);
+      } else if (!userData.name || !userData.password || !userData.email) {
+        return setFormValid(false);
+      }
+    } else if (type === 'signin') {
+      if (messageError.email || messageError.password) {
+        return setFormValid(false);
+      } else if (!userData.password || !userData.email) {
+        return setFormValid(false);
+      }
+    }
+    setFormValid(true);
+  }, [messageError, userData, type]);
 
   return (
     <section className='login'>
@@ -61,8 +91,8 @@ export const Login = () => {
                 pattern='^[A-Za-zА-Яа-яЁё /s -]+$'
                 required
                 minLength={2}
-                maxLength={100}
-                value={value.name}
+                maxLength={40}
+                value={userData.name}
                 onChange={handleInputChange}
               />
               {messageError.name && (
@@ -78,7 +108,7 @@ export const Login = () => {
               type='email'
               name='email'
               required
-              value={value.email}
+              value={userData.email}
               onChange={handleInputChange}
             />
             {messageError.email && (
@@ -92,7 +122,7 @@ export const Login = () => {
               className={classErrorPassword}
               type='password'
               name='password'
-              value={value.password}
+              value={userData.password}
               required
               minLength={8}
               onChange={handleInputChange}
@@ -104,7 +134,15 @@ export const Login = () => {
 
         </div>
 
-        <button type='submit' className='login__button'>{button}</button>
+        {!formAccept && <span className='login__error'>{messageAcceptError}</span>}
+
+        <button
+          type='submit'
+          className={submitButtonClassName}
+          onClick={handleRegistration}
+          disabled={!formValid}
+          >{button}
+        </button>
 
         <p className='login__text'>
           {text}

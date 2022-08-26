@@ -1,19 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_NOT_FOUND, NOT_FOUND_STATUS } from '../../utils/constants';
 import './PageNotFound.css'
 
 export const PageNotFound = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(-1);
+  };
+  
   return (
-    <main className='pagenotfound'>
+    <section className='pagenotfound'>
       <h1 className='pagenotfound__title'>
-        404
+        {NOT_FOUND_STATUS}
       </h1>
       <p className='pagenotfound__subtitle'>
-        Страница не найдена
+        {PAGE_NOT_FOUND}
       </p>
-      <Link to="/" className='pagenotfound__link'>
+      <p className='pagenotfound__link' onClick={handleClick}>
         Назад
-      </Link>
-    </main>
+      </p>
+    </section>
   );
 }; 
