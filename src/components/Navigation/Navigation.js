@@ -1,8 +1,13 @@
-import { React } from 'react';
-import { NavigationAuth } from '../NavigationAuth/NavigationAuth';
-import { NavigationMovies } from '../NavigationMovies/NavigationMovies';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import './Navigation.css'
 
-export const Navigation = ({ login }) => {
+export function Navigation() {
 
-  return <>{login ? <NavigationMovies /> : <NavigationAuth />}</>;
-};
+  return(
+    <nav className='navigation-header'>
+      <NavLink to='/signup' className='navigation-header__link'>Регистрация</NavLink>
+      <NavLink to='/signin' className='navigation-header__link navigation-header__link_fill'>Войти</NavLink>
+    </nav>
+  )
+}

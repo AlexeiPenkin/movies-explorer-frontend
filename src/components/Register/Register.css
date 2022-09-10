@@ -26,10 +26,12 @@
   font-weight: 500;
   font-size: 24px;
   line-height: 29px;
+  text-align: left;
 }
 
 .register-fieldsets__wrapper {
   height: 266px;
+  text-align: left;
 }
 
 .register__fieldset {
@@ -123,17 +125,6 @@
 
 .error {
   color: #FF3055;
-}
-
-.register__error {
-  color: #ff004c;
-  font-weight: 400;
-  font-size: 11px;
-  line-height: 13px;
-  margin-top: 0;
-  display: flex;
-  justify-content: center;
-  cursor: default;
 }
 
 @media screen and (max-width: 768px) {

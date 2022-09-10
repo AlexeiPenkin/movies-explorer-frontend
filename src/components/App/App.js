@@ -1,311 +1,364 @@
-import { React,useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { Register } from '../Register/Register';
-import { Login } from '../Login/Login';
-import { Main } from '../Main/Main';
-import { Movies } from '../Movies/Movies';
-import { PageNotFound } from '../PageNotFound/PageNotFound';
-import { Profile } from '../Profile/Profile';
-import { SavedMovies } from '../SavedMovies/SavedMovies';
+import React from 'react';
+import { Route } from 'react-router-dom';
+import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../../utils/ProtectedRoute';
+import { Header } from '../Header/Header';
+import { Main } from '../Main/Main';
+import { Footer } from '../Footer/Footer';
+import { Movies } from '../Movies/Movies';
+import { SavedMovies } from '../SavedMovies/SavedMovies';
+import { Profile } from '../Profile/Profile';
+import { Register } from '../Register/Register';
+import { Login } from '../Login/Login';
+import { PageNotFound } from '../PageNotFound/PageNotFound';
+import { Preloader } from '../Preloader/Preloader';
+import { Popup } from '../Popup/Popup';
+import mainApi from '../../utils/MainApi';
+import moviesApi from '../../utils/MoviesApi';
 import './App.css';
-import {
-  headers,
-  getMovies,
-  updateUserData,
-  addSaveMovies,
-  deleteSaveMovies,
-  getUserInfo,
-} from '../../utils/MainApi';
-import { signupFetch, signinFetch, validJWTFetch } from '../../utils/auth';
-import { CurrentMoviesSaveContext } from '../../contexts/CurrentMoviesSaveContext';
-import { InfoToolTip } from '../InfoToolTip/InfoToolTip';
-import {
-  REGISTRATION_MESSAGE,
-  CONFLICT_ERROR,
-  ERROR_SERVER_MESSAGE_SHORT,
-  ERROR_MESSAGE_EMAIL_PASSWORD,
-  UPDATE_DATA_MESSAGE,
-  DELETE_MOVIE_MESSAGE,
-  ERROR_MOVIES_VALID_DATA_MESSAGE,
-  CONFLICT_ERROR_STATUS,
-  UNAUTHORIZED_STATUS,
-  BAD_REQUEST_STATUS,
-} from '../../utils/constants';
 
-export const App = () => {
-    const navigate = useNavigate();
-    const [currentUser, setCurrentUser] = useState({});
-    const [currentMovies, setCurrentMovies] = useState([]);
-    const [messageAcceptAuth, setMessageAcceptAuth] = useState('');
-    const [isAccept, setIsAccept] = useState(true);
-    const [login, setLogin] = useState(true);
-    const [isInfoTooltipOpen, setInfoTooltip] = useState(false);
-    let messageClean;
+
+export function App() {
+  const cardsDesktop = 16;
+  const cardsTablet = 8;
+  const cardsMobile = 5;
+  const addCardsDesktop = 4;
+  const addCardsTablet = 2;
+  const addCardsMobile = 1;
+  const movieUrl = 'https://api.nomoreparties.co';
+  const [currentUser, setCurrentUser] = React.useState({});
+  const [isMobileMenuOpen, toggleMobileMenu] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [popupMessage, setPopupMessage] = React.useState('');
+  const [movies, setMovies] = React.useState([]);
+  const [savedMovies, setSavedMovies] = React.useState([]);
+  const [filter, setFilter] = React.useState(false);
+  const [searching, setSearching] = React.useState(false);
+  const [numberOfMovies, setNumberOfMovies] = React.useState(
+    window.screen.width > 1279
+    ? cardsDesktop
+    : window.screen.width > 767
+    ? cardsTablet
+    : cardsMobile
+    );
+  const location = useLocation();
+  const history = useHistory();
   
-    // Регистрация
-    const onRegister = async (userData) => {
-      setMessageAcceptAuth('');
-      setIsAccept(false);
-  
-      const response = await signupFetch(userData);
-  
-      if (response._id) {
-        setIsAccept(true);
-        setMessageAcceptAuth(REGISTRATION_MESSAGE);
-        setIsAccept(false);
-        messageClean = setTimeout(() => {
-          setIsAccept(true);
-          setMessageAcceptAuth('');
-        }, 5000);
-        return onLogin(userData);
-      }
-      if (response.message === CONFLICT_ERROR_STATUS) {
-        setMessageAcceptAuth(CONFLICT_ERROR);
-      } else {
-        setMessageAcceptAuth(ERROR_SERVER_MESSAGE_SHORT);
-      }
-      setIsAccept(false);
-      messageClean = setTimeout(() => {
-        setIsAccept(true);
-        setMessageAcceptAuth('');
-      }, 5000);
+  function handleMobileMenuOpen() {
+    toggleMobileMenu(true);
+  }
+
+  function handleMobileMenuClose() {
+    toggleMobileMenu(false);
+  }
+
+  function handleFilter() {
+    setFilter(!filter);
+  }
+
+  function checkToken(token) {
+    if (token) {
+      getUser(token);
+    }
+  }
+
+  function handleMore() {
+    setNumberOfMovies(
+      numberOfMovies + 
+      (
+      window.screen.width > 1279
+      ? addCardsDesktop
+      : window.screen.width > 767
+      ? addCardsTablet
+      : addCardsMobile
+      )
+    )
+  }
+
+  function handleRegister(data) {
+    setIsLoading(true);
+    mainApi.register(data.password, data.email, data.name)
+      .then(() => {
+        setPopupMessage('Вы успешно зарегистрировались');
+        history.push('/signin');
+      })
+      .catch((err) => {
+        setPopupMessage('Что-то пошло не так...');
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  function handleLogin( data ) {
+    setIsLoading(true);
+    mainApi.login( data.password, data.email)
+      .then((res) => {
+        console.log(data.password, data.email)
+        setPopupMessage('Вы успешно авторизировались');
+        localStorage.setItem('token', res.token);
+        getUser(res.token);
+        history.push('/movies');
+      })
+      .catch((err) => {
+        setPopupMessage('Неверная почта или пароль');
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  function getUser(token) {
+    setIsLoading(true);
+    mainApi.getUserInfo(token)
+      .then((userInfo) => {
+        setLoggedIn(true);
+        setCurrentUser(userInfo);
+        getMovies(token);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  function handleSaveMovie({
+    id,
+    saved,
+    image,
+    created_at,
+    updated_at,
+    trailerLink,
+    trailer,
+    ...keys
+  }) {
+    const token = localStorage.getItem('token');
+    const poster = movieUrl + image?.url;
+    const data = {
+      movieId: id,
+      image: poster,
+      trailer: trailerLink,
+      thumbnail: poster,
+      ...keys
     };
+    mainApi.likeMovie(data, token)
+    .then((res) => {
+      const savedCards = [...savedMovies, res];
+      setSavedMovies(savedCards);
+      getSaved(movies, savedCards);
+    })
+    .catch((err) => {
+      setPopupMessage('Что-то пошло не так...');
+      console.log(err);
+    })
+  }
+
+  function handleDeleteMovie(movieId) {
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+    var card;
+    if(movieId._id){
+      console.log(movieId._id);
+      card = movieId._id;
+    } else {
+      const id = savedMovies.filter(
+        (card) => card.movieId === movieId
+      );
+      card = id[0]._id;
+    }
+    console.log(movieId);
+    mainApi
+    .deleteMovie(card, token)
+    .then((res) => {
+      setPopupMessage('Фильм удалён из избранных');
+      const savedCards = savedMovies.filter(
+        (card) => card.movieId !== movieId
+      );
+      setSavedMovies(savedCards);
+      getSaved(movies, savedCards);
+    })
+    .catch((err) => {
+      setPopupMessage('Что-то пошло не так...');
+      console.log(err);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  }
   
-    // Авторизация (вход)
-    const onLogin = async (userData) => {
-      setMessageAcceptAuth('');
-      setIsAccept(false);
-  
-      const userDataAuth = { email: userData.email, password: userData.password };
-      const response = await signinFetch(userDataAuth);
-  
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        headers.authorization = `Bearer ${localStorage.getItem('token')}`;
-        setLogin(true);
-        const user = await getUserInfo();
-        const cards = await getMovies();
-        setCurrentMovies(cards);
-        setCurrentUser(user);
-        navigate('/movies');
+  function handleUpdate(user) {
+    const token = localStorage.getItem('token');
+    setIsLoading(true);
+    mainApi.updateUserInfo(user, token)
+    .then((res) =>{
+      setPopupMessage('Вы успешно отредактировали профиль');
+      setCurrentUser(res);
+    })
+    .catch((err) => {
+      setPopupMessage('Что-то пошло не так...');
+      console.log(err);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  }
+
+  function getSaved(moviesCard, savedMoviesCard) {
+    setMovies(
+      moviesCard.map((card) => ({
+        ...card,
+        saved: savedMoviesCard.find((card) => card.movieId === card.id)
+          ? true
+          : false,
+      }))
+    );
+  }
+
+  function getMovies(token) {
+    const localMovies = localStorage.getItem('movies');
+    const arrMovies = localMovies ? JSON.parse(localMovies) : [];
+    const getMovies = arrMovies.length ? arrMovies : moviesApi.getMovies();
+    Promise.all([getMovies, mainApi.getLikedMovies(token)])
+      .then(([moviesCard, savedMoviesCard]) => {
+        setSavedMovies(savedMoviesCard);
+        getSaved(moviesCard, savedMoviesCard);
+      })
+      .catch((err) => {
+        setPopupMessage('Что-то пошло не так...');
+        console.log(err);
+      });
+  }
+
+  function filterMovies(movies, keyword) {
+    return movies.filter(({ nameRU, nameEN }) => {
+      if(!keyword) {
+        return true;
       }
-      if (response.message === UNAUTHORIZED_STATUS) {
-        setMessageAcceptAuth(ERROR_MESSAGE_EMAIL_PASSWORD);
-        setIsAccept(false);
-      } else {
-        setMessageAcceptAuth(ERROR_SERVER_MESSAGE_SHORT);
-        setIsAccept(false);
-      }
-      messageClean = setTimeout(() => {
-        setIsAccept(true);
-        setMessageAcceptAuth('');
-      }, 5000);
-    };
-  
-    // Выход из аккаунта
-    const onSignOut = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('arrayAllMovies');
-      localStorage.removeItem('searchText');
-      localStorage.removeItem('shortFilter');
-      setLogin(false);
-      setCurrentUser({});
-      setCurrentMovies([]);
-    };
-  
-    // Редактирование профиля
-    const onClickUpdateProfile = async (userDataNew) => {
-      const response = await updateUserData(userDataNew);
-  
-      if (response._id) {
-        setIsAccept(false);
-        setMessageAcceptAuth(UPDATE_DATA_MESSAGE);
-        setCurrentUser(userDataNew);
-      } else if (response.message === CONFLICT_ERROR_STATUS) {
-        setIsAccept(false);
-        setMessageAcceptAuth(CONFLICT_ERROR);
-      } else {
-        setIsAccept(false);
-        setMessageAcceptAuth(ERROR_SERVER_MESSAGE_SHORT);
-      }
-      messageClean = setTimeout(() => {
-        setIsAccept(true);
-        setMessageAcceptAuth('');
-      }, 5000);
-    };
-  
-    // Удаление фильма из сохраненных по id
-    const onClickDeleteMovie = async (id) => {
-      const response = await deleteSaveMovies(id);
-      if (response.message === DELETE_MOVIE_MESSAGE) {
-        setCurrentMovies((prev) => prev.filter((el) => el._id !== id));
-      } else {
-        setIsAccept(false);
-        setMessageAcceptAuth(ERROR_SERVER_MESSAGE_SHORT);
-      }
-    };
-  
-    // Сохранение фильма по id
-    const onClickSaveMovie = async (movie, status, id) => {
-      if (status === 'delete') {
-        onClickDeleteMovie(id);
-        return;
-      }
-      const movieNew = {
-        ...movie,
-        image: `https://api.nomoreparties.co${movie.image.url}`,
-        thumbnail: `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`,
-        movieId: movie.id,
-      };
-      delete movieNew.id;
-      delete movieNew.created_at;
-      delete movieNew.updated_at;
-      const response = await addSaveMovies(movieNew);
-      if (response._id) {
-        setCurrentMovies((prev) => [...prev, response]);
-      } else if (response.message === BAD_REQUEST_STATUS) {
-        setMessageAcceptAuth(ERROR_MOVIES_VALID_DATA_MESSAGE);
-        setInfoTooltip(true);
-      } else {
-        setMessageAcceptAuth(ERROR_SERVER_MESSAGE_SHORT);
-        setInfoTooltip(true);
-      }
-    };
-  
-    const closePopupsMessage = () => {
-      setInfoTooltip(false);
-      setMessageAcceptAuth('');
-    };
-  
-    const openPopupsMessage = (message) => {
-      setMessageAcceptAuth(message);
-      setInfoTooltip(true);
-    };
-  
-    // Проверка токена
-    const tokenCheck = () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      if(typeof nameRU !== 'string' || typeof nameEN !== 'string') {
         return false;
       }
-      return validJWTFetch();
-    };
-    useEffect(() => {
-      (async () => {
-        const response = await tokenCheck();
-        if (response) {
-          setLogin(true);
-          setCurrentUser(response);
-          const cards = await getMovies();
-          setCurrentMovies(cards);
-        } else {
-          setLogin(false);
-        }
-      })();
-      return clearTimeout(messageClean);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      const ru = nameRU.toLowerCase();
+      const en = nameEN.toLowerCase();
+      const word = keyword.toLowerCase();
+      return ru.indexOf(word) !== -1 || en.indexOf(word) !== -1;
+    });
+  }
+
+  function filterDuration(movie) {
+    return filter ? movie.duration < 41 : true;
+  }
+
+  function onSearch(keyword, filter) {
+    moviesApi.getMovies().then((cards) => {
+      setSearching(true);
+      const searchMovies = filterMovies(cards, keyword);
+      getSaved(searchMovies, savedMovies);
+      localStorage.setItem('movies', JSON.stringify(searchMovies));
+    });
+  }
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      checkToken(token);
+    }
+  }, []);
+
+  function hadleSignOut() {
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+    history.push('/');
+  }
+
+  function onSearchSaved(keyword) {
+    const token = localStorage.getItem('token');
+    mainApi.getLikedMovies(token).then((cards) =>{
+      const searchCards = filterMovies(cards, keyword);
+      setSavedMovies(searchCards);
+    })
+  }
+
+  function popupOnSubmit() {
+    setPopupMessage('');
+  }
   
-    useEffect(() => {
-      setIsAccept(true);
-    }, [navigate]);
-
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      <CurrentMoviesSaveContext.Provider value={currentMovies}>
-        {
-          <div className='page'>
-
-            <Routes>
-              <Route exact path='/' element={<Main login={login} />} />
-              <Route
-                path='/movies'
-                element={
-                  <ProtectedRoute login={login}>
-                    <Movies
-                      login={login}
-                      onClickSaveMovie={onClickSaveMovie}
-                      openPopupsMessage={openPopupsMessage}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path='/saved-movies'
-                element={
-                  <ProtectedRoute login={login}>
-                    <SavedMovies
-                      login={login}
-                      onClickDeleteMovie={onClickDeleteMovie}
-                      openPopupsMessage={openPopupsMessage}
-                      currentMovies={currentMovies}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path='/profile'
-                element={
-                  <ProtectedRoute login={login}>
-                    <Profile
-                      onSignOut={onSignOut}
-                      login={login}
-                      onClickUpdateProfile={onClickUpdateProfile}
-                      messageAccept={messageAcceptAuth}
-                      isAccept={isAccept}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path='/signin'
-                element={
-                  login ? (
-                    <Navigate to='/movies' />
-                  ) : (
-                    <Login
-                      onLogin={onLogin}
-                      messageAcceptAuth={messageAcceptAuth}
-                      isAccept={isAccept}
-                    />
-                  )
-                }
-              />
-
-              <Route
-                path='/signup'
-                element={
-                  login ? (
-                    <Navigate to='/movies' />
-                  ) : (
-                    <Register
-                      onRegister={onRegister}
-                      messageAcceptAuth={messageAcceptAuth}
-                      isAccept={isAccept}
-                    />
-                  )
-                }
-              />
-
-              <Route path='*' element={<PageNotFound />} />
-              
-            </Routes>
-            <InfoToolTip
-              isOpen={isInfoTooltipOpen}
-              onClose={closePopupsMessage}
-              isAccept={isAccept}
-              messageAcceptAuth={messageAcceptAuth}
+    <CurrentUserContext.Provider value={{ ...currentUser }}>
+      <div className='App'>
+      {isLoading ? (
+        <Preloader /> 
+        ) : (
+          <></>
+        )}
+        <Header
+          loggedIn={loggedIn}
+          isOpen={isMobileMenuOpen}
+          onClose={handleMobileMenuClose}
+          onOpen={handleMobileMenuOpen}
+          path={location.pathname}
+        />
+        <Switch>
+          <ProtectedRoute 
+            path='/movies'
+            numberOfMovies={numberOfMovies}
+            onSearch={onSearch}
+            handleFilter={handleFilter}
+            handleMore={handleMore}
+            filter={filter}
+            movies={movies.filter(filterDuration)}
+            deleteMovie={handleDeleteMovie}
+            saveMovie={handleSaveMovie}
+            searching={searching}
+            component={Movies}
+          />
+          <ProtectedRoute 
+            path='/saved-movies'
+            component={SavedMovies}
+            numberOfMovies={numberOfMovies}
+            onSearch={onSearchSaved}
+            handleFilter={handleFilter}
+            handleMore={handleMore}
+            deleteMovie={handleDeleteMovie}
+            filter={filter}
+            movies={savedMovies.filter(filterDuration)}
+            searching={searching}
+          />
+          <ProtectedRoute 
+            path='/profile'
+            hadleSignOut={hadleSignOut}
+            handleUpdate={handleUpdate}
+            component={Profile}
+          />
+          <Route exact path='/'>
+            <Main 
+              loggedIn={loggedIn} 
             />
-
-          </div>
-        }
-      </CurrentMoviesSaveContext.Provider>
+          </Route>
+          <Route path='/signup'>
+            <Register
+              handleRegister={handleRegister}
+            />
+          </Route>
+          <Route path='/signin'>
+            <Login
+              handleLogin={handleLogin}
+            />
+          </Route>
+          <Route path='*'>
+            <PageNotFound/>
+          </Route>
+        </Switch>
+        <Popup
+          message={popupMessage}
+          onSubmit={popupOnSubmit}
+        />
+      </div>
     </CurrentUserContext.Provider>
   );
-};
-
+}

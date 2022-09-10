@@ -1,67 +1,110 @@
-import { BASE_URL_MAIN } from '../utils/constants';
-
-export const headers = {
-  authorization: `Bearer ${localStorage.getItem('token')}`,
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-};
-
-// Обработка ответа от сервера
-const getResponse = (response) => {
-  try {
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    return response.json();
-  } catch (err) {
-    return err;
+class MainApi{
+  constructor(options){
+    this._url = options.baseUrl;
+    this.headers = options.headers;
   }
-};
 
-// Получение информации о пользователе GET users/me
-export const getUserInfo = async () => {
-  const response = await fetch(`${BASE_URL_MAIN}/users/me`, {
-    headers: headers,
-  });
-  return await getResponse(response);
-};
+  _checkResponse(res){
+    if(res.ok){
+      return res.json();
+    } else {
+      console.log(`${res.status}`);
+    }
+  }
 
-// Получение информации о сохраненных фильмах GET /movies
-export const getMovies = async () => {
-  const response = await fetch(`${BASE_URL_MAIN}/movies`, {
-    headers: headers,
-  });
-  return await getResponse(response);
-};
+  register(password, email, name) {
+    return fetch(`${this._url}/signup`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        password: password,
+        email: email,
+        name: name
+      }),
+    })
+      .then(this._checkResponse);
+  }
 
-// Редактирование данных пользователя PATCH
-export const updateUserData = async (userData) => {
-  const response = await fetch(`${BASE_URL_MAIN}/users/me`, {
-    method: 'PATCH',
-    headers: headers,
-    body: JSON.stringify({
-      name: userData.name,
-      email: userData.email,
-    }),
-  });
-  return await getResponse(response);
-};
+  login(password, email) {
+    console.log(password, email)
+    return fetch(`${this._url}/signin`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        password: password,
+        email: email,
+      }),
+    })
+      .then(this._checkResponse);
+    }
 
-// Добавить фильм в сохраненные POST /movies
-export const addSaveMovies = async (movieData) => {
-  const response = await fetch(`${BASE_URL_MAIN}/movies`, {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(movieData),
-  });
-  return await getResponse(response);
-};
+  getUserInfo(token){
+    return fetch(`${this._url}/users/me`, {
+      method: 'GET',
+      headers: {
+        ...this.headers,
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then(this._checkResponse);
+  }
 
-// Удаление фильма из сохраненных DELETE /movies/:id
-export const deleteSaveMovies = async (id) => {
-  const response = await fetch(`${BASE_URL_MAIN}/movies/${id}`, {
-    method: 'DELETE',
-    headers: headers,
-  });
-  return await getResponse(response);
-};
+  updateUserInfo(user, token) {
+    return fetch(`${this._url}/users/me`, {
+      method: 'PATCH',
+      headers: {
+        ...this.headers,
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name: user.name,
+        email: user.email
+      })
+    })
+    .then(this._checkResponse);
+  }
+
+  getLikedMovies(token) {
+    return fetch(`${this._url}/movies`, {
+      method: 'GET',
+      headers: {
+        ...this.headers,
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then(this._checkResponse);
+  }
+
+  deleteMovie(movieId, token) {
+    return fetch(`${this._url}/movies/${movieId}`, {
+      method: 'DELETE',
+      headers: {
+        ...this.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(this._checkResponse);
+  }
+
+  likeMovie(movie, token) {
+    return fetch(`${this._url}/movies`, {
+      method: 'POST',
+      body: JSON.stringify(movie),
+      headers: {
+        ...this.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(this._checkResponse);
+  }
+  
+}
+
+const mainApi = new MainApi({
+  baseUrl: 'https://api.nicemovie.nomoredomains.monster',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export default mainApi;

@@ -1,24 +1,23 @@
 import React from 'react';
-import { Header } from '../Header/Header';
 import { Promo } from '../Promo/Promo';
 import { AboutProject } from '../AboutProject/AboutProject';
 import { Techs } from '../Techs/Techs';
 import { AboutMe } from '../AboutMe/AboutMe';
+import { Portfolio } from '../Portfolio/Portfolio';
 import { Footer } from '../Footer/Footer';
+
 import './Main.css';
 
-export const Main = ({ login }) => {
+export function Main() {
 
-  return (
-    <>
-      <Header login={ login }/>
-      <main className='main__components'>
-        <Promo />
-        <AboutProject />
-        <Techs />
-        <AboutMe />
-      </main>
-      <Footer />
-    </>
-  )
+  return(
+    <section>
+      <Promo></Promo>
+      <AboutProject></AboutProject>
+      <Techs></Techs>
+      <AboutMe></AboutMe>
+      <Portfolio></Portfolio>
+      <Footer></Footer>
+    </section>
+  );
 }

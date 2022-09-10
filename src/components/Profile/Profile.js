@@ -1,77 +1,62 @@
-import { Header } from '../Header/Header';
-import { React } from 'react'; 
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useContext } from 'react';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { useFormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
-const userData = {
-  name: 'Алексей',
-  email: 'alexei_penkin@mail.ru',
-};
+export function Profile({ hadleSignOut, handleUpdate }) {
+  const currentUser = useContext(CurrentUserContext);
+  const validate = useFormWithValidation();
 
-export const Profile = () => {
-  const [edit, setEdit] = useState(false);
-  // eslint-disable-next-line
-  const [error, setError] = useState(false);
-  const classSaveButton = 'profile__save-button profile__save-button_disabled';
-  const { name, email } = userData;
+  React.useEffect(() => {
+    validate.setValues(currentUser);
+  }, [currentUser]);
+
+  function hadleSubmit(e){
+    e.preventDefault();
+    handleUpdate(validate.values);
+  }
 
   return (
-    <>
-      <Header />
-      <main className='profile'>
-        <h1 className='profile__title'>{`Привет, ${name}!`}</h1>
-        <form className='profile__form'>
-          <fieldset className='profile__fieldset'>
-            <label className='profile__label'>Имя</label>
-            <input
-              type='text'
-              name='name'
-              defaultValue={name}
-              className='profile__input profile__input_type_name'
-              placeholder='Имя'
-              required
-              pattern='^[a-zA-ZА-Яа-яЁё\s]+$'
-              minLength={2}
-              maxLength={100}
-              title='Кириллица'
-              disabled={!edit}
-            />
-          </fieldset>
-          <fieldset className='profile__fieldset'>
-            <label className='profile__label'>E-mail</label>
-            <input
-              type='email'
-              name='email'
-              defaultValue={email}
-              className='profile__input profile__input_type_email'
-              placeholder='email'
-              required
-              title='email'
-              disabled={!edit}
-            />
-          </fieldset>
-          {error && (
-            <span className='profile__error'>
-              При обновлении профиля произошла ошибка.
-            </span>
-          )}
-          {edit ? (
-            <button type='submit' className={classSaveButton} disabled={error}>
-              Сохранить
-            </button>
-          ) : (
-            <div className='profile__buttons'>
-              <p className='profile__edit' onClick={() => setEdit(!edit)}>
-                Редактировать
-              </p>
-              <Link to='/' className='profile__logout'>
-                Выйти из аккаунта
-              </Link>
+    <section className='profile'>
+      <form className='profile__form'>
+        <h3 className='profile__title'>Привет, {currentUser.name}!</h3>
+        <div className='profile__input-list'>
+          <div className='profile__input-area'>
+            <div className='profile__input-container'>
+              <label className='profile__label'>Имя</label>
+              <input
+                required
+                name='name'
+                value={validate.values.name || ''}
+                className='profile__input'
+                placeholder={currentUser.name}
+                minLength='2'
+                maxLength='30'
+                onChange={validate.handleChange}
+              />
             </div>
-          )}
-        </form>
-      </main>
-    </>
+            <span className='profile__error'>{validate.errors.name || ''}</span>
+          </div>
+          <div className='profile__input-area'>
+            <div className='profile__input-container'>
+            <label className='profile__label'>E-mail</label>
+              <input
+                required
+                name='email'
+                value={validate.values.email || ''}
+                className='profile__input'
+                placeholder={currentUser.email}
+                type='email'
+                onChange={validate.handleChange}  
+              >
+              </input>
+            </div>
+            <span className='profile__error'>{validate.errors.email || ''}</span>
+          </div>
+        </div>
+        <button type='submit' className='profile__submit-btn' onClick={hadleSubmit} disabled={!validate.isValid}>Редактировать</button>
+        <button className='profile__exit-btn' onClick={hadleSignOut}>Выйти из аккаунта</button>
+      </form>
+    </section>
   );
 };

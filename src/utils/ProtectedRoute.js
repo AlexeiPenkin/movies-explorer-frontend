@@ -1,5 +1,11 @@
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import { Route, Redirect } from "react-router-dom";
 
-export const ProtectedRoute = ({ login, children }) => {
-  return <>{login ? children : <Navigate to='/' />}</>;
-};
+export const ProtectedRoute = ({ component: Component, ...props }) => {
+  return (
+    <Route>
+      {
+        () => localStorage.getItem('token') ? <Component {...props} /> : <Redirect to='/signin' />
+      }
+    </Route>
+)}
