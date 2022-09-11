@@ -1,11 +1,10 @@
-import React from 'react';
+import { React, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../../utils/ProtectedRoute';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import { Footer } from '../Footer/Footer';
 import { Movies } from '../Movies/Movies';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
 import { Profile } from '../Profile/Profile';
@@ -27,16 +26,16 @@ export function App() {
   const addCardsTablet = 2;
   const addCardsMobile = 1;
   const movieUrl = 'https://api.nomoreparties.co';
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [isMobileMenuOpen, toggleMobileMenu] = React.useState(false);
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [popupMessage, setPopupMessage] = React.useState('');
-  const [movies, setMovies] = React.useState([]);
-  const [savedMovies, setSavedMovies] = React.useState([]);
-  const [filter, setFilter] = React.useState(false);
-  const [searching, setSearching] = React.useState(false);
-  const [numberOfMovies, setNumberOfMovies] = React.useState(
+  const [currentUser, setCurrentUser] = useState({});
+  const [isMobileMenuOpen, toggleMobileMenu] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+  const [movies, setMovies] = useState([]);
+  const [savedMovies, setSavedMovies] = useState([]);
+  const [filter, setFilter] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [numberOfMovies, setNumberOfMovies] = useState(
     window.screen.width > 1279
     ? cardsDesktop
     : window.screen.width > 767
@@ -223,6 +222,7 @@ export function App() {
   function getMovies(token) {
     const localMovies = localStorage.getItem('movies');
     const arrMovies = localMovies ? JSON.parse(localMovies) : [];
+    console.group(arrMovies);
     const getMovies = arrMovies.length ? arrMovies : moviesApi.getMovies();
     Promise.all([getMovies, mainApi.getLikedMovies(token)])
       .then(([moviesCard, savedMoviesCard]) => {
@@ -263,12 +263,12 @@ export function App() {
     });
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       checkToken(token);
-    }
-  }, []);
+    } console.log(token);
+  });
 
   function hadleSignOut() {
     localStorage.removeItem('token');

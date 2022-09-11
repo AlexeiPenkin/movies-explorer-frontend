@@ -101,7 +101,7 @@ class MainApi{
 }
 
 const mainApi = new MainApi({
-  baseUrl: 'https://api.nicemovie.nomoredomains.monster',
+  baseUrl: 'frontend.movie.project.nomoredomains.xyz',
   headers: {
     'Content-Type': 'application/json',
   },
