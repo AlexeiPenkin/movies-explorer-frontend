@@ -1,68 +1,45 @@
-.moviesCardList{
+.movies-card-list {
+  /* width: 1280px; */
   display: flex;
-  flex-direction: column;
-  background: #202020;
-}
-
-.moviesCardList__list{
-  display: flex;
-  margin: 32px auto 0;
-  width: 1140px;
-  flex-wrap: wrap;
-}
-
-.moviesCardList__text{
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 25px;
-  margin: 200px auto;
-  color: #FFFFFF;
-}
-
-.moviesCardList__more-btn{
-  display: flex;
-  width: 1140px;
-  height: 36px;
-  padding: 0;
-  border: none;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 15px;
-  align-items: center;
   justify-content: center;
-  margin: 50px auto 80px;
-  color: #FFFFFF;
-
-  background: #2F2F2F;
-  border-radius: 6px;
+  align-items: center;
+  padding: 70px 70px 30px;
+  box-sizing: border-box;
 }
 
-@media (max-width:1279px) {
-  .moviesCardList__list{
-    width: 708px;
-    flex-wrap: wrap;
-    justify-content: space-between;
+.elements {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 364px);
+  grid-template-rows: repeat(auto-fill, 271px);
+  column-gap: 24px;
+  row-gap: 30px;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+@media screen and (min-width: 768px) and (max-width: 910px) {
+  .movies-card-list {
+    padding: 70px 30px 30px;
   }
 
-  .moviesCardList__more-btn{
-    width: 708px;
+  .elements {
+    grid-template-columns: repeat(auto-fill, 339px);
+    grid-template-rows: repeat(auto-fill, 258px);
+    column-gap: 30px;
+    row-gap: 36px;
   }
 }
 
-@media (max-width:767px) {
-  .moviesCardList__list{
-    margin-top: 36px;
-    width: 300px;
-    flex-wrap: wrap;
-    justify-content: space-between;
+@media screen and (min-width: 320px) and (max-width: 767px) {
+  .movies-card-list {
+    padding: 40px 10px 30px;
   }
 
-  .moviesCardList__more-btn{
-    width: 300px;
-    margin-bottom: 89px;
+  .elements {
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-template-rows: repeat(auto-fill, 236px);
+    row-gap: 16px;
   }
 }

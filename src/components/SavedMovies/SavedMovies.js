@@ -1,25 +1,29 @@
-import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
+import { HeaderPages } from '../HeaderPages/HeaderPages';
+import { moviesList } from '../../utils/moviesList';
 import { SearchForm } from '../SearchForm/SearchForm';
-
+import { Preloader } from '../Preloader/Preloader';
+import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
+import { Footer } from '../Footer/Footer';
 import './SavedMovies.css';
 
-export function SavedMovies ({ path, onSearch, handleFilter, filter, movies, numberOfMovies, handleMore, searching, deleteMovie }) {
-
-  return(
-    <section className='savedMovies'>
-      <SearchForm 
-        onSearch={onSearch}
-        handleFilter={handleFilter}
-        filter={filter}
-      ></SearchForm>
-      <MoviesCardList 
-        path={path}
-        movies={movies} 
-        numberOfMovies={numberOfMovies} 
-        handleMore={handleMore} 
-        searching={searching}
-        deleteMovie={deleteMovie}
-      ></MoviesCardList>
-    </section>
+export const SavedMovies = () => {
+  const preLoading = false;
+  const saveMoviesList = moviesList.filter((movie) => movie.save);
+  return (
+    <>
+      <HeaderPages />
+      <main className='saved-movies'>
+        <SearchForm />
+        {preLoading ? (
+          <Preloader />
+        ) : (
+          <>
+            <MoviesCardList moviesList={saveMoviesList} type={'save'}/>
+            <div className='blocks-gap'></div>
+          </>
+        )}
+      </main>
+      <Footer />
+    </>
   );
-}
+};

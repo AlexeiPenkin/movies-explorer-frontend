@@ -1,5 +1,4 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from '../../image/logo.svg';
 import { useState } from 'react';
 import classNames from 'classnames';
@@ -44,9 +43,9 @@ export const Login = () => {
     <section className='login'>
       <form className='login__form'>
 
-        <NavLink to='/' className='login__link'>
+        <Link to='/' className='login__link'>
           <img className='login__logo' src={logo} alt='logo' />
-        </NavLink>
+        </Link>
 
         <h1 className='login__title'>{title}</h1>
 
@@ -106,16 +105,20 @@ export const Login = () => {
         </div>
 
         <button type='submit' className='login__button'>{button}</button>
+
         <p className='login__text'>
           {text}
           {type === 'signup' ? (
-            <NavLink className='login-link__text' to='/signin'>
+
+            <Link className='login-link__text' to='/signin'>
               Войти
-            </NavLink>
+            </Link>
+
           ) : (
-            <NavLink className='login-link__text' to='/signup'>
+            
+            <Link className='login-link__text' to='/signup'>
               Регистрация
-            </NavLink>
+            </Link>
 
           )}
         </p>
