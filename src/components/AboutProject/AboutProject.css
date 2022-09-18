@@ -12,6 +12,7 @@
   margin: 0;
   padding-bottom: 23px;
   border-bottom: 1px solid #000;
+  text-align: left;
 }
 
 .about-project__content {
@@ -19,6 +20,7 @@
   margin: 0;
   padding-top: 70px;
   display: flex;
+  text-align: left;
 }
 
 .about-project__content_item {

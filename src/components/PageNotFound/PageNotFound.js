@@ -1,6 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './PageNotFound.css'
+import { NavLink } from 'react-router-dom';
+import './PageNotFound.css';
 
 export const PageNotFound = () => {
   return (
@@ -11,9 +10,9 @@ export const PageNotFound = () => {
       <p className='pagenotfound__subtitle'>
         Страница не найдена
       </p>
-      <Link to="/" className='pagenotfound__link'>
+      <NavLink to="/" className='pagenotfound__link'>
         Назад
-      </Link>
+      </NavLink>
     </main>
   );
 }; 

@@ -1,10 +1,13 @@
-import { React, useState } from 'react';
-import { NavigationAuth } from '../NavigationAuth/NavigationAuth';
-import { NavigationMovies } from '../NavigationMovies/NavigationMovies';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import './Navigation.css'
 
-export const Navigation = () => {
-  // eslint-disable-next-line
-  const [login, setLogin] = useState(true);
+export function Navigation() {
 
-  return <>{login ? <NavigationMovies /> : <NavigationAuth />}</>;
-};
+  return(
+    <nav className='navigation-homepage'>
+      <NavLink to='/signup' className='navigation-homepage__link'>Регистрация</NavLink>
+      <NavLink to='/signin' className='navigation-homepage__link navigation-homepage__link_button'>Войти</NavLink>
+    </nav>
+  )
+}

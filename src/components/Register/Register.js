@@ -1,130 +1,72 @@
-import { Link } from 'react-router-dom';
-import logo from '../../image/logo.svg';
-import { useState } from 'react';
-import classNames from 'classnames';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useFormWithValidation } from '../../utils/FormWithValidation';
 import './Register.css';
 
-const type = 'signup';
-const title = 'Добро пожаловать!';
-const button = 'Зарегистрироваться';
-const text = `Уже зарегистрированы? `;
+export function Register({ handleRegister }) {
+  const validate = useFormWithValidation();
+  
+  function handleSubmit(e){
+    e.preventDefault();
+    handleRegister(validate.values);
+  }
 
-export const Register = () => {
-  const [messageError, setMessageError] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [value, setValue] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const classErrorName = classNames(`register__input`, {
-    error: messageError.name,
-  });
-  const classErrorEmail = classNames(`register__input`, {
-    error: messageError.email,
-  });
-  const classErrorPassword = classNames(`register__input`, {
-    error: messageError.password,
-  });
-
-  const handleInputChange = (evt) => {
-    const { name, value } = evt.target;
-    setValue((prev) => ({ ...prev, [name]: value }));
-    setMessageError((prev) => ({
-      ...prev,
-      [name]: evt.target.validationMessage,
-    }));
-  };
-
-  return (
+  return(
     <section className='register'>
-      <form className='register__form'>
+      <div className='register__wrapper'>
+        <NavLink to='/' className='register__logo'></NavLink>
+        <h2 className='register__title'>Добро пожаловать!</h2>
+        <form className='register__form' onSubmit={handleSubmit}>
 
-        <Link to='/' className='register__link'>
-          <img className='register__logo' src={logo} alt='logo' />
-        </Link>
+          <label className='register__label'>Имя</label>
+          <input 
+            className={`register__input ${validate.errors.name ? 'register__input-error' : ''}`}
+            name='name'
+            type='text'
+            required 
+            minLength='2'
+            maxLength='30'
+            value={validate.values.name || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.name || ''}</span>
 
-        <h1 className='register__title'>{title}</h1>
+          <label className='register__label'>E-mail</label>
+          <input 
+            className={`register__input ${validate.errors.email ? 'register__input-error' : ''}`}
+            name='email'
+            type='email'
+            required
+            value={validate.values.email || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.email || ''}</span>
 
-        <div className='register-fieldsets__wrapper'>
-          {type === 'signup' && (
+          <label className='register__label'>Пароль</label>
+          <input 
+            className={`register__input ${validate.errors.password ? 'register__input-error' : ''}`}
+            name='password'
+            type='password'
+            required 
+            minLength='8'
+            maxLength='30'
+            value={validate.values.password || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.password || ''}</span>
 
-            <fieldset className='register__fieldset'>
-              <label className='register__label'>Имя</label>
-              <input
-                className={classErrorName}
-                type='text'
-                name='name'
-                pattern='^[A-Za-zА-Яа-яЁё /s -]+$'
-                required
-                minLength={2}
-                maxLength={100}
-                value={value.name}
-                onChange={handleInputChange}
-              />
-              {messageError.name && (
-                <span className='register__span-error'>{messageError.name}</span>
-              )}
-            </fieldset>
-          )}
+          <button 
+            className={`register__button ${
+              validate.isValid ? '' : 'register__button_disabled'
+            }`}
+            disabled={!validate.isValid}
+          >Зарегистрироваться</button>
 
-          <fieldset className='register__fieldset'>
-            <label className='register__label'>E-mail</label>
-            <input
-              className={classErrorEmail}
-              type='email'
-              name='email'
-              required
-              value={value.email}
-              onChange={handleInputChange}
-            />
-            {messageError.email && (
-              <span className='register__span-error'>{messageError.email}</span>
-            )}
-          </fieldset>
+        </form>
 
-          <fieldset className='register__fieldset'>
-            <label className='register__label'>Пароль</label>
-            <input
-              className={classErrorPassword}
-              type='password'
-              name='password'
-              value={value.password}
-              required
-              minLength={8}
-              onChange={handleInputChange}
-            />
-            {messageError.password && (
-              <span className='register__span-error'>{messageError.password}</span>
-            )}
-          </fieldset>
+        <p className='register__text'>Уже зарегистрированы? <NavLink to='/signin' className='register__link'>Войти</NavLink></p>
 
-        </div>
-
-        <button type='submit' className='register__button'>{button}</button>
-
-        <p className='register__text'>
-          {text}
-          {type === 'signup' ? (
-
-            <Link className='register-link__text' to='/signin'>
-              Войти
-            </Link>
-
-          ) : (
-            
-            <Link className='register-link__text' to='/signup'>
-              Регистрация
-            </Link>
-
-          )}
-        </p>
-
-      </form>
-      
+      </div>
     </section>
   );
-};
+}

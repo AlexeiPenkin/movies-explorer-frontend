@@ -1,130 +1,62 @@
-import { Link } from 'react-router-dom';
-import logo from '../../image/logo.svg';
-import { useState } from 'react';
-import classNames from 'classnames';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useFormWithValidation } from '../../utils/FormWithValidation';
 import './Login.css';
 
-const type = 'signin';
-const title = 'Мы рады,что Вы опять с нами!';
-const button = 'Войти';
-const text = `Еще не зарегистрированы? `;
+export function Login({ handleLogin }) {
+  const validate = useFormWithValidation();
 
-export const Login = () => {
-  const [messageError, setMessageError] = useState({
-    email: '',
-    password: '',
-  });
-  const [value, setValue] = useState({
-    email: '',
-    password: '',
-  });
+  function hadleSubmit(e){
+    e.preventDefault();
+    handleLogin( validate.values );
+  }
 
-  
-  const classErrorName = classNames(`login__input`, {
-    error: messageError.name,
-  });
-  const classErrorEmail = classNames(`login__input`, {
-    error: messageError.email,
-  });
-  const classErrorPassword = classNames(`login__input`, {
-    error: messageError.password,
-  });
-
-  const handleInputChange = (evt) => {
-    const { name, value } = evt.target;
-    setValue((prev) => ({ ...prev, [name]: value }));
-    setMessageError((prev) => ({
-      ...prev,
-      [name]: evt.target.validationMessage,
-    }));
-  };
-
-  return (
+  return(
     <section className='login'>
-      <form className='login__form'>
 
-        <Link to='/' className='login__link'>
-          <img className='login__logo' src={logo} alt='logo' />
-        </Link>
+      <div className='login__wrapper'>
 
-        <h1 className='login__title'>{title}</h1>
+        <NavLink to='/' className='login__logo'></NavLink>
 
-        <div className='login-fieldsets__wrapper'>
-          {type === 'signup' && (
+        <h2 className='login__title'>Рады видеть!</h2>
 
-            <fieldset className='login__fieldset'>
-              <label className='login__label'>Имя</label>
-              <input
-                className={classErrorName}
-                type='text'
-                name='name'
-                pattern='^[A-Za-zА-Яа-яЁё /s -]+$'
-                required
-                minLength={2}
-                maxLength={100}
-                value={value.name}
-                onChange={handleInputChange}
-              />
-              {messageError.name && (
-                <span className='login__span-error'>{messageError.name}</span>
-              )}
-            </fieldset>
-          )}
+        <form className='login__form' onSubmit={hadleSubmit}>
 
-          <fieldset className='login__fieldset'>
-            <label className='login__label'>E-mail</label>
-            <input
-              className={classErrorEmail}
-              type='email'
-              name='email'
-              required
-              value={value.email}
-              onChange={handleInputChange}
-            />
-            {messageError.email && (
-              <span className='login__span-error'>{messageError.email}</span>
-            )}
-          </fieldset>
+          <label className='login__label'>E-mail</label>
+          <input
+            required
+            name='email'
+            className={`login__input ${validate.errors.email ? 'login__input-error' : ''}`}
+            value={validate.values.email || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='login__error'>{validate.errors.email || ''}</span>
 
-          <fieldset className='login__fieldset'>
-            <label className='login__label'>Пароль</label>
-            <input
-              className={classErrorPassword}
-              type='password'
-              name='password'
-              value={value.password}
-              required
-              minLength={8}
-              onChange={handleInputChange}
-            />
-            {messageError.password && (
-              <span className='login__span-error'>{messageError.password}</span>
-            )}
-          </fieldset>
+          <label className='login__label'>Пароль</label>
+          <input
+            required
+            className={`login__input ${validate.errors.password ? 'login__input-error' : ''}`}
+            name='password'
+            type='password'
+            minLength='6'
+            maxLength='30'
+            value={validate.values.password || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='login__error'>{validate.errors.password || ''}</span>
 
-        </div>
+          <button
+            className={`login__button ${
+              validate.isValid ? '' : 'login__button_disabled'
+            }`}
+            disabled={!validate.isValid}
+          >Войти</button>
 
-        <button type='submit' className='login__button'>{button}</button>
+        </form>
 
-        <p className='login__text'>
-          {text}
-          {type === 'signup' ? (
-
-            <Link className='login-link__text' to='/signin'>
-              Войти
-            </Link>
-
-          ) : (
-            
-            <Link className='login-link__text' to='/signup'>
-              Регистрация
-            </Link>
-
-          )}
-        </p>
-
-      </form>
-      
+        <p className='login__text'>Ещё не зарегистрированы? <NavLink to='/signup' className='login__link'>Регистрация</NavLink></p>
+        
+      </div>
     </section>
   );
-};
+}

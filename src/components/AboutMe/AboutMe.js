@@ -1,5 +1,4 @@
-import { Portfolio } from '../Portfolio/Portfolio';
-import photo from '../../image/Student_я.jpg';
+import photo from '../../images/Student.jpg';
 import './AboutMe.css';
 
 export const AboutMe = () => {
@@ -36,7 +35,6 @@ export const AboutMe = () => {
         </div>
         <img className='photo' alt='Фото' src={photo} />
       </div>
-      <Portfolio />
     </section>
   );
 };

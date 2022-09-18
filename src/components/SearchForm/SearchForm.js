@@ -1,25 +1,41 @@
+import { React, useState } from 'react';
 import './SearchForm.css';
 
-export const SearchForm = () => {
-  return (
+export function SearchForm ({ onSearch, handleFilter, filter }) {
+  const [keyword, setKeyword] = useState('');
+
+  function handleSearch(e) {
+    setKeyword(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSearch(keyword, filter)
+  }
+
+  return(
     <section className='search-form'>
-      <form className='search-form__form'>
-        <div className='search-form__movie'>
+      <form onSubmit={handleSubmit} className='search-form__form'>
+        <div className='search-form__bar'>
           <input
-            className='search-form__input'
+            onChange={handleSearch}
+            className='search-form__input' 
+            placeholder='Фильм'
             type='text'
-            placeholder={`Фильм`}
-            required
+            value={keyword || ''}
           />
-        <button className='search-form__button' type='button'></button>
+          <button className='search-form__find-button'></button>
         </div>
         <label className='checkbox__label'>
-          <input className='checkbox' type='checkbox' value='short' />
-          <span className='checkbox__pseudo-element'></span>
+          <input className='checkbox'
+            type='checkbox'
+            value='short'
+            handleFilter={handleFilter}
+            filter={filter} />
+          <span className='checkbox__selector'></span>
           Короткометражки
         </label>
-        {/* <div className='search-form__bottom-line'></div> */}
       </form>
     </section>
   );
-};
+}
