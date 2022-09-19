@@ -13,7 +13,7 @@ export function SavedMovies ({ path, onSearch, handleFilter, filter, movies, num
         filter={filter}
       ></SearchForm>
       <MoviesCardList 
-        type={'movies'}
+        // type={'movies'}
         path={path}
         movies={movies} 
         numberOfMovies={numberOfMovies} 

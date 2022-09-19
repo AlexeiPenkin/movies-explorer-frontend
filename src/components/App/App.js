@@ -310,34 +310,34 @@ export function App() {
         <Switch>
           <ProtectedRoute 
             path='/movies'
-            numberOfMovies={numberOfMovies}
-            onSearch={onSearch}
-            handleFilter={handleFilter}
-            handleMore={handleMore}
-            filter={filter}
-            movies={movies.filter(filterDuration)}
-            deleteMovie={handleDeleteMovie}
+            component={Movies}
             saveMovie={handleSaveMovie}
             searching={searching}
-            component={Movies}
+            onSearch={onSearch}
+            numberOfMovies={numberOfMovies}
+            filter={filter}
+            handleFilter={handleFilter}
+            movies={movies.filter(filterDuration)}
+            deleteMovie={handleDeleteMovie}
+            handleMore={handleMore}
           />
           <ProtectedRoute 
             path='/saved-movies'
             component={SavedMovies}
-            numberOfMovies={numberOfMovies}
-            onSearch={onSearchSaved}
-            handleFilter={handleFilter}
-            handleMore={handleMore}
-            deleteMovie={handleDeleteMovie}
-            filter={filter}
-            movies={movies.filter(filterDuration)}
             searching={searching}
+            onSearch={onSearchSaved}
+            numberOfMovies={numberOfMovies}
+            filter={filter}
+            handleFilter={handleFilter}
+            movies={movies.filter(filterDuration)}
+            deleteMovie={handleDeleteMovie}
+            handleMore={handleMore}
           />
           <ProtectedRoute 
             path='/profile'
+            component={Profile}
             hadleSignOut={hadleSignOut}
             handleUpdate={handleUpdate}
-            component={Profile}
           />
           <Route exact path='/'>
             <Main 
