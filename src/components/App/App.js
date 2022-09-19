@@ -275,8 +275,6 @@ export function App() {
     localStorage.removeItem('token');
     setLoggedIn(false);
     history.push('/');
-    localStorage.removeItem('searchText');
-    localStorage.removeItem('shortFilter');
     setCurrentUser({});
   }
 
