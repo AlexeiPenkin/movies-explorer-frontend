@@ -2,7 +2,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: auto;
 }
 
 .navigation-homepage__link{

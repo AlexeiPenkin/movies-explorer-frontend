@@ -1,22 +1,23 @@
 .header{
   display: flex;
   height: 74px;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items: center;
   padding-left: 70px;
   padding-right: 70px;
 }
- 
+
 .header__hidden-menu{
   display: none;
   background-color: #fff;
 }
 
 .header__navigation-block{
-  width: 1140px;
   display: flex;
-  justify-content:right;
+  /* width: 1140px; */
+  justify-content: space-between;
   margin: 0 auto;
+
 }
 
 .header__logo{

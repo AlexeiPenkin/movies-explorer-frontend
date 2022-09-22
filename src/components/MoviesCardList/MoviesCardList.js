@@ -2,15 +2,15 @@ import { MoviesCard } from '../MoviesCard/MoviesCard';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ path, movies, numberOfMovies, handleMore, saveMovie, deleteMovie, key }) {
+export function MoviesCardList ({ path, movies, moviesNumber, handleAddMovies, deleteMovie }) {
   const moviesCard = movies
-    .filter((card, number) => number < numberOfMovies)
+    .filter((card, number) => number < moviesNumber)
     .map((movie) => {
     return (
       <MoviesCard 
         path={path}
         movie={movie}
-        saveMovie={SavedMovies}
+        savedMovie={SavedMovies}
         deleteMovie={deleteMovie}
         key={movie._id}
       />
@@ -21,12 +21,12 @@ export function MoviesCardList ({ path, movies, numberOfMovies, handleMore, save
       <div className='cards-list__grid'>
         {moviesCard}
       </div>
-      {movies.length > numberOfMovies && ( 
+      {movies.length > moviesNumber && ( 
         <section className='cards-list__add-movies'>
           <button 
             type='button'
             className='cards-list__add-movies-button'
-            onClick={handleMore}>
+            onClick={handleAddMovies}>
               Ещё
           </button>
         </section>

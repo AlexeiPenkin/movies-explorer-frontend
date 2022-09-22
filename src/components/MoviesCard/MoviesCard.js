@@ -28,7 +28,7 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
     time = duration % 60 + 'мин';
   }
 
-  function handleSave() {
+  function handleSaveMovie() {
     if(!movie.saved) {
       saveMovie(movie);
     } else {
@@ -36,7 +36,7 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
     }
   }
 
-  function handleDelete() {
+  function handleDeleteMovie() {
     deleteMovie(movie);
   }
   
@@ -50,13 +50,13 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
           <button 
             className={`movies-card__like-button
             ${ saved ? 'movies-card__like-button_active' : '' }`}
-            onClick={handleSave}
+            onClick={handleSaveMovie}
             style={{display: likeVisible}}
           >
           </button>
           <button 
             className='movies-card__delete-button' 
-            onClick={handleDelete}
+            onClick={handleDeleteMovie}
             style={{display: deleteVisible}}
           >
           </button>

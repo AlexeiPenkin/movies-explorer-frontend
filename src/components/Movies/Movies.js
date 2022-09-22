@@ -3,23 +3,21 @@ import { SearchForm } from '../SearchForm/SearchForm';
 import { Footer } from '../Footer/Footer';
 import './Movies.css';
 
-export function Movies ({ path, onSearch, handleFilter, filter, movies, numberOfMovies, handleMore, searching, saveMovie, deleteMovie }) {
+export function Movies ({ movieCards, onSave, savedMovies, onSearch, durationSwitch, listLength, addMovies, handleDeleteMovie, currentUser }) {
   return(
     <section className='movies'>
       <SearchForm 
         onSearch={onSearch}
-        handleFilter={handleFilter}
-        filter={filter}
+        durationSwitch={durationSwitch}
       ></SearchForm>
       <MoviesCardList 
-        // type={'movies'}
-        path={path}
-        movies={movies} 
-        numberOfMovies={numberOfMovies} 
-        handleMore={handleMore} 
-        searching={searching}
-        saveMovie={saveMovie}
-        deleteMovie={deleteMovie}
+        movieCards={movieCards}
+        onSave={onSave}
+        savedMovies={savedMovies}
+        listLength={listLength}
+        addMovies={addMovies}
+        onDelete={handleDeleteMovie}
+        currentUser={currentUser}
       ></MoviesCardList>
       <Footer></Footer>
     </section>
