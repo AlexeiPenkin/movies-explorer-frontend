@@ -11,13 +11,13 @@ export function Movies ({ movieCards, onSave, savedMovies, onSearch, durationSwi
         durationSwitch={durationSwitch}
       ></SearchForm>
       <MoviesCardList 
+        currentUser={currentUser}
         movieCards={movieCards}
+        addMovies={addMovies}
         onSave={onSave}
         savedMovies={savedMovies}
         listLength={listLength}
-        addMovies={addMovies}
         onDelete={handleDeleteMovie}
-        currentUser={currentUser}
       ></MoviesCardList>
       <Footer></Footer>
     </section>

@@ -1,17 +1,19 @@
+import { React, useState } from 'react';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ path, movies, moviesNumber, handleAddMovies, deleteMovie }) {
+export function MoviesCardList ({ path, moviesNumber, handleAddMovies, handleDeleteMovie }) {
+  const [movies, setMovies] = useState([]);
   const moviesCard = movies
-    .filter((card, number) => number < moviesNumber)
+    .filter((number) => number < moviesNumber)
     .map((movie) => {
     return (
       <MoviesCard 
         path={path}
         movie={movie}
         savedMovie={SavedMovies}
-        deleteMovie={deleteMovie}
+        deleteMovie={handleDeleteMovie}
         key={movie._id}
       />
     )

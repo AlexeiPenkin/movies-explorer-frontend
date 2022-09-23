@@ -49,6 +49,7 @@ export function App() {
   const [savedMoviesFilter, setSavedMoviesFilter] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [listLength, setListLength] = useState(0);
+  const [movies, setMovies] = useState([]);
 
 /* ========================================================= */
   function handleBurgerMenuOpen() {
@@ -276,7 +277,6 @@ export function App() {
     setSavedMoviesFilter([])
     setFilteredMovies([])
     setLocalSavedData([])
-    setTimeout(() => {history.push('/')}, 2)
   }
 
 /* ========================================================= */
@@ -314,17 +314,18 @@ export function App() {
             movieCards={filteredMovies}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
-            addMovies={addMovies}
+            addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={localSavedData}
             onSave={handleSaveMovie}
           />
           <ProtectedRoute path='/saved-movies'
+            component={SavedMovies}
             movieCards={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
-            addMovies={addMovies}
+            addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={savedMoviesFilter}

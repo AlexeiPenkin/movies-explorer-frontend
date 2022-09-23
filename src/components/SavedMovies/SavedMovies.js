@@ -13,10 +13,10 @@ export function SavedMovies ({ movieCards, handleDeleteMovie, listLength, onSear
       ></SearchForm>
       <MoviesCardList 
         movieCards={movieCards}
-        onDelete={handleDeleteMovie}
-        listLength={listLength}
         addMovies={addMovies}
         savedMovies={savedMovies} 
+        listLength={listLength}
+        onDelete={handleDeleteMovie}
       ></MoviesCardList>
       <Footer></Footer>
     </section>
