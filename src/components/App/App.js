@@ -166,7 +166,7 @@ export function App() {
   }, [token, currentUser])
 
   // Определение количества фильмов на странице в зависимости от размера экрана
-  function handleAddMovies() {
+  function handleAddMoviesButton() {
     setMoviesNumber(
       moviesNumber + 
       (
@@ -307,14 +307,14 @@ export function App() {
           onOpen={handleBurgerMenuOpen}
           path={location.pathname}
         />
-        <Switch>
+        <Switch>  
           <ProtectedRoute path='/movies'
             component={Movies}
             currentUser={currentUser}
             movieCards={filteredMovies}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
-            addMovies={handleAddMovies}
+            addMovies={handleAddMoviesButton}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={localSavedData}
@@ -325,7 +325,7 @@ export function App() {
             movieCards={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
-            addMovies={handleAddMovies}
+            addMovies={handleAddMoviesButton}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={savedMoviesFilter}

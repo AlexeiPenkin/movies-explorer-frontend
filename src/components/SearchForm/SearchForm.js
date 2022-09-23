@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import './SearchForm.css';
 
-export function SearchForm ({ onSearch, handleFilter, filter }) {
+export function SearchForm ({ onSearch, value }) {
   const [keyword, setKeyword] = useState('');
 
   function handleSearch(e) {
@@ -10,7 +10,7 @@ export function SearchForm ({ onSearch, handleFilter, filter }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    onSearch(keyword, filter)
+    onSearch(value)
   }
 
   return(
@@ -29,9 +29,7 @@ export function SearchForm ({ onSearch, handleFilter, filter }) {
         <label className='checkbox__label'>
           <input className='checkbox'
             type='checkbox'
-            value='short'
-            handleFilter={handleFilter}
-            filter={filter} />
+            value='short' />
           <span className='checkbox__selector'></span>
           Короткометражки
         </label>
