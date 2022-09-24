@@ -138,9 +138,11 @@ export function App() {
     if (token) {
       moviesApi.getMovies()
         .then(res => {
+          console.log(res);
           localStorage.setItem('data', JSON.stringify(res));
           const allMovies = JSON.parse(localStorage.getItem('data'));
           setLocalData(allMovies);
+          console.log(allMovies);
         })
         .catch((err) => {
           console.log(`Фильмы не удалось получить: ${err}`)
@@ -148,15 +150,19 @@ export function App() {
         .finally(() => setIsLoading(false));
     }
   }, [token])
+
   // Добавление фильмов на страницу "Saved-Movies"
   useEffect(() => {
     setIsLoading(true);
     if (token && currentUser !== null) {
       mainApi.getLikedMovies(token)
         .then(res => {
+          const { movies } = res;
+          console.log(movies);
           localStorage.setItem('savedMovies', JSON.stringify(res.filter((i) => i.owner === currentUser._id)))
           const userMovies = JSON.parse(localStorage.getItem('savedMovies'));
           setLocalSavedData(userMovies);
+          console.log(userMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы не удалось получить: ${err}`)
@@ -177,12 +183,13 @@ export function App() {
       : addCardsMobile
       )
     )
+    setListLength(listLength + moviesNumber);
   }
 
   // Кнопка "Ещё"
-  function addMovies() {
-    setListLength(listLength + moviesNumber);
-  };
+  // function addMovies() {
+  //   setListLength(listLength + moviesNumber);
+  // };
 
 /* ========================================================= */
   // Поиск
