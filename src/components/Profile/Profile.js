@@ -3,7 +3,7 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useFormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
-export function Profile({ hadleSignOut, handleUpdate }) {
+export function Profile({ handleSignOut, handleUpdate }) {
   const currentUser = useContext(CurrentUserContext);
   const validate = useFormWithValidation();
  
@@ -11,7 +11,7 @@ export function Profile({ hadleSignOut, handleUpdate }) {
     validate.setValues(currentUser);
   }, [currentUser]);
 
-  function hadleSubmit(e){
+  function handleSubmit(e){
     e.preventDefault();
     handleUpdate(validate.values);
   }
@@ -47,15 +47,15 @@ export function Profile({ hadleSignOut, handleUpdate }) {
                 className='profile__input'
                 placeholder={currentUser.email}
                 type='email'
-                onChange={validate.handleChange}  
+                onChange={validate.handleChange}
               >
               </input>
             </fieldset>
             <span className='profile__error'>{validate.errors.email || ''}</span>
           </div>
         </div>
-        <button type='submit' className='profile__submit-button' onClick={hadleSubmit} disabled={!validate.isValid}>Редактировать</button>
-        <button className='profile__signout-button' onClick={hadleSignOut}>Выйти из аккаунта</button>
+        <button type='submit' className='profile__submit-button' onClick={handleSubmit} disabled={!validate.isValid}>Редактировать</button>
+        <button className='profile__signout-button' onClick={handleSignOut}>Выйти из аккаунта</button>
       </form>
     </section>
   );

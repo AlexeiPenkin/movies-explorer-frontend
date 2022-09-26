@@ -78,34 +78,55 @@ export function App() {
 
 /* ========================================================= */
   // Регистрация
-  function handleRegister(input) {
-    mainApi.register(input)
-    .then(() => {
-      setPopupText("Вы успешно зарегистрировались!")
-      handleLogin({ email: input.email, password: input.password })
+  function handleRegister(data) {
+    console.log(data);
+    setIsLoading(true);
+    mainApi.register(data.password, data.email, data.name)
+    .then((res) => {
+      console.log(res); /* res = undefined ??? */
+      if (res) {
+        handleLogin(res.email, res.password);
+        console.log(data);
+        setPopupMessage('Вы успешно зарегистрировались!')
+      }
     })
-    .then(() => history.push('/movies'))
     .catch((err) => {
-      console.log(`Ошибка регистрации: ${err}`)
-      setPopupText('Что-то пошло не так! Попробуйте ещё раз.')
+      // loggedIn(false);
+      if (err === 500)
+        setPopupMessage('На сервере произошла ошибка');
+      if (err === 409)
+        setPopupMessage('Пользователь с таким email уже существует.');
+      if (err === 400)
+        setPopupMessage('Все поля должны быть заполнены');
+      console.log(err);
     })
-    .finally(setPopupMessage)
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
 /* ========================================================= */
   // Авторизация
-  function handleLogin(input) {
-    mainApi.login(input)
+  function handleLogin(data) {
+    console.log(data);
+    setIsLoading(true);
+    mainApi.login(data.password, data.email)
     .then((res) => {
       localStorage.setItem('token', res.token)
-      setLoggedIn(true)
+      setLoggedIn(true);
+      setCurrentUser(token);
+      history.push('/movies');
     })
     .catch((err) => {
-      console.log(`Ошибка входа: ${err}`)
-      setPopupText('Не верные имя пользователя или пароль.')
-      popupOnSubmit()
+      if (err === 401) {
+        setPopupMessage("Неверный логин или пароль");
+      } else {
+        setPopupMessage("При авторизации произошла ошибка");
+      }
     })
-    .finally(setPopupMessage)
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
 /* ========================================================= */
@@ -275,6 +296,9 @@ export function App() {
     localStorage.removeItem('token');
     setLoggedIn(false);
     setCurrentUser(null)
+    setSavedMoviesFilter([])
+    setFilteredMovies([])
+    setLocalSavedData([])
     history.push('/');
   }
 
@@ -295,11 +319,11 @@ export function App() {
   return (
     <CurrentUserContext.Provider value={{ ...currentUser }}>
       <div className='App'>
-      {isLoading ? (
+      {/* {isLoading ? (
         <Preloader /> 
         ) : (
           <></>
-        )}
+        )} */}
         <Header
           loggedIn={loggedIn}
           isOpen={isMobileMenuOpen}
