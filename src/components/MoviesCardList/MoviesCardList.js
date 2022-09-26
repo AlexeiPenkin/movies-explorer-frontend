@@ -3,16 +3,16 @@ import { MoviesCard } from '../MoviesCard/MoviesCard';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ path, moviesNumber, handleAddMovies, handleDeleteMovie }) {
+export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie }) {
   const [movies, setMovies] = useState([]);
-  const moviesCard = movies
+  const movieCards = movies
     .filter((number) => number < moviesNumber)
     .map((movie) => {
     return (
       <MoviesCard 
         path={path}
         movie={movie}
-        savedMovie={SavedMovies}
+        // savedMovie={SavedMovies}
         deleteMovie={handleDeleteMovie}
         key={movie._id}
       />
@@ -21,7 +21,7 @@ export function MoviesCardList ({ path, moviesNumber, handleAddMovies, handleDel
   return(
     <section className='cards-list'>
       <div className='cards-list__grid'>
-        {moviesCard}
+        {movieCards}
       </div>
       {movies.length > moviesNumber && ( 
         <section className='cards-list__add-movies'>

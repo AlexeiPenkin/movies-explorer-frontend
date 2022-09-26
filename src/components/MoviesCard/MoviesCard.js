@@ -3,24 +3,24 @@ import './MoviesCard.css';
 export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
   const {
     country,
+    description,
     director,
     duration,
+    id,
+    image,
+    nameEN,
+    nameRU,
+    trailerLink,
+    trailer,
     year,
     saved = false,
-    description,
-    image,
-    trailerLink,
     thumbnail,
-    trailer,
-    id,
-    nameRU,
-    nameEN,
   } = movie;
   
-  const likeVisible = (path === '/saved-movies') && 'none';
-  const deleteVisible = (path === '/movies') && 'none';
+  const likeButton = (path === '/saved-movies') && 'none';
+  const deleteButton = (path === '/movies') && 'none';
   const movieUrl = 'https://api.nomoreparties.co';
-  const poster = movieUrl + image?.url;
+  const moviePoster = movieUrl + image?.url;
   
   var time = Math.floor(movie.duration / 60) + 'ч ' + movie.duration % 60 + 'мин';
   
@@ -51,20 +51,20 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
             className={`movies-card__like-button
             ${ saved ? 'movies-card__like-button_active' : '' }`}
             onClick={handleSaveMovie}
-            style={{display: likeVisible}}
+            style={{display: likeButton}}
           >
           </button>
           <button 
             className='movies-card__delete-button' 
             onClick={handleDeleteMovie}
-            style={{display: deleteVisible}}
+            style={{display: deleteButton}}
           >
           </button>
         </div>
         <p className='movies-card__duration'>{time}</p>
       </div>
       <a href={trailerLink || trailer} target='_blank' rel="noreferrer">
-        <img src={path === '/saved-movies' ? image : poster} className='movies-card__img' alt=' '/>
+        <img src={path === '/saved-movies' ? image : moviePoster} className='movies-card__img' alt=' '/>
       </a>
     </div>
   );

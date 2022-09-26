@@ -64,7 +64,12 @@ export function Register({ handleRegister }) {
 
         </form>
 
-        <p className='register__text'>Уже зарегистрированы? <NavLink to='/signin' className='register__link'>Войти</NavLink></p>
+        <p className='register__text'>
+          Уже зарегистрированы? 
+          <NavLink to='/signin' className='register__link'>
+            Войти
+          </NavLink>
+        </p>
 
       </div>
     </section>

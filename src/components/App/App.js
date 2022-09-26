@@ -86,8 +86,8 @@ export function App() {
     })
     .then(() => history.push('/movies'))
     .catch((err) => {
-      setPopupText('Что-то пошло не так! Попробуйте ещё раз.')
       console.log(`Ошибка регистрации: ${err}`)
+      setPopupText('Что-то пошло не так! Попробуйте ещё раз.')
     })
     .finally(setPopupMessage)
   }
@@ -103,8 +103,9 @@ export function App() {
     .catch((err) => {
       console.log(`Ошибка входа: ${err}`)
       setPopupText('Не верные имя пользователя или пароль.')
-      handlePopupMessage()
+      popupOnSubmit()
     })
+    .finally(setPopupMessage)
   }
 
 /* ========================================================= */
@@ -136,13 +137,14 @@ export function App() {
   useEffect(() => {
     setIsLoading(true);
     if (token) {
+      console.log(token); /* приходит текущий токен */
       moviesApi.getMovies()
         .then(res => {
-          console.log(res);
-          localStorage.setItem('data', JSON.stringify(res));
-          const allMovies = JSON.parse(localStorage.getItem('data'));
+          console.log(res); /* приходит массив всех фильмов */
+          localStorage.setItem('movies', JSON.stringify(res));
+          const allMovies = JSON.parse(localStorage.getItem('movies'));
           setLocalData(allMovies);
-          console.log(allMovies);
+          console.log(allMovies) /* приходит массив всех фильмов */
         })
         .catch((err) => {
           console.log(`Фильмы не удалось получить: ${err}`)
@@ -158,11 +160,11 @@ export function App() {
       mainApi.getLikedMovies(token)
         .then(res => {
           const { movies } = res;
-          console.log(movies);
+          console.log(movies); /* приходит пустой массив */
           localStorage.setItem('savedMovies', JSON.stringify(res.filter((i) => i.owner === currentUser._id)))
           const userMovies = JSON.parse(localStorage.getItem('savedMovies'));
           setLocalSavedData(userMovies);
-          console.log(userMovies)
+          // console.log(userMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы не удалось получить: ${err}`)
@@ -172,7 +174,7 @@ export function App() {
   }, [token, currentUser])
 
   // Определение количества фильмов на странице в зависимости от размера экрана
-  function handleAddMoviesButton() {
+  function handleAddMovies() {
     setMoviesNumber(
       moviesNumber + 
       (
@@ -192,7 +194,7 @@ export function App() {
   // };
 
 /* ========================================================= */
-  // Поиск
+  // Поиск "Movies"
   function onSearch(value) {
     const sortedMovieSearch = localData.filter((item) => {
       const values = value.toLowerCase();
@@ -202,12 +204,10 @@ export function App() {
       || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
         ? item : null
     });
-
     localStorage.setItem('filtered', JSON.stringify(sortedMovieSearch));
-
     setFilteredMovies(sortedMovieSearch)
   }
-  // Сохранить поиск
+  // Поиск "SavedMovies"
   function onSearchSaved(value) {
     const sortedMovieSearch = localSavedData.filter((card) => {
       const values = value.toLowerCase();
@@ -216,7 +216,6 @@ export function App() {
       return ((nameEN && nameEN.toLowerCase().includes(values)) || (nameRU && nameRU.toLowerCase().includes(value)))
         ? card : null
     });
-
     localStorage.setItem('savedFilter', JSON.stringify(sortedMovieSearch));
     setSavedMoviesFilter(sortedMovieSearch.length !== 0 ? sortedMovieSearch : localSavedData);
   }
@@ -255,8 +254,8 @@ export function App() {
         setLocalSavedData([...localSavedData, res])
       })
     } else {
-      const dislike = localSavedData.find((i) => i.movieId === card.id)
-      handleDeleteMovie(dislike)
+      const dislikeMovies = localSavedData.find((i) => i.movieId === card.id)
+      handleDeleteMovie(dislikeMovies)
     }
   }
 
@@ -274,28 +273,22 @@ export function App() {
   // Выход из аккаунта
   function handleSignOut() {
     localStorage.removeItem('token');
-    localStorage.removeItem('savedMovies');
-    localStorage.removeItem('movieList');
-    localStorage.removeItem('data')
-    localStorage.removeItem('saveSearchValue')
-    localStorage.removeItem('saveCheck')
-    setCurrentUser(null)
     setLoggedIn(false);
-    setSavedMoviesFilter([])
-    setFilteredMovies([])
-    setLocalSavedData([])
+    setCurrentUser(null)
+    history.push('/');
   }
 
 /* ========================================================= */
+  // Попап с сообщениями
   function popupOnSubmit() {
     setPopupMessage('');
   }
 
 /* ========================================================= */
   // Попап с сообщениями
-  function handlePopupMessage() {
-  setPopupText(true)
-}
+//   function handlePopupMessage() {
+//   setPopupText(true)
+// }
 
 /* ========================================================= */
   // Рендер
@@ -321,7 +314,7 @@ export function App() {
             movieCards={filteredMovies}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
-            addMovies={handleAddMoviesButton}
+            addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={localSavedData}
@@ -332,14 +325,14 @@ export function App() {
             movieCards={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
-            addMovies={handleAddMoviesButton}
+            addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={savedMoviesFilter}
           />
           <ProtectedRoute path='/profile'
             component={Profile}
-            signOut={handleSignOut}
+            handleSignOut={handleSignOut}
             handleUserUpdate={handleUserUpdate}
           />
           <Route exact path='/'>

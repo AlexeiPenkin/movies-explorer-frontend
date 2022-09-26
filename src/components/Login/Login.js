@@ -13,15 +13,11 @@ export function Login({ handleLogin }) {
 
   return(
     <section className='login'>
-
       <div className='login__wrapper'>
-
         <NavLink to='/' className='login__logo'></NavLink>
-
         <h2 className='login__title'>Рады видеть!</h2>
-
         <form className='login__form' onSubmit={hadleSubmit}>
-
+          
           <label className='login__label'>E-mail</label>
           <input
             required
