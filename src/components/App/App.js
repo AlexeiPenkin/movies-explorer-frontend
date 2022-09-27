@@ -39,7 +39,7 @@ export function App() {
 
   const location = useLocation();
   const history = useHistory();
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem('token')
 
 /* ========================================================= */
   const [localData, setLocalData] = useState([]);
@@ -79,26 +79,17 @@ export function App() {
 /* ========================================================= */
   // Регистрация
   function handleRegister(data) {
-    console.log(data);
     setIsLoading(true);
     mainApi.register(data.password, data.email, data.name)
     .then((res) => {
-      console.log(res); /* res = undefined ??? */
-      if (res) {
-        handleLogin(res.email, res.password);
-        console.log(data);
-        setPopupMessage('Вы успешно зарегистрировались!')
+      if (res.statusCode !== 400) {
+        handleLogin({ password: data.password, email: data.email });
+        history.push('/signin');
       }
     })
     .catch((err) => {
-      // loggedIn(false);
-      if (err === 500)
-        setPopupMessage('На сервере произошла ошибка');
-      if (err === 409)
-        setPopupMessage('Пользователь с таким email уже существует.');
-      if (err === 400)
-        setPopupMessage('Все поля должны быть заполнены');
       console.log(err);
+        setPopupMessage('При авторизации произошла ошибка');
     })
     .finally(() => {
       setIsLoading(false);
@@ -108,7 +99,6 @@ export function App() {
 /* ========================================================= */
   // Авторизация
   function handleLogin(data) {
-    console.log(data);
     setIsLoading(true);
     mainApi.login(data.password, data.email)
     .then((res) => {
@@ -118,11 +108,8 @@ export function App() {
       history.push('/movies');
     })
     .catch((err) => {
-      if (err === 401) {
-        setPopupMessage("Неверный логин или пароль");
-      } else {
-        setPopupMessage("При авторизации произошла ошибка");
-      }
+      console.log(err);
+        setPopupMessage('При авторизации произошла ошибка');
     })
     .finally(() => {
       setIsLoading(false);
@@ -144,7 +131,7 @@ export function App() {
       .then(res => setCurrentUser(res))
       .then(() => {
 
-        setPopupText("Данные успешно изменены!")
+        setPopupText('Данные успешно изменены!')
       })
       .catch((err) => {
         setPopupText('При обновлении профиля произошла ошибка.')
@@ -154,7 +141,7 @@ export function App() {
   }
 
 /* ========================================================= */
-  // Добавление фильмов на страницу "Movies"
+  // Добавление фильмов на страницу 'Movies'
   useEffect(() => {
     setIsLoading(true);
     if (token) {
@@ -174,7 +161,7 @@ export function App() {
     }
   }, [token])
 
-  // Добавление фильмов на страницу "Saved-Movies"
+  // Добавление фильмов на страницу 'Saved-Movies'
   useEffect(() => {
     setIsLoading(true);
     if (token && currentUser !== null) {
@@ -209,13 +196,13 @@ export function App() {
     setListLength(listLength + moviesNumber);
   }
 
-  // Кнопка "Ещё"
+  // Кнопка 'Ещё'
   // function addMovies() {
   //   setListLength(listLength + moviesNumber);
   // };
 
 /* ========================================================= */
-  // Поиск "Movies"
+  // Поиск 'Movies'
   function onSearch(value) {
     const sortedMovieSearch = localData.filter((item) => {
       const values = value.toLowerCase();
@@ -228,7 +215,7 @@ export function App() {
     localStorage.setItem('filtered', JSON.stringify(sortedMovieSearch));
     setFilteredMovies(sortedMovieSearch)
   }
-  // Поиск "SavedMovies"
+  // Поиск 'SavedMovies'
   function onSearchSaved(value) {
     const sortedMovieSearch = localSavedData.filter((card) => {
       const values = value.toLowerCase();
