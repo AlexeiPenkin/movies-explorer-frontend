@@ -14,7 +14,7 @@ import { Login } from '../Login/Login';
 import { PageNotFound } from '../PageNotFound/PageNotFound';
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
-import { Preloader } from '../Preloader/Preloader';
+// import { Preloader } from '../Preloader/Preloader';
 import { Popup } from '../Popup/Popup';
 
 export function App() {
@@ -125,7 +125,7 @@ export function App() {
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
     }
   }, [token])
-  // Изменение профиля
+  // Изменение профиля пользователя
   const handleUserUpdate = (user) => {
     mainApi.updateUserInfo(token, user)
       .then(res => setCurrentUser(res))
@@ -145,14 +145,14 @@ export function App() {
   useEffect(() => {
     setIsLoading(true);
     if (token) {
-      console.log(token); /* приходит текущий токен */
+      // console.log(token); /* приходит текущий токен */
       moviesApi.getMovies()
         .then(res => {
-          console.log(res); /* приходит массив всех фильмов */
+          // console.log(res); /* приходит массив всех фильмов */
           localStorage.setItem('movies', JSON.stringify(res));
           const allMovies = JSON.parse(localStorage.getItem('movies'));
           setLocalData(allMovies);
-          console.log(allMovies) /* приходит массив всех фильмов */
+          // console.log(allMovies) /* приходит массив всех фильмов */
         })
         .catch((err) => {
           console.log(`Фильмы не удалось получить: ${err}`)
@@ -168,8 +168,8 @@ export function App() {
       mainApi.getLikedMovies(token)
         .then(res => {
           const { movies } = res;
-          console.log(movies); /* приходит пустой массив */
-          localStorage.setItem('savedMovies', JSON.stringify(res.filter((i) => i.owner === currentUser._id)))
+          // console.log(movies); /* приходит пустой массив */
+          localStorage.setItem('savedMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const userMovies = JSON.parse(localStorage.getItem('savedMovies'));
           setLocalSavedData(userMovies);
           // console.log(userMovies)
@@ -204,6 +204,7 @@ export function App() {
 /* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
+    console.log(value);
     const sortedMovieSearch = localData.filter((item) => {
       const values = value.toLowerCase();
       const nameEN = item.nameEN;
@@ -221,7 +222,8 @@ export function App() {
       const values = value.toLowerCase();
       const nameEN = card.nameEN.toLowerCase();
       const nameRU = card.nameRU.toLowerCase();
-      return ((nameEN && nameEN.toLowerCase().includes(values)) || (nameRU && nameRU.toLowerCase().includes(value)))
+      return ((nameEN && nameEN.toLowerCase().includes(values)) 
+      || (nameRU && nameRU.toLowerCase().includes(value)))
         ? card : null
     });
     localStorage.setItem('savedFilter', JSON.stringify(sortedMovieSearch));
@@ -328,7 +330,7 @@ export function App() {
             addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
-            savedMovies={localSavedData}
+            savedMovies={localData}
             onSave={handleSaveMovie}
           />
           <ProtectedRoute path='/saved-movies'
@@ -339,7 +341,7 @@ export function App() {
             addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
-            savedMovies={savedMoviesFilter}
+            savedMovies={localSavedData}
           />
           <ProtectedRoute path='/profile'
             component={Profile}

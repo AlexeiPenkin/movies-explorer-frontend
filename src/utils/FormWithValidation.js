@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import validator from 'validator';
 
-export function useFormWithValidation() {
+export function FormWithValidation() {
   const [values, setValues] = React.useState({});
   const [errors, setErrors] = React.useState({});
   const [isValid, setIsValid] = React.useState(false);
@@ -10,6 +10,7 @@ export function useFormWithValidation() {
     setValues({...values, [name]: value});
     setErrors({...errors, [name]: (validator.isEmail(value)) ? "" : 'Некоректный e-mail' });
     setIsValid((!validator.isEmail(value)) ? validator.isEmail(value) : target.closest("form").checkValidity());
+    console.log(value);
   };
 
   const handleChange = (event) => {

@@ -14,7 +14,7 @@
 
 .header__navigation-block{
   display: flex;
-  /* width: 1140px; */
+  width: 1140px;
   justify-content: space-between;
   margin: 0 auto;
 

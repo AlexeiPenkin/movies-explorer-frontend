@@ -1,15 +1,17 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { useFormWithValidation } from '../../utils/FormWithValidation';
+import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
 export function Profile({ handleSignOut, handleUpdate }) {
   const currentUser = useContext(CurrentUserContext);
-  const validate = useFormWithValidation();
+  const validate = FormWithValidation();
  
-  React.useEffect(() => {
+  useEffect(() => {
     validate.setValues(currentUser);
+    // console.log(currentUser);
   }, [currentUser]);
+  // console.log(currentUser);
 
   function handleSubmit(e){
     e.preventDefault();
@@ -19,7 +21,7 @@ export function Profile({ handleSignOut, handleUpdate }) {
   return (
     <section className='profile'>
       <form className='profile__form'>
-        <h3 className='profile__title'>Привет, {currentUser.name}!</h3>
+        <h3 className='profile__title'>{`Привет, ${currentUser.name}!`}</h3>
         <div className='profile__input-list'>
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
@@ -54,8 +56,16 @@ export function Profile({ handleSignOut, handleUpdate }) {
             <span className='profile__error'>{validate.errors.email || ''}</span>
           </div>
         </div>
-        <button type='submit' className='profile__submit-button' onClick={handleSubmit} disabled={!validate.isValid}>Редактировать</button>
-        <button className='profile__signout-button' onClick={handleSignOut}>Выйти из аккаунта</button>
+        <button className='profile__submit-button'
+          type='submit'
+          onClick={handleSubmit}
+          disabled={!validate.isValid}>
+            Редактировать
+        </button>
+        <button className='profile__signout-button'
+          onClick={handleSignOut}>
+            Выйти из аккаунта
+        </button>
       </form>
     </section>
   );
