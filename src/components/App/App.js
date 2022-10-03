@@ -1,10 +1,11 @@
 import './App.css';
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useReducer } from 'react';
 import { Route } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
 import { Header } from '../Header/Header';
+// import { Footer } from '../Footer/Footer';
 import { Main } from '../Main/Main';
 import { Movies } from '../Movies/Movies';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
@@ -12,9 +13,9 @@ import { Profile } from '../Profile/Profile';
 import { Register } from '../Register/Register';
 import { Login } from '../Login/Login';
 import { PageNotFound } from '../PageNotFound/PageNotFound';
+// import { Preloader } from "../Preloader/Preloader";
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
-// import { Preloader } from '../Preloader/Preloader';
 import { Popup } from '../Popup/Popup';
 
 export function App() {
@@ -32,9 +33,9 @@ export function App() {
     : cardsMobile
     );
   const [currentUser, setCurrentUser] = useState({});
-  const [isMobileMenuOpen, toggleBurgerMenu] = useState(false);
+  const [isBurgerMenuOpen, toggleBurgerMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [popupMessage, setPopupMessage] = useState('');
 
   const location = useLocation();
@@ -44,12 +45,11 @@ export function App() {
 /* ========================================================= */
   const [localData, setLocalData] = useState([]);
   const [localSavedData, setLocalSavedData] = useState([]);
-  // const [popup, setPopupImage] = useState('')
   const [popupText, setPopupText] = useState('')
   const [savedMoviesFilter, setSavedMoviesFilter] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [listLength, setListLength] = useState(0);
-  const [movies, setMovies] = useState([]);
+  // const [movies, setMovies] = useState([]);
 
 /* ========================================================= */
   function handleBurgerMenuOpen() {
@@ -59,6 +59,17 @@ export function App() {
   function handleBurgerMenuClose() {
     toggleBurgerMenu(false);
   }
+
+/* ========================================================= */
+  const [searchText, setSearchText] = useState(false);
+
+  useEffect(() => {
+    if (localData && searchText) {
+      // вызвать твою функцию поиска заново
+      onSearch();
+    }
+  }, [localData]);
+  
 
 /* ========================================================= */
   // Проверка токена
@@ -102,6 +113,8 @@ export function App() {
     setIsLoading(true);
     mainApi.login(data.password, data.email)
     .then((res) => {
+      // console.log(data.password, data.email)
+      setPopupMessage('Вы успешно авторизировались');
       localStorage.setItem('token', res.token)
       setLoggedIn(true);
       setCurrentUser(token);
@@ -125,6 +138,7 @@ export function App() {
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
     }
   }, [token])
+  
   // Изменение профиля пользователя
   const handleUserUpdate = (user) => {
     mainApi.updateUserInfo(token, user)
@@ -145,19 +159,20 @@ export function App() {
   useEffect(() => {
     setIsLoading(true);
     if (token) {
-      // console.log(token); /* приходит текущий токен */
+      console.log(token); /* приходит текущий токен */
       moviesApi.getMovies()
         .then(res => {
-          // console.log(res); /* приходит массив всех фильмов */
-          localStorage.setItem('movies', JSON.stringify(res));
-          const allMovies = JSON.parse(localStorage.getItem('movies'));
+          console.log(res); /* приходит массив всех фильмов */
+          localStorage.setItem('allMovies', JSON.stringify(res));
+          const allMovies = JSON.parse(localStorage.getItem('allMovies'));
           setLocalData(allMovies);
-          // console.log(allMovies) /* приходит массив всех фильмов */
+          console.log(allMovies) /* приходит массив всех фильмов */
         })
         .catch((err) => {
-          console.log(`Фильмы не удалось получить: ${err}`)
+          console.log(`Фильмы получить не удалось: ${err}`)
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => 
+          setIsLoading(false));
     }
   }, [token])
 
@@ -175,9 +190,10 @@ export function App() {
           // console.log(userMovies)
         })
         .catch((err) => {
-          console.log(`Сохраненные фильмы не удалось получить: ${err}`)
+          console.log(`Сохраненные фильмы получить не удалось: ${err}`)
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => 
+          setIsLoading(false));
     }
   }, [token, currentUser])
 
@@ -196,15 +212,11 @@ export function App() {
     setListLength(listLength + moviesNumber);
   }
 
-  // Кнопка 'Ещё'
-  // function addMovies() {
-  //   setListLength(listLength + moviesNumber);
-  // };
-
 /* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
-    console.log(value);
+    console.log(value); /* приходит значение из строки поиска */
+    console.log(localData); /* приходит пустой массив */
     const sortedMovieSearch = localData.filter((item) => {
       const values = value.toLowerCase();
       const nameEN = item.nameEN;
@@ -235,8 +247,8 @@ export function App() {
   function durationSwitch(checked) {
     const filterMovies = JSON.parse(localStorage.getItem('filtered'));
     if (checked === '1' && filterMovies) {
-      const shorts = filterMovies.filter((item) => item.duration <= 40);
-      setFilteredMovies(shorts);
+      const shortMovies = filterMovies.filter((item) => item.duration <= 40);
+      setFilteredMovies(shortMovies);
     } else {
       setFilteredMovies(filterMovies);
     }
@@ -245,8 +257,8 @@ export function App() {
   function savedDurationSwitch(checked) {
     const savedFiltered = JSON.parse(localStorage.getItem('savedFilter'));
     if (checked === '1' && savedFiltered) {
-      const shorts = savedFiltered.filter((item) => item.duration <= 40);
-      setSavedMoviesFilter(shorts);
+      const shortMovies = savedFiltered.filter((item) => item.duration <= 40);
+      setSavedMoviesFilter(shortMovies);
     } else {
       setSavedMoviesFilter(savedFiltered);
     }
@@ -264,8 +276,8 @@ export function App() {
         setLocalSavedData([...localSavedData, res])
       })
     } else {
-      const dislikeMovies = localSavedData.find((i) => i.movieId === card.id)
-      handleDeleteMovie(dislikeMovies)
+      const dislikeMovie = localSavedData.find((i) => i.movieId === card.id)
+      handleDeleteMovie(dislikeMovie)
     }
   }
 
@@ -283,6 +295,7 @@ export function App() {
   // Выход из аккаунта
   function handleSignOut() {
     localStorage.removeItem('token');
+    localStorage.removeItem('allMovies')
     setLoggedIn(false);
     setCurrentUser(null)
     setSavedMoviesFilter([])
@@ -306,22 +319,18 @@ export function App() {
 /* ========================================================= */
   // Рендер
   return (
-    <CurrentUserContext.Provider value={{ ...currentUser }}>
+    <CurrentUserContext.Provider value={ currentUser }>
       <div className='App'>
-      {/* {isLoading ? (
-        <Preloader /> 
-        ) : (
-          <></>
-        )} */}
         <Header
           loggedIn={loggedIn}
-          isOpen={isMobileMenuOpen}
+          isOpen={isBurgerMenuOpen}
           onClose={handleBurgerMenuClose}
           onOpen={handleBurgerMenuOpen}
           path={location.pathname}
         />
         <Switch>  
           <ProtectedRoute path='/movies'
+            loggedIn={loggedIn}
             component={Movies}
             currentUser={currentUser}
             movieCards={filteredMovies}
@@ -330,10 +339,11 @@ export function App() {
             addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
-            savedMovies={localData}
+            savedMovies={localSavedData}
             onSave={handleSaveMovie}
           />
           <ProtectedRoute path='/saved-movies'
+            loggedIn={loggedIn}
             component={SavedMovies}
             movieCards={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}

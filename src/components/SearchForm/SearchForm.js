@@ -5,17 +5,16 @@ import './SearchForm.css';
 export function SearchForm ({ onSearch, durationSwitch }) {
   const localValueStorage = localStorage.getItem('saveSearchValues')
   const localChecked = localStorage.getItem('saveChecked')
-
   const location = useLocation()
-
   const [checked, setChecked] = useState(localChecked ?? '0')
   const [value, setValue] = useState(localValueStorage ?? '')
-
+  
   const handleSubmit = (e) => {
+    console.log(e, value);
     e.preventDefault()
     setChecked('0')
     onSearch(value)
-  } 
+  }
   // console.log(value);
 
   useEffect(() => {
@@ -25,15 +24,14 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       setValue('')
     }
   }, [location])
-  // console.log(value);
 
   useEffect(() => {
     if (location.pathname === '/movies') {
       localStorage.setItem('saveSearchValues', value)
       localStorage.setItem('saveChecked', checked)
-    }
+    } 
+    // console.log(checked, value);
   }, [value, checked])
-
 
   useEffect(() => {
     if (location.pathname === '/saved-movies') {
@@ -47,9 +45,9 @@ export function SearchForm ({ onSearch, durationSwitch }) {
 
   return(
     <section className='search-form'>
-      <form onSubmit={handleSubmit} className='search-form__form'>
+      <form className='search-form__form' onSubmit={(e) => handleSubmit(e)}>
         <div className='search-form__bar'>
-          <input className='search-form__input' 
+          <input className='search-form__input' id='search'
             type='search'
             name='search'
             onChange={(e) => setValue(e.target.value)}
@@ -57,12 +55,15 @@ export function SearchForm ({ onSearch, durationSwitch }) {
             required
             value={value}
           />
-          <button className='search-form__find-button'></button>
+          <button 
+            className='search-form__find-button'
+            type='button'>
+          </button>
         </div>
         <label className='checkbox__label'>
           <input className='checkbox'
             type='checkbox'
-            value='short' />
+            value='shortMovies' />
           <span className='checkbox__selector'></span>
           Короткометражки
         </label>
