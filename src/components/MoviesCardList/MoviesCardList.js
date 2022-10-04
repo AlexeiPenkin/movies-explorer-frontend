@@ -1,27 +1,29 @@
-import { React, useState } from 'react';
+import React from 'react';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
-import { SavedMovies } from '../SavedMovies/SavedMovies';
+// import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie }) {
-  const [movies, setMovies] = useState([]);
-  const movieCards = movies
-    .filter((number) => number < moviesNumber)
-    .map((movie) => {
+export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, filteredMovies, saveMovie, listLength }) {
+
+  const moviesCard = movies
+    // .filter((number) => number < moviesNumber)
+    .map((item) => {
     return (
       <MoviesCard 
         path={path}
-        movie={movie}
-        savedMovie={SavedMovies}
+        movie={item}
+        filteredMovies={filteredMovies}
+        saveMovie={saveMovie}
         deleteMovie={handleDeleteMovie}
-        key={movie._id}
+        key={item.id}
+        // listLength={listLength}
       />
     )
   })
   return(
     <section className='cards-list'>
       <div className='cards-list__grid'>
-        {movieCards}
+        {moviesCard}
       </div>
       {movies.length > moviesNumber && ( 
         <section className='cards-list__add-movies'>

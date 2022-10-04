@@ -2,19 +2,13 @@ import './MoviesCard.css';
 
 export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
   const {
-    country,
-    description,
-    director,
     duration,
     id,
     image,
-    nameEN,
     nameRU,
     trailerLink,
     trailer,
-    year,
     saved = false,
-    thumbnail,
   } = movie;
   
   const likeButton = (path === '/saved-movies') && 'none';
@@ -30,7 +24,7 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
 
   function handleSaveMovie() {
     if(!movie.saved) {
-      saveMovie(movie);
+      saveMovie(movie); 
     } else {
       deleteMovie(id);
     }

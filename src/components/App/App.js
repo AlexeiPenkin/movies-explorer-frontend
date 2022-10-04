@@ -32,10 +32,11 @@ export function App() {
     ? cardsTablet
     : cardsMobile
     );
+  const movieUrl = 'https://api.nomoreparties.co';
   const [currentUser, setCurrentUser] = useState({});
   const [isBurgerMenuOpen, toggleBurgerMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [popupMessage, setPopupMessage] = useState('');
 
   const location = useLocation();
@@ -45,11 +46,9 @@ export function App() {
 /* ========================================================= */
   const [localData, setLocalData] = useState([]);
   const [localSavedData, setLocalSavedData] = useState([]);
-  const [popupText, setPopupText] = useState('')
   const [savedMoviesFilter, setSavedMoviesFilter] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [listLength, setListLength] = useState(0);
-  // const [movies, setMovies] = useState([]);
 
 /* ========================================================= */
   function handleBurgerMenuOpen() {
@@ -90,7 +89,7 @@ export function App() {
 /* ========================================================= */
   // Регистрация
   function handleRegister(data) {
-    setIsLoading(true);
+    // setIsLoading(true);
     mainApi.register(data.password, data.email, data.name)
     .then((res) => {
       if (res.statusCode !== 400) {
@@ -102,15 +101,15 @@ export function App() {
       console.log(err);
         setPopupMessage('При авторизации произошла ошибка');
     })
-    .finally(() => {
-      setIsLoading(false);
-    });
+    // .finally(() => {
+    //   setIsLoading(false);
+    // });
   }
 
 /* ========================================================= */
   // Авторизация
   function handleLogin(data) {
-    setIsLoading(true);
+    // setIsLoading(true);
     mainApi.login(data.password, data.email)
     .then((res) => {
       // console.log(data.password, data.email)
@@ -124,83 +123,84 @@ export function App() {
       console.log(err);
         setPopupMessage('При авторизации произошла ошибка');
     })
-    .finally(() => {
-      setIsLoading(false);
-    });
+    // .finally(() => {
+    //   setIsLoading(false);
+    // });
   }
 
 /* ========================================================= */
   // Получения профиля пользователя
   useEffect(() => {
     if (token) {
+      // console.log(token); /* приходит текущий токен */
       mainApi.getUserInfo(token)
-        .then(res => setCurrentUser(res.user))
+        .then(res => 
+          setCurrentUser(res.user))
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
-    }
+    } 
   }, [token])
   
+  
   // Изменение профиля пользователя
-  const handleUserUpdate = (user) => {
-    mainApi.updateUserInfo(token, user)
-      .then(res => setCurrentUser(res))
-      .then(() => {
-
-        setPopupText('Данные успешно изменены!')
-      })
-      .catch((err) => {
-        setPopupText('При обновлении профиля произошла ошибка.')
-        console.log(`При обновлении профиля произошла ошибка: ${err}`)
-      })
-      .finally(setPopupMessage);
+  function handleUserUpdate(user) {
+    const token = localStorage.getItem('token');
+    // setIsLoading(true);
+    mainApi.updateUserInfo(user, token)
+    .then((res) =>{
+      setPopupMessage('Вы успешно отредактировали профиль');
+      setCurrentUser(res);
+    }) 
+    .catch((err) => {
+      setPopupMessage('Что-то пошло не так...');
+      console.log(err);
+    })
+    // .finally(() => {
+    //   setIsLoading(false);
+    // });
   }
 
 /* ========================================================= */
   // Добавление фильмов на страницу 'Movies'
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     if (token) {
-      console.log(token); /* приходит текущий токен */
       moviesApi.getMovies()
         .then(res => {
-          console.log(res); /* приходит массив всех фильмов */
-          localStorage.setItem('allMovies', JSON.stringify(res));
-          const allMovies = JSON.parse(localStorage.getItem('allMovies'));
-          setLocalData(allMovies);
-          console.log(allMovies) /* приходит массив всех фильмов */
+          localStorage.setItem('filtered', JSON.stringify(res));
+          const filteredMovies = JSON.parse(localStorage.getItem('filtered'));
+          setFilteredMovies(filteredMovies)
         })
         .catch((err) => {
           console.log(`Фильмы получить не удалось: ${err}`)
         })
-        .finally(() => 
-          setIsLoading(false));
+        // .finally(() => 
+        //   setIsLoading(false));
     }
   }, [token])
 
   // Добавление фильмов на страницу 'Saved-Movies'
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     if (token && currentUser !== null) {
       mainApi.getLikedMovies(token)
         .then(res => {
           const { movies } = res;
-          // console.log(movies); /* приходит пустой массив */
           localStorage.setItem('savedMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
-          const userMovies = JSON.parse(localStorage.getItem('savedMovies'));
-          setLocalSavedData(userMovies);
-          // console.log(userMovies)
+          const savedMoviesFilter = JSON.parse(localStorage.getItem('savedMovies'));
+          setFilteredMovies(savedMoviesFilter)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы получить не удалось: ${err}`)
         })
-        .finally(() => 
-          setIsLoading(false));
+        // .finally(() => 
+        //   setIsLoading(false));
     }
   }, [token, currentUser])
 
   // Определение количества фильмов на странице в зависимости от размера экрана
   function handleAddMovies() {
     setMoviesNumber(
-      moviesNumber + 
+      moviesNumber
       (
       window.screen.width > 1279
       ? addCardsDesktop
@@ -209,17 +209,17 @@ export function App() {
       : addCardsMobile
       )
     )
-    setListLength(listLength + moviesNumber);
+    // setListLength(listLength + moviesNumber);
   }
 
 /* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
     console.log(value); /* приходит значение из строки поиска */
-    console.log(localData); /* приходит пустой массив */
-    const sortedMovieSearch = localData.filter((item) => {
+    // console.log(localData); /* приходит массив фильмов */
+    const sortedMovieSearch = filteredMovies.filter((item) => {
       const values = value.toLowerCase();
-      const nameEN = item.nameEN;
+      const nameEN = item.nameEN.toLowerCase();
       const nameRU = item.nameRU.toLowerCase();
       return (nameEN && nameEN.toLowerCase().includes(values) && (values !== ''))
       || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
@@ -230,7 +230,7 @@ export function App() {
   }
   // Поиск 'SavedMovies'
   function onSearchSaved(value) {
-    const sortedMovieSearch = localSavedData.filter((card) => {
+    const sortedMovieSearch = filteredMovies.filter((card) => {
       const values = value.toLowerCase();
       const nameEN = card.nameEN.toLowerCase();
       const nameRU = card.nameRU.toLowerCase();
@@ -267,17 +267,17 @@ export function App() {
 /* ========================================================= */
   // Сохранение фильма
   function handleSaveMovie(card) {
-    const like = localSavedData.some((i) =>
+    const likeCard = localSavedData.some((i) =>
       i.movieId === card.id
     );
 
-    if (!like) {
-      mainApi.saveMovies(card, token).then(res => {
+    if (!likeCard) {
+      mainApi.likeMovie(card, token).then(res => {
         setLocalSavedData([...localSavedData, res])
       })
     } else {
-      const dislikeMovie = localSavedData.find((i) => i.movieId === card.id)
-      handleDeleteMovie(dislikeMovie)
+      const deleteCard = localSavedData.find((i) => i.movieId === card.id)
+      handleDeleteMovie(deleteCard)
     }
   }
 
@@ -333,19 +333,18 @@ export function App() {
             loggedIn={loggedIn}
             component={Movies}
             currentUser={currentUser}
-            movieCards={filteredMovies}
+            filteredMovies={filteredMovies}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
             addMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
-            savedMovies={localSavedData}
             onSave={handleSaveMovie}
           />
           <ProtectedRoute path='/saved-movies'
             loggedIn={loggedIn}
             component={SavedMovies}
-            movieCards={savedMoviesFilter}
+            filteredMovies={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
             addMovies={handleAddMovies}

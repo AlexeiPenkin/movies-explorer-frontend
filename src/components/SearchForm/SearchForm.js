@@ -57,7 +57,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
           />
           <button 
             className='search-form__find-button'
-            type='button'>
+            type='submit'>
           </button>
         </div>
         <label className='checkbox__label'>

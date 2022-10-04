@@ -3,25 +3,25 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
-export function Profile({ handleSignOut, handleUpdate }) {
+export function Profile({ handleSignOut, handleUserUpdate }) {
   const currentUser = useContext(CurrentUserContext);
   const validate = FormWithValidation();
  
   useEffect(() => {
     validate.setValues(currentUser);
-    // console.log(currentUser);
+    console.log(currentUser); /* undefined */
   }, [currentUser]);
-  // console.log(currentUser);
+  console.log(currentUser); /* undefined */
 
   function handleSubmit(e){
     e.preventDefault();
-    handleUpdate(validate.values);
+    handleUserUpdate(validate); /* validate.values */
   }
 
   return (
     <section className='profile'>
       <form className='profile__form'>
-        <h3 className='profile__title'>{`Привет, ${currentUser.name}!`}</h3>
+        <h3 className='profile__title'>Привет, {'name'}!</h3>
         <div className='profile__input-list'>
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
@@ -29,9 +29,9 @@ export function Profile({ handleSignOut, handleUpdate }) {
               <input
                 required
                 name='name'
-                value={validate.values.name || ''}
+                value={validate.name || ''} /* validate.values.name */
                 className='profile__input'
-                placeholder={currentUser.name}
+                placeholder={'name'} /* {currentUser.name} - не работает, страница перестает отображаться */
                 minLength='2'
                 maxLength='30'
                 onChange={validate.handleChange}
@@ -45,9 +45,9 @@ export function Profile({ handleSignOut, handleUpdate }) {
               <input
                 required
                 name='email'
-                value={validate.values.email || ''}
+                value={validate.email || ''} /* validate.values.email */
                 className='profile__input'
-                placeholder={currentUser.email}
+                placeholder={'email'} /* {currentUser.email} - не работает, страница перестает отображаться */
                 type='email'
                 onChange={validate.handleChange}
               >
