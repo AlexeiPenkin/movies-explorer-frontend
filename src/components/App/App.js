@@ -32,23 +32,39 @@ export function App() {
     ? cardsTablet
     : cardsMobile
     );
+
+  console.log(moviesNumber); /* 12 */
+
   const movieUrl = 'https://api.nomoreparties.co';
   const [currentUser, setCurrentUser] = useState({});
   const [isBurgerMenuOpen, toggleBurgerMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
   const [popupMessage, setPopupMessage] = useState('');
-
   const location = useLocation();
   const history = useHistory();
   const token = localStorage.getItem('token')
-
-/* ========================================================= */
   const [localData, setLocalData] = useState([]);
   const [localSavedData, setLocalSavedData] = useState([]);
   const [savedMoviesFilter, setSavedMoviesFilter] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [listLength, setListLength] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+/* ========================================================= */
+  // Определение количества фильмов на странице
+  function handleAddMovies() {
+    setMoviesNumber(moviesNumber + 
+      (window.screen.width > 1279
+      ? addCardsDesktop
+      : window.screen.width > 767
+      ? addCardsTablet
+      : addCardsMobile)
+    )
+  }
+
+// const addMovies = () => {
+//   setListLength(listLength + moviesNumber);
+// }
 
 /* ========================================================= */
   function handleBurgerMenuOpen() {
@@ -68,7 +84,6 @@ export function App() {
       onSearch();
     }
   }, [localData]);
-  
 
 /* ========================================================= */
   // Проверка токена
@@ -134,8 +149,8 @@ export function App() {
     if (token) {
       // console.log(token); /* приходит текущий токен */
       mainApi.getUserInfo(token)
-        .then(res => 
-          setCurrentUser(res.user))
+        .then((userInfo) => 
+          setCurrentUser(userInfo))
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
     } 
   }, [token])
@@ -178,13 +193,15 @@ export function App() {
     }
   }, [token])
 
-  // Добавление фильмов на страницу 'Saved-Movies'
+  // Добавление фильмов на страницу 'SavedMovies'
   useEffect(() => {
     // setIsLoading(true);
     if (token && currentUser !== null) {
       mainApi.getLikedMovies(token)
         .then(res => {
+        console.log(res) /* приходит пустой массив */
           const { movies } = res;
+        console.log(movies) /* приходит пустой массив */
           localStorage.setItem('savedMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const savedMoviesFilter = JSON.parse(localStorage.getItem('savedMovies'));
           setFilteredMovies(savedMoviesFilter)
@@ -197,20 +214,7 @@ export function App() {
     }
   }, [token, currentUser])
 
-  // Определение количества фильмов на странице в зависимости от размера экрана
-  function handleAddMovies() {
-    setMoviesNumber(
-      moviesNumber
-      (
-      window.screen.width > 1279
-      ? addCardsDesktop
-      : window.screen.width > 767
-      ? addCardsTablet
-      : addCardsMobile
-      )
-    )
-    // setListLength(listLength + moviesNumber);
-  }
+
 
 /* ========================================================= */
   // Поиск 'Movies'
@@ -238,27 +242,28 @@ export function App() {
       || (nameRU && nameRU.toLowerCase().includes(value)))
         ? card : null
     });
-    localStorage.setItem('savedFilter', JSON.stringify(sortedMovieSearch));
+    localStorage.setItem('savedMoviesFilter', JSON.stringify(sortedMovieSearch));
     setSavedMoviesFilter(sortedMovieSearch.length !== 0 ? sortedMovieSearch : localSavedData);
   }
 
 /* ========================================================= */
   // Сортировка по длине фильмов 
-  function durationSwitch(checked) {
+  const durationSwitch = (checked) => {
     const filterMovies = JSON.parse(localStorage.getItem('filtered'));
     if (checked === '1' && filterMovies) {
-      const shortMovies = filterMovies.filter((item) => item.duration <= 40);
-      setFilteredMovies(shortMovies);
+      const shorts = filterMovies.filter((item) => item.duration <= 40);
+      setFilteredMovies(shorts);
     } else {
       setFilteredMovies(filterMovies);
     }
   };
   // Сортировка по длине сохраненных фильмов
-  function savedDurationSwitch(checked) {
+  const savedDurationSwitch= (checked) => {
     const savedFiltered = JSON.parse(localStorage.getItem('savedFilter'));
+    // if (checked === '1' && savedFiltered) {
     if (checked === '1' && savedFiltered) {
-      const shortMovies = savedFiltered.filter((item) => item.duration <= 40);
-      setSavedMoviesFilter(shortMovies);
+      const shorts = savedFiltered.filter((item) => item.duration <= 40);
+      setSavedMoviesFilter(shorts);
     } else {
       setSavedMoviesFilter(savedFiltered);
     }
@@ -336,7 +341,8 @@ export function App() {
             filteredMovies={filteredMovies}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
-            addMovies={handleAddMovies}
+            moviesNumber={moviesNumber}
+            handleAddMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             onSave={handleSaveMovie}
@@ -347,7 +353,8 @@ export function App() {
             filteredMovies={savedMoviesFilter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
-            addMovies={handleAddMovies}
+            moviesNumber={moviesNumber}
+            handleAddMovies={handleAddMovies}
             onDelete={handleDeleteMovie}
             listLength={listLength}
             savedMovies={localSavedData}

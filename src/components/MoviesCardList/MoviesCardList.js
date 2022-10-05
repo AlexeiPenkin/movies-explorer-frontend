@@ -3,20 +3,22 @@ import { MoviesCard } from '../MoviesCard/MoviesCard';
 // import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, filteredMovies, saveMovie, listLength }) {
+export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, filteredMovies, saveMovie, listLength, handleSaveMovie }) {
 
   const moviesCard = movies
-    // .filter((number) => number < moviesNumber)
+    .filter((number) => number < moviesNumber)
     .map((item) => {
+      console.log(moviesNumber); /* 12 */
     return (
       <MoviesCard 
         path={path}
         movie={item}
         filteredMovies={filteredMovies}
         saveMovie={saveMovie}
+        listLength={listLength}
+        onSave={handleSaveMovie}
         deleteMovie={handleDeleteMovie}
         key={item.id}
-        // listLength={listLength}
       />
     )
   })
@@ -36,5 +38,5 @@ export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDel
         </section>
       )}
     </section>
-  );
+ );
 }

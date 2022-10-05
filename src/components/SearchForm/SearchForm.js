@@ -2,15 +2,15 @@ import { React, useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom";
 import './SearchForm.css';
 
-export function SearchForm ({ onSearch, durationSwitch }) {
-  const localValueStorage = localStorage.getItem('saveSearchValues')
+export function SearchForm ({ onSearch, onSearchSaved, durationSwitch, savedDurationSwitch }) {
+  const localValueStorage = localStorage.getItem('saveSearchValue')
   const localChecked = localStorage.getItem('saveChecked')
   const location = useLocation()
   const [checked, setChecked] = useState(localChecked ?? '0')
   const [value, setValue] = useState(localValueStorage ?? '')
   
   const handleSubmit = (e) => {
-    console.log(e, value);
+    // console.log(e, value);
     e.preventDefault()
     setChecked('0')
     onSearch(value)
@@ -27,7 +27,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
 
   useEffect(() => {
     if (location.pathname === '/movies') {
-      localStorage.setItem('saveSearchValues', value)
+      localStorage.setItem('saveSearchValue', value)
       localStorage.setItem('saveChecked', checked)
     } 
     // console.log(checked, value);
@@ -35,7 +35,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
 
   useEffect(() => {
     if (location.pathname === '/saved-movies') {
-      durationSwitch(checked)
+      savedDurationSwitch(checked)
     }
     if (location.pathname === '/movies') {
       onSearch(localValueStorage ?? '')
