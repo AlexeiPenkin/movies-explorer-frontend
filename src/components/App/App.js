@@ -25,6 +25,7 @@ export function App() {
   const addCardsDesktop = 3;
   const addCardsTablet = 2;
   const addCardsMobile = 2;
+  /* Movies */
   const [moviesNumber, setMoviesNumber] = useState(
     window.screen.width > 1279
     ? cardsDesktop
@@ -32,10 +33,15 @@ export function App() {
     ? cardsTablet
     : cardsMobile
     );
+  /* SavedMovies */
+  const [savedMoviesNumber, setSavedMoviesNumber] = useState(
+    window.screen.width > 1279
+    ? cardsDesktop
+    : window.screen.width > 767
+    ? cardsTablet
+    : cardsMobile
+    );
 
-  console.log(moviesNumber); /* 12 */
-
-  const movieUrl = 'https://api.nomoreparties.co';
   const [currentUser, setCurrentUser] = useState({});
   const [isBurgerMenuOpen, toggleBurgerMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -44,14 +50,33 @@ export function App() {
   const history = useHistory();
   const token = localStorage.getItem('token')
   const [localData, setLocalData] = useState([]);
+
   const [localSavedData, setLocalSavedData] = useState([]);
-  const [savedMoviesFilter, setSavedMoviesFilter] = useState([]);
-  const [filteredMovies, setFilteredMovies] = useState([]);
-  const [listLength, setListLength] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+
+  /* << Movies >>:
+  (1) durationSwitch;
+  (2) onSearch
+  (3) moviesApi.getMovies()
+  */
+  const [filteredMovies, setFilteredMovies] = useState([]); 
+  
+  /* << SavedMovies >>:
+  (1) savedDurationSwitch
+  (2) onSearchSaved
+  (3) mainApi.getLikedMovies(token)
+  */
+  const [savedFilteredMovies, setSavedMoviesFilter] = useState([]); /* savedMoviesFilter */
+  
+  // const [listLength, setListLength] = useState(0);
+  // const [isLoading, setIsLoading] = useState(true);
+
+  const [filter, setFilter] = useState(false);
+
+
+
 
 /* ========================================================= */
-  // Определение количества фильмов на странице
+  // Определение количества фильмов на странице 'Movies'
   function handleAddMovies() {
     setMoviesNumber(moviesNumber + 
       (window.screen.width > 1279
@@ -62,6 +87,16 @@ export function App() {
     )
   }
 
+  // Определение количества фильмов на странице 'Movies'
+  function handleAddMoviesSaved() {
+    setSavedMoviesNumber(savedMoviesNumber + 
+      (window.screen.width > 1279
+      ? addCardsDesktop
+      : window.screen.width > 767
+      ? addCardsTablet
+      : addCardsMobile)
+    )
+  }
 // const addMovies = () => {
 //   setListLength(listLength + moviesNumber);
 // }
@@ -75,6 +110,9 @@ export function App() {
     toggleBurgerMenu(false);
   }
 
+  function handleFilter() {
+    setFilter(!filter);
+  }
 /* ========================================================= */
   const [searchText, setSearchText] = useState(false);
 
@@ -181,8 +219,8 @@ export function App() {
     if (token) {
       moviesApi.getMovies()
         .then(res => {
-          localStorage.setItem('filtered', JSON.stringify(res));
-          const filteredMovies = JSON.parse(localStorage.getItem('filtered'));
+          localStorage.setItem('filteredMovies', JSON.stringify(res));
+          const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
           setFilteredMovies(filteredMovies)
         })
         .catch((err) => {
@@ -199,12 +237,11 @@ export function App() {
     if (token && currentUser !== null) {
       mainApi.getLikedMovies(token)
         .then(res => {
-        console.log(res) /* приходит пустой массив */
           const { movies } = res;
-        console.log(movies) /* приходит пустой массив */
-          localStorage.setItem('savedMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
-          const savedMoviesFilter = JSON.parse(localStorage.getItem('savedMovies'));
-          setFilteredMovies(savedMoviesFilter)
+          console.log(movies)
+          localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
+          const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
+          setSavedMoviesFilter(savedFilteredMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы получить не удалось: ${err}`)
@@ -219,9 +256,7 @@ export function App() {
 /* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
-    console.log(value); /* приходит значение из строки поиска */
-    // console.log(localData); /* приходит массив фильмов */
-    const sortedMovieSearch = filteredMovies.filter((item) => {
+    const savedSortedMovieSearch = filteredMovies.filter((item) => {
       const values = value.toLowerCase();
       const nameEN = item.nameEN.toLowerCase();
       const nameRU = item.nameRU.toLowerCase();
@@ -229,12 +264,12 @@ export function App() {
       || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
         ? item : null
     });
-    localStorage.setItem('filtered', JSON.stringify(sortedMovieSearch));
-    setFilteredMovies(sortedMovieSearch)
+    localStorage.setItem('filteredMovies', JSON.stringify(savedSortedMovieSearch));
+    setFilteredMovies(savedSortedMovieSearch)
   }
   // Поиск 'SavedMovies'
   function onSearchSaved(value) {
-    const sortedMovieSearch = filteredMovies.filter((card) => {
+    const savedSortedMovieSearch = savedFilteredMovies.filter((card) => {
       const values = value.toLowerCase();
       const nameEN = card.nameEN.toLowerCase();
       const nameRU = card.nameRU.toLowerCase();
@@ -242,30 +277,30 @@ export function App() {
       || (nameRU && nameRU.toLowerCase().includes(value)))
         ? card : null
     });
-    localStorage.setItem('savedMoviesFilter', JSON.stringify(sortedMovieSearch));
-    setSavedMoviesFilter(sortedMovieSearch.length !== 0 ? sortedMovieSearch : localSavedData);
+    localStorage.setItem('savedFilteredMovies', JSON.stringify(savedSortedMovieSearch));
+    setSavedMoviesFilter(savedSortedMovieSearch.length !== 0 ? savedSortedMovieSearch : localSavedData);
   }
 
 /* ========================================================= */
   // Сортировка по длине фильмов 
   const durationSwitch = (checked) => {
-    const filterMovies = JSON.parse(localStorage.getItem('filtered'));
-    if (checked === '1' && filterMovies) {
-      const shorts = filterMovies.filter((item) => item.duration <= 40);
+    const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
+    if (checked === '1' && filteredMovies) {
+      const shorts = filteredMovies.filter((item) => item.duration <= 40);
       setFilteredMovies(shorts);
     } else {
-      setFilteredMovies(filterMovies);
+      setFilteredMovies(filteredMovies);
     }
   };
   // Сортировка по длине сохраненных фильмов
   const savedDurationSwitch= (checked) => {
-    const savedFiltered = JSON.parse(localStorage.getItem('savedFilter'));
-    // if (checked === '1' && savedFiltered) {
-    if (checked === '1' && savedFiltered) {
-      const shorts = savedFiltered.filter((item) => item.duration <= 40);
-      setSavedMoviesFilter(shorts);
+    const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
+    // if (checked === '1' && savedFilteredMovies) {
+    if (checked === '1' && savedFilteredMovies) {
+      const savedShorts = savedFilteredMovies.filter((item) => item.duration <= 40);
+      setSavedMoviesFilter(savedShorts);
     } else {
-      setSavedMoviesFilter(savedFiltered);
+      setSavedMoviesFilter(savedFilteredMovies);
     }
   }
 
@@ -291,7 +326,7 @@ export function App() {
   function handleDeleteMovie(card) {
     mainApi.deleteMovie(card, token)
       .then(() => {
-        setSavedMoviesFilter(savedMoviesFilter.filter((i) => i._id !== card._id))
+        setSavedMoviesFilter(savedFilteredMovies.filter((i) => i._id !== card._id))
         setLocalSavedData(localSavedData.filter(i => i._id !== card._id))
       })
   }
@@ -335,29 +370,33 @@ export function App() {
         />
         <Switch>  
           <ProtectedRoute path='/movies'
-            loggedIn={loggedIn}
+            // loggedIn={loggedIn}
             component={Movies}
-            currentUser={currentUser}
+            // currentUser={currentUser}
             filteredMovies={filteredMovies}
+            handleFilter={handleFilter}
+            // filter={filter}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
             moviesNumber={moviesNumber}
             handleAddMovies={handleAddMovies}
-            onDelete={handleDeleteMovie}
-            listLength={listLength}
             onSave={handleSaveMovie}
+            onDelete={handleDeleteMovie}
+            // listLength={listLength}
           />
           <ProtectedRoute path='/saved-movies'
-            loggedIn={loggedIn}
+            // loggedIn={loggedIn}
             component={SavedMovies}
-            filteredMovies={savedMoviesFilter}
+            filteredMovies={filteredMovies}
+            handleFilter={handleFilter}
+            // filter={filter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
             moviesNumber={moviesNumber}
-            handleAddMovies={handleAddMovies}
-            onDelete={handleDeleteMovie}
-            listLength={listLength}
+            handleAddMoviesSaved={handleAddMoviesSaved}
             savedMovies={localSavedData}
+            onDelete={handleDeleteMovie}
+            // listLength={listLength}
           />
           <ProtectedRoute path='/profile'
             component={Profile}

@@ -3,22 +3,18 @@ import { SearchForm } from '../SearchForm/SearchForm';
 import { Footer } from '../Footer/Footer';
 import './SavedMovies.css';
 
-export function SavedMovies ({ moviesCard, handleDeleteMovie, listLength, onSearch, savedDurationSwitch, handleAddMovies, savedMovies, filteredMovies, moviesNumber }) {
-
-  // console.log(moviesNumber) /* 12 */
+export function SavedMovies ({ onSearchSaved, savedDurationSwitch, moviesCard, savedFilteredMovies, savedMoviesNumber, handleAddMovies, handleDeleteMovie }) {
 
   return(
     <section className='savedMovies'>
       <SearchForm 
-        onSearch={onSearch}
-        savedDurationSwitch={savedDurationSwitch}
+        onSearch={onSearchSaved}
+        durationSwitch={savedDurationSwitch}
       ></SearchForm>
       <MoviesCardList 
         moviesCard={moviesCard}
-        movies={filteredMovies}
-        moviesNumber={moviesNumber}
-        savedMovies={savedMovies} 
-        listLength={listLength}
+        movies={savedFilteredMovies}
+        moviesNumber={savedMoviesNumber}
         handleAddMovies={handleAddMovies}
         onDelete={handleDeleteMovie}
       ></MoviesCardList>

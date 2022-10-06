@@ -45,20 +45,21 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
             className={`movies-card__like-button
             ${ saved ? 'movies-card__like-button_active' : '' }`}
             onClick={handleSaveMovie}
-            style={{display: likeButton}}
+            // style={{display: likeButton}}
           >
           </button>
           <button 
             className='movies-card__delete-button' 
             onClick={handleDeleteMovie}
-            style={{display: deleteButton}}
+            // style={{display: deleteButton}}
           >
           </button>
         </div>
         <p className='movies-card__duration'>{time}</p>
       </div>
       <a href={trailerLink || trailer} target='_blank' rel="noreferrer">
-        <img src={path === '/saved-movies' ? image : moviePoster} className='movies-card__img' alt=' '/>
+        <img src={path === movieUrl ? image : moviePoster} className='movies-card__img' alt=' '/> 
+        {/* <img src={path ==='/saved-movies' -> movieUrl... */}
       </a>
     </div>
   );

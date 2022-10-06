@@ -1,21 +1,15 @@
 import React from 'react';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
-// import { SavedMovies } from '../SavedMovies/SavedMovies';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, filteredMovies, saveMovie, listLength, handleSaveMovie }) {
-
+export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, handleSaveMovie }) { 
   const moviesCard = movies
-    .filter((number) => number < moviesNumber)
+    .filter((item, number) => number < moviesNumber)
     .map((item) => {
-      console.log(moviesNumber); /* 12 */
     return (
       <MoviesCard 
         path={path}
         movie={item}
-        filteredMovies={filteredMovies}
-        saveMovie={saveMovie}
-        listLength={listLength}
         onSave={handleSaveMovie}
         deleteMovie={handleDeleteMovie}
         key={item.id}

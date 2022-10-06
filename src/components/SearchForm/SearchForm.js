@@ -1,59 +1,68 @@
-import { React, useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
+import { React, useState } from 'react';
 import './SearchForm.css';
 
-export function SearchForm ({ onSearch, onSearchSaved, durationSwitch, savedDurationSwitch }) {
-  const localValueStorage = localStorage.getItem('saveSearchValue')
-  const localChecked = localStorage.getItem('saveChecked')
-  const location = useLocation()
-  const [checked, setChecked] = useState(localChecked ?? '0')
-  const [value, setValue] = useState(localValueStorage ?? '')
-  
-  const handleSubmit = (e) => {
-    // console.log(e, value);
-    e.preventDefault()
-    setChecked('0')
-    onSearch(value)
+export function SearchForm ({ onSearch, handleFilter, filter }) {
+  const [keyword, setKeyword] = useState('');
+
+  function handleSearch(e) {
+    setKeyword(e.target.value);
   }
-  // console.log(value);
 
-  useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      setChecked('0')
-      onSearch(value)
-      setValue('')
-    }
-  }, [location])
+  function handleSubmit(e) {
+    e.preventDefault();
+    handleSearch(keyword, filter)
+  }
 
-  useEffect(() => {
-    if (location.pathname === '/movies') {
-      localStorage.setItem('saveSearchValue', value)
-      localStorage.setItem('saveChecked', checked)
-    } 
-    // console.log(checked, value);
-  }, [value, checked])
+  // const localValueStorage = localStorage.getItem('saveSearchValue')
+  // const localChecked = localStorage.getItem('saveChecked')
+  // const location = useLocation()
+  // const [checked, setChecked] = useState(localChecked ?? '0')
+  // const [value, setValue] = useState(localValueStorage ?? '')
+  
+  // const handleSubmit = (e) => {
+  //   e.preventDefault()
+  //   setChecked('0')
+  //   onSearch(value)
+  // }
+  // // console.log(value);
 
-  useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      savedDurationSwitch(checked)
-    }
-    if (location.pathname === '/movies') {
-      onSearch(localValueStorage ?? '')
-      durationSwitch(checked ?? '0')
-    }
-  }, [location, checked])
+  // useEffect(() => {
+  //   if (location.pathname === '/saved-movies') {
+  //     setChecked('0')
+  //     onSearch(value)
+  //     setValue('')
+  //   }
+  // }, [location])
+
+  // useEffect(() => {
+  //   if (location.pathname === '/movies') {
+  //     localStorage.setItem('saveSearchValue', value)
+  //     localStorage.setItem('saveChecked', checked)
+  //   } 
+  //   // console.log(checked, value);
+  // }, [value, checked])
+
+  // useEffect(() => {
+  //   if (location.pathname === '/saved-movies') {
+  //     durationSwitch(checked)
+  //   }
+  //   if (location.pathname === '/movies') {
+  //     onSearch(localValueStorage ?? '')
+  //     durationSwitch(checked ?? '0')
+  //   }
+  // }, [location, checked])
 
   return(
     <section className='search-form'>
-      <form className='search-form__form' onSubmit={(e) => handleSubmit(e)}>
+      <form className='search-form__form' onSubmit={handleSubmit}>
         <div className='search-form__bar'>
           <input className='search-form__input' id='search'
             type='search'
             name='search'
-            onChange={(e) => setValue(e.target.value)}
+            onChange={handleSearch}
             placeholder='Фильм'
             required
-            value={value}
+            value={keyword || ''}
           />
           <button 
             className='search-form__find-button'
@@ -63,7 +72,10 @@ export function SearchForm ({ onSearch, onSearchSaved, durationSwitch, savedDura
         <label className='checkbox__label'>
           <input className='checkbox'
             type='checkbox'
-            value='shortMovies' />
+            value='shortMovies'
+            onChange={handleFilter}
+            checked={filter}
+             />
           <span className='checkbox__selector'></span>
           Короткометражки
         </label>
