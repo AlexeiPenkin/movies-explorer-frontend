@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useFormWithValidation } from '../../utils/FormWithValidation';
+import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Register.css';
 
 export function Register({ handleRegister }) {
-  const validate = useFormWithValidation();
+  const validate = FormWithValidation();
   
   function handleSubmit(e){
     e.preventDefault();

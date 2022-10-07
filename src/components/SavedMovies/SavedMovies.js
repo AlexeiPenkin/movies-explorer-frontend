@@ -3,7 +3,7 @@ import { SearchForm } from '../SearchForm/SearchForm';
 import { Footer } from '../Footer/Footer';
 import './SavedMovies.css';
 
-export function SavedMovies ({ onSearchSaved, savedDurationSwitch, moviesCard, savedFilteredMovies, savedMoviesNumber, handleAddMovies, handleDeleteMovie }) {
+export function SavedMovies ({ onSearchSaved, savedDurationSwitch, moviesCard, filteredMovies, savedMoviesNumber, handleAddMoviesSaved, handleDeleteMovie, localSavedData }) {
 
   return(
     <section className='savedMovies'>
@@ -13,10 +13,11 @@ export function SavedMovies ({ onSearchSaved, savedDurationSwitch, moviesCard, s
       ></SearchForm>
       <MoviesCardList 
         moviesCard={moviesCard}
-        movies={savedFilteredMovies}
+        movies={filteredMovies}
         moviesNumber={savedMoviesNumber}
-        handleAddMovies={handleAddMovies}
-        onDelete={handleDeleteMovie}
+        handleAddMovies={handleAddMoviesSaved}
+        deleteMovie={handleDeleteMovie}
+        // savedMovies={localSavedData}
       ></MoviesCardList>
       <Footer></Footer>
     </section>

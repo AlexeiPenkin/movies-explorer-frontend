@@ -235,7 +235,7 @@ export function App() {
   useEffect(() => {
     // setIsLoading(true);
     if (token && currentUser !== null) {
-      mainApi.getLikedMovies(token)
+      mainApi.getSavedMovies(token)
         .then(res => {
           const { movies } = res;
           console.log(movies)
@@ -307,16 +307,17 @@ export function App() {
 /* ========================================================= */
   // Сохранение фильма
   function handleSaveMovie(card) {
-    const likeCard = localSavedData.some((i) =>
-      i.movieId === card.id
+    const likeCard = localSavedData
+    .some((i) => i.movieId === card.id
     );
-
     if (!likeCard) {
-      mainApi.likeMovie(card, token).then(res => {
+      mainApi.saveMovies(card, token)
+      .then(res => {
         setLocalSavedData([...localSavedData, res])
       })
     } else {
-      const deleteCard = localSavedData.find((i) => i.movieId === card.id)
+      const deleteCard = localSavedData
+      .find((i) => i.movieId === card.id)
       handleDeleteMovie(deleteCard)
     }
   }
@@ -326,8 +327,10 @@ export function App() {
   function handleDeleteMovie(card) {
     mainApi.deleteMovie(card, token)
       .then(() => {
-        setSavedMoviesFilter(savedFilteredMovies.filter((i) => i._id !== card._id))
-        setLocalSavedData(localSavedData.filter(i => i._id !== card._id))
+        setSavedMoviesFilter(savedFilteredMovies
+          .filter((i) => i._id !== card._id))
+        setLocalSavedData(localSavedData
+          .filter(i => i._id !== card._id))
       })
   }
 
@@ -370,33 +373,28 @@ export function App() {
         />
         <Switch>  
           <ProtectedRoute path='/movies'
-            // loggedIn={loggedIn}
             component={Movies}
-            // currentUser={currentUser}
             filteredMovies={filteredMovies}
             handleFilter={handleFilter}
-            // filter={filter}
+            filter={filter}
             durationSwitch={durationSwitch}
             onSearch={onSearch}
             moviesNumber={moviesNumber}
             handleAddMovies={handleAddMovies}
-            onSave={handleSaveMovie}
-            onDelete={handleDeleteMovie}
-            // listLength={listLength}
+            saveMovie={handleSaveMovie}
+            deleteMovie={handleDeleteMovie}
           />
           <ProtectedRoute path='/saved-movies'
-            // loggedIn={loggedIn}
             component={SavedMovies}
             filteredMovies={filteredMovies}
             handleFilter={handleFilter}
-            // filter={filter}
+            filter={filter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
             moviesNumber={moviesNumber}
-            handleAddMoviesSaved={handleAddMoviesSaved}
+            handleAddMovies={handleAddMoviesSaved}
             savedMovies={localSavedData}
-            onDelete={handleDeleteMovie}
-            // listLength={listLength}
+            deleteMovie={handleDeleteMovie}
           />
           <ProtectedRoute path='/profile'
             component={Profile}

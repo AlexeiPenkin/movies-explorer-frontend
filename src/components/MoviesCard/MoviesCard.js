@@ -1,6 +1,8 @@
 import './MoviesCard.css';
+import {useLocation} from "react-router-dom";
 
-export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
+export function MoviesCard ({ card, path, movie, handleSaveMovie, handleDeleteMovie, filteredMovies }) {
+  const location = useLocation();
   const {
     duration,
     id,
@@ -11,8 +13,8 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
     saved = false,
   } = movie;
   
-  const likeButton = (path === '/saved-movies') && 'none';
-  const deleteButton = (path === '/movies') && 'none';
+  const likeButton = (location.pathname === '/saved-movies') && 'none';
+  const deleteButton = (location.pathname === '/movies') && 'none';
   const movieUrl = 'https://api.nomoreparties.co';
   const moviePoster = movieUrl + image?.url;
   
@@ -21,45 +23,36 @@ export function MoviesCard ({ path, movie, saveMovie, deleteMovie }) {
   if(duration < 60){
     time = duration % 60 + 'мин';
   }
-
-  function handleSaveMovie() {
-    if(!movie.saved) {
-      saveMovie(movie); 
-    } else {
-      deleteMovie(id);
-    }
-  }
-
-  function handleDeleteMovie() {
-    deleteMovie(movie);
-  }
   
   return(
     <div className='movies-card' id='card'>
-      <div className='movies-card__info'>
         <div className='movies-card__info-block'>
-          <p className='movies-card__title'>
-            {nameRU}
-          </p>
-          <button 
-            className={`movies-card__like-button
+          <p className='movies-card__title'>{nameRU}</p>
+
+          <button className={`movies-card__like-button
             ${ saved ? 'movies-card__like-button_active' : '' }`}
-            onClick={handleSaveMovie}
-            // style={{display: likeButton}}
-          >
-          </button>
-          <button 
-            className='movies-card__delete-button' 
-            onClick={handleDeleteMovie}
-            // style={{display: deleteButton}}
-          >
-          </button>
+            style={{display: likeButton}}
+            onClick={() => {
+              if (location.pathname === '/movies') {
+                handleSaveMovie(card)
+              }
+            }}
+          />
+
+          <button className={`movies-card__delete-button
+            ${ filteredMovies ? 'movies-card__delete-button' : '' }`}
+            style={{display: deleteButton}}
+            onClick={() => {
+              if (location.pathname === '/saved-movies'){
+                handleDeleteMovie(card)
+              }
+            }}
+          />
+          
         </div>
         <p className='movies-card__duration'>{time}</p>
-      </div>
       <a href={trailerLink || trailer} target='_blank' rel="noreferrer">
-        <img src={path === movieUrl ? image : moviePoster} className='movies-card__img' alt=' '/> 
-        {/* <img src={path ==='/saved-movies' -> movieUrl... */}
+        <img src={path === '/saved-movies' ? image : moviePoster} className='movies-card__image' alt=' '/>
       </a>
     </div>
   );
