@@ -388,14 +388,14 @@ export function App() {
           />
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
-            filteredMovies={filteredMovies}
+            filteredMovies={savedFilteredMovies}
             handleFilter={handleFilter}
             filter={filter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
             moviesNumber={savedMoviesNumber}
             handleAddMovies={handleAddMoviesSaved}
-            savedMovies={localSavedData}
+            handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
           />
           <ProtectedRoute path='/profile'

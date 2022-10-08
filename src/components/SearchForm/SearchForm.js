@@ -1,8 +1,11 @@
 import { React, useState } from 'react';
 import './SearchForm.css';
 
-export function SearchForm ({ onSearch, handleFilter, filter }) {
+export function SearchForm ({ onSearch, filter, durationSwitch }) {
   const [keyword, setKeyword] = useState('');
+
+  const localChecked = localStorage.getItem('saveCheck')
+  const [checked, setChecked] = useState(localChecked ?? '0')
 
   function handleSearch(e) {
     setKeyword(e.target.value);
@@ -13,50 +16,14 @@ export function SearchForm ({ onSearch, handleFilter, filter }) {
     onSearch(keyword, filter)
   }
 
-  // const localValueStorage = localStorage.getItem('saveSearchValue')
-  // const localChecked = localStorage.getItem('saveChecked')
-  // const location = useLocation()
-  // const [checked, setChecked] = useState(localChecked ?? '0')
-  // const [value, setValue] = useState(localValueStorage ?? '')
-  
-  // const handleSubmit = (e) => {
-  //   e.preventDefault()
-  //   setChecked('0')
-  //   onSearch(value)
-  // }
-  // // console.log(value);
-
-  // useEffect(() => {
-  //   if (location.pathname === '/saved-movies') {
-  //     setChecked('0')
-  //     onSearch(value)
-  //     setValue('')
-  //   }
-  // }, [location])
-
-  // useEffect(() => {
-  //   if (location.pathname === '/movies') {
-  //     localStorage.setItem('saveSearchValue', value)
-  //     localStorage.setItem('saveChecked', checked)
-  //   } 
-  //   // console.log(checked, value);
-  // }, [value, checked])
-
-  // useEffect(() => {
-  //   if (location.pathname === '/saved-movies') {
-  //     durationSwitch(checked)
-  //   }
-  //   if (location.pathname === '/movies') {
-  //     onSearch(localValueStorage ?? '')
-  //     durationSwitch(checked ?? '0')
-  //   }
-  // }, [location, checked])
-
-  return(
+  return (
     <section className='search-form'>
-      <form className='search-form__form' onSubmit={handleSubmit}>
+
+      <form className='search-form__form' onSubmit={(e) => handleSubmit(e)}>
+
         <div className='search-form__bar'>
-          <input className='search-form__input' id='search'
+
+        <input className='search-form__input' id='search'
             type='search'
             name='search'
             onChange={handleSearch}
@@ -64,22 +31,27 @@ export function SearchForm ({ onSearch, handleFilter, filter }) {
             required
             value={keyword || ''}
           />
-          <button 
-            className='search-form__find-button'
-            type='submit'>
-          </button>
+
+            <button 
+              className='search-form__find-button'
+              type='submit'>
+            </button>
+
         </div>
+
         <label className='checkbox__label'>
-          <input className='checkbox'
-            type='checkbox'
-            value='shortMovies'
-            onChange={handleFilter}
-            checked={filter}
-             />
-          <span className='checkbox__selector'></span>
+          <button className={`checkbox__selector checkbox__selector${checked === '1' ? '_on' : '_off'}`}
+            type='button'
+            onClick={() => {
+              setChecked(checked === '0' ? '1' : '0')
+              durationSwitch(checked)
+            }}
+          />
           Короткометражки
-        </label>
+      </label>
+
       </form>
     </section>
   );
+
 }

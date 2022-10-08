@@ -2,7 +2,7 @@ import React from 'react';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDeleteMovie, movies, handleSaveMovie }) { 
+export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, handleDeleteMovie, handleAddMovies }) { 
   const moviesCard = movies
     .filter((item, number) => number < moviesNumber)
     .map((item) => {

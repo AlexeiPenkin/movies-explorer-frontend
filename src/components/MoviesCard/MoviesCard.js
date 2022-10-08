@@ -1,7 +1,7 @@
 import './MoviesCard.css';
 import {useLocation} from "react-router-dom";
 
-export function MoviesCard ({ card, path, movie, handleSaveMovie, handleDeleteMovie, filteredMovies }) {
+export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, filteredMovies }) {
   const location = useLocation();
   const {
     duration,
