@@ -15,9 +15,9 @@ export function Movies ({ onSearch, durationSwitch, moviesCard, filteredMovies, 
         moviesCard={moviesCard}
         movies={filteredMovies}
         moviesNumber={moviesNumber}
-        saveMovie={handleSaveMovie}
         handleAddMovies={handleAddMovies}
-        deleteMovie={handleDeleteMovie}
+        handleSaveMovie={handleSaveMovie}
+        handleDeleteMovie={handleDeleteMovie}
       ></MoviesCardList>
       <Footer></Footer>
     </section>

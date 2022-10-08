@@ -106,7 +106,7 @@ class MainApi{
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        country: movie.country ?? '1',
+        country: movie.country,
         description: movie.description,
         director: movie.director,
         duration: movie.duration,

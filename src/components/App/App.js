@@ -222,6 +222,7 @@ export function App() {
           localStorage.setItem('filteredMovies', JSON.stringify(res));
           const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
           setFilteredMovies(filteredMovies)
+          // console.log(filteredMovies)
         })
         .catch((err) => {
           console.log(`Фильмы получить не удалось: ${err}`)
@@ -238,10 +239,11 @@ export function App() {
       mainApi.getSavedMovies(token)
         .then(res => {
           const { movies } = res;
-          console.log(movies)
+          console.log(movies) /* приходят сохраненные фильмы */
           localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
           setSavedMoviesFilter(savedFilteredMovies)
+          // console.log(savedFilteredMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы получить не удалось: ${err}`)
@@ -306,18 +308,18 @@ export function App() {
 
 /* ========================================================= */
   // Сохранение фильма
-  function handleSaveMovie(card) {
+  function handleSaveMovie(movie) {
     const likeCard = localSavedData
-    .some((i) => i.movieId === card.id
+    .some((i) => i.movieId === movie.id
     );
     if (!likeCard) {
-      mainApi.saveMovies(card, token)
+      mainApi.saveMovies(movie, token)
       .then(res => {
         setLocalSavedData([...localSavedData, res])
       })
     } else {
       const deleteCard = localSavedData
-      .find((i) => i.movieId === card.id)
+      .find((i) => i.movieId === movie.id)
       handleDeleteMovie(deleteCard)
     }
   }
@@ -381,8 +383,8 @@ export function App() {
             onSearch={onSearch}
             moviesNumber={moviesNumber}
             handleAddMovies={handleAddMovies}
-            saveMovie={handleSaveMovie}
-            deleteMovie={handleDeleteMovie}
+            handleSaveMovie={handleSaveMovie}
+            handleDeleteMovie={handleDeleteMovie}
           />
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
@@ -391,10 +393,10 @@ export function App() {
             filter={filter}
             durationSwitch={savedDurationSwitch}
             onSearch={onSearchSaved}
-            moviesNumber={moviesNumber}
+            moviesNumber={savedMoviesNumber}
             handleAddMovies={handleAddMoviesSaved}
             savedMovies={localSavedData}
-            deleteMovie={handleDeleteMovie}
+            handleDeleteMovie={handleDeleteMovie}
           />
           <ProtectedRoute path='/profile'
             component={Profile}

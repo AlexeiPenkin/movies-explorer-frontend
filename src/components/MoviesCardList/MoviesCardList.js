@@ -10,8 +10,8 @@ export function MoviesCardList ({ moviesNumber, path, handleAddMovies, handleDel
       <MoviesCard 
         path={path}
         movie={item}
-        onSave={handleSaveMovie}
-        deleteMovie={handleDeleteMovie}
+        handleSaveMovie={handleSaveMovie}
+        handleDeleteMovie={handleDeleteMovie}
         key={item.id}
       />
     )

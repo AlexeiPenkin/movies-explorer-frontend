@@ -34,21 +34,20 @@ export function MoviesCard ({ card, path, movie, handleSaveMovie, handleDeleteMo
             style={{display: likeButton}}
             onClick={() => {
               if (location.pathname === '/movies') {
-                handleSaveMovie(card)
+                handleSaveMovie(movie)
               }
             }}
           />
-
+          
           <button className={`movies-card__delete-button
             ${ filteredMovies ? 'movies-card__delete-button' : '' }`}
             style={{display: deleteButton}}
             onClick={() => {
               if (location.pathname === '/saved-movies'){
-                handleDeleteMovie(card)
+                handleDeleteMovie(movie)
               }
             }}
           />
-          
         </div>
         <p className='movies-card__duration'>{time}</p>
       <a href={trailerLink || trailer} target='_blank' rel="noreferrer">

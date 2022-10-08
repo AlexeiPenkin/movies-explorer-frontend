@@ -10,7 +10,7 @@ export function SearchForm ({ onSearch, handleFilter, filter }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    handleSearch(keyword, filter)
+    onSearch(keyword, filter)
   }
 
   // const localValueStorage = localStorage.getItem('saveSearchValue')
