@@ -28,7 +28,6 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
     <div className='movies-card' id='card'>
         <div className='movies-card__info-block'>
           <p className='movies-card__title'>{nameRU}</p>
-
           <button className={`movies-card__like-button
             ${ saved ? 'movies-card__like-button_active' : '' }`}
             style={{display: likeButton}}
@@ -38,7 +37,6 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
               }
             }}
           />
-          
           <button className={`movies-card__delete-button
             ${ filteredMovies ? 'movies-card__delete-button' : '' }`}
             style={{display: deleteButton}}
@@ -50,9 +48,10 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
           />
         </div>
         <p className='movies-card__duration'>{time}</p>
-      <a href={trailerLink || trailer} target='_blank' rel="noreferrer">
-        <img src={path === '/saved-movies' ? image : moviePoster} className='movies-card__image' alt=' '/>
-      </a>
+        <a href={movie.trailerLink} target="_blank" rel="noreferrer">
+          <img className='movies-card__image' src={location.pathname === "/movies" ?
+          `https://api.nomoreparties.co${movie.image.url}` : movie.image} alt={movie.nameRU}/>
+        </a>
     </div>
   );
 }

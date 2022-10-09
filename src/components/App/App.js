@@ -52,19 +52,7 @@ export function App() {
   const [localData, setLocalData] = useState([]);
 
   const [localSavedData, setLocalSavedData] = useState([]);
-
-  /* << Movies >>:
-  (1) durationSwitch;
-  (2) onSearch
-  (3) moviesApi.getMovies()
-  */
   const [filteredMovies, setFilteredMovies] = useState([]); 
-  
-  /* << SavedMovies >>:
-  (1) savedDurationSwitch
-  (2) onSearchSaved
-  (3) mainApi.getLikedMovies(token)
-  */
   const [savedFilteredMovies, setSavedMoviesFilter] = useState([]); /* savedMoviesFilter */
   
   // const [listLength, setListLength] = useState(0);
@@ -326,13 +314,13 @@ export function App() {
 
 /* ========================================================= */
   // Удаление фильма
-  function handleDeleteMovie(card) {
-    mainApi.deleteMovie(card, token)
+  function handleDeleteMovie(movie) {
+    mainApi.deleteMovie(movie, token)
       .then(() => {
         setSavedMoviesFilter(savedFilteredMovies
-          .filter((i) => i._id !== card._id))
+          .filter((i) => i._id !== movie._id))
         setLocalSavedData(localSavedData
-          .filter(i => i._id !== card._id))
+          .filter(i => i._id !== movie._id))
       })
   }
 
@@ -340,7 +328,8 @@ export function App() {
   // Выход из аккаунта
   function handleSignOut() {
     localStorage.removeItem('token');
-    localStorage.removeItem('allMovies')
+    localStorage.removeItem('filteredMovies')
+    localStorage.removeItem('savedFilteredMovies')
     setLoggedIn(false);
     setCurrentUser(null)
     setSavedMoviesFilter([])
@@ -354,12 +343,6 @@ export function App() {
   function popupOnSubmit() {
     setPopupMessage('');
   }
-
-/* ========================================================= */
-  // Попап с сообщениями
-//   function handlePopupMessage() {
-//   setPopupText(true)
-// }
 
 /* ========================================================= */
   // Рендер
