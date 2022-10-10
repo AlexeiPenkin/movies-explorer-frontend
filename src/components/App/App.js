@@ -1,11 +1,10 @@
 import './App.css';
-import { React, useState, useEffect, useReducer } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
 import { Header } from '../Header/Header';
-// import { Footer } from '../Footer/Footer';
 import { Main } from '../Main/Main';
 import { Movies } from '../Movies/Movies';
 import { SavedMovies } from '../SavedMovies/SavedMovies';
@@ -13,7 +12,6 @@ import { Profile } from '../Profile/Profile';
 import { Register } from '../Register/Register';
 import { Login } from '../Login/Login';
 import { PageNotFound } from '../PageNotFound/PageNotFound';
-// import { Preloader } from "../Preloader/Preloader";
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
 import { Popup } from '../Popup/Popup';
@@ -25,7 +23,7 @@ export function App() {
   const addCardsDesktop = 3;
   const addCardsTablet = 2;
   const addCardsMobile = 2;
-  /* Movies */
+
   const [moviesNumber, setMoviesNumber] = useState(
     window.screen.width > 1279
     ? cardsDesktop
@@ -33,7 +31,7 @@ export function App() {
     ? cardsTablet
     : cardsMobile
     );
-  /* SavedMovies */
+
   const [savedMoviesNumber, setSavedMoviesNumber] = useState(
     window.screen.width > 1279
     ? cardsDesktop
@@ -50,18 +48,13 @@ export function App() {
   const history = useHistory();
   const token = localStorage.getItem('token')
   const [localData, setLocalData] = useState([]);
-
   const [localSavedData, setLocalSavedData] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]); 
-  const [savedFilteredMovies, setSavedMoviesFilter] = useState([]); /* savedMoviesFilter */
-  
+  const [savedFilteredMovies, setSavedMoviesFilter] = useState([]);
   // const [listLength, setListLength] = useState(0);
   // const [isLoading, setIsLoading] = useState(true);
-
-  const [filter, setFilter] = useState(false);
-
-
-
+  const localChecked = localStorage.getItem('saveCheck')
+  const [filter, setFilter] = useState(localChecked ?? '0');
 
 /* ========================================================= */
   // Определение количества фильмов на странице 'Movies'
@@ -74,7 +67,7 @@ export function App() {
       : addCardsMobile)
     )
   }
-
+ 
   // Определение количества фильмов на странице 'Movies'
   function handleAddMoviesSaved() {
     setSavedMoviesNumber(savedMoviesNumber + 
@@ -241,8 +234,6 @@ export function App() {
     }
   }, [token, currentUser])
 
-
-
 /* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
@@ -315,21 +306,24 @@ export function App() {
 /* ========================================================= */
   // Удаление фильма
   function handleDeleteMovie(movie) {
-    mainApi.deleteMovie(movie, token)
+    mainApi.deleteMovie(movie._id, token)
       .then(() => {
         setSavedMoviesFilter(savedFilteredMovies
           .filter((i) => i._id !== movie._id))
         setLocalSavedData(localSavedData
           .filter(i => i._id !== movie._id))
+          console.log(movie._id)
       })
   }
 
 /* ========================================================= */
   // Выход из аккаунта
   function handleSignOut() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('filteredMovies')
-    localStorage.removeItem('savedFilteredMovies')
+    localStorage.clear();
+    // localStorage.removeItem('token');
+    // localStorage.removeItem('filteredMovies')
+    // localStorage.removeItem('savedFilteredMovies')
+    // localStorage.removeItem('checked')
     setLoggedIn(false);
     setCurrentUser(null)
     setSavedMoviesFilter([])
