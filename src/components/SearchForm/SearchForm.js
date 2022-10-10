@@ -1,9 +1,9 @@
 import { React, useState } from 'react';
 import './SearchForm.css';
 
-export function SearchForm ({ onSearch, durationSwitch, localChecked }) {
+export function SearchForm ({ onSearch, durationSwitch }) {
   const [keyword, setKeyword] = useState('');
-  // const localChecked = localStorage.getItem('saveCheck')
+  const localChecked = localStorage.getItem('saveCheck')
   // const [checked, setChecked] = useState(localChecked ?? '0')
   const [filter, setFilter] = useState(localChecked ?? '0');
   
@@ -38,7 +38,7 @@ export function SearchForm ({ onSearch, durationSwitch, localChecked }) {
             type='button'
             onClick={() => {
               setFilter(filter === '0' ? '1' : '0')
-              durationSwitch(filter)
+              durationSwitch(filter === '0' ? '1' : '0')
             }}
           />
           Короткометражки

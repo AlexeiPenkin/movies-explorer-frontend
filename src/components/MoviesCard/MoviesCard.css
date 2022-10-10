@@ -38,9 +38,13 @@
 }
 
 .movies-card__like-button_active{
+  width: 30px;
+  height: 30px;
+  border-radius: 36px;
+  border: none;
   background-image: url('../../images/like-button_active.svg');
   background-repeat: no-repeat;
-  background-size: 10px 8.5px;
+  /* background-size: 10px 8.5px; */
   background-position: center;
 }
 

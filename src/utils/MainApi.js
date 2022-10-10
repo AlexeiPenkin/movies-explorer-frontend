@@ -86,18 +86,6 @@ class MainApi{
     .then(this._checkResponse);
   }
 
-  // likeMovie(movie, token) {
-  //   return fetch(`${this._baseUrl}/movies`, {
-  //     method: 'POST',
-  //     body: JSON.stringify(movie),
-  //     headers: {
-  //       ...this.headers,
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //   .then(this._checkResponse);
-  // }
-
   saveMovies(movie, token) {
     return fetch(`${this._baseUrl}/movies`, {
       method: "POST",

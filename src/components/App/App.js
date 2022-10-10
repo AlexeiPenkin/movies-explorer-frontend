@@ -276,7 +276,6 @@ export function App() {
   // Сортировка по длине сохраненных фильмов
   const savedDurationSwitch= (checked) => {
     const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
-    // if (checked === '1' && savedFilteredMovies) {
     if (checked === '1' && savedFilteredMovies) {
       const savedShorts = savedFilteredMovies.filter((item) => item.duration <= 40);
       setSavedMoviesFilter(savedShorts);
@@ -320,10 +319,6 @@ export function App() {
   // Выход из аккаунта
   function handleSignOut() {
     localStorage.clear();
-    // localStorage.removeItem('token');
-    // localStorage.removeItem('filteredMovies')
-    // localStorage.removeItem('savedFilteredMovies')
-    // localStorage.removeItem('checked')
     setLoggedIn(false);
     setCurrentUser(null)
     setSavedMoviesFilter([])
