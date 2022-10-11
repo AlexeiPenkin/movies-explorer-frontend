@@ -34,7 +34,7 @@ export function Login({ handleLogin }) {
             className={`login__input ${validate.errors.password ? 'login__input-error' : ''}`}
             name='password'
             type='password'
-            minLength='6'
+            minLength='8'
             maxLength='30'
             value={validate.values.password || ''}
             onChange={validate.handleChange}

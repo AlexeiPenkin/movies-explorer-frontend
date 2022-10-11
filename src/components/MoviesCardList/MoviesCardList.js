@@ -2,7 +2,7 @@ import React from 'react';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
 import './MoviesCardList.css';
 
-export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, handleDeleteMovie, handleAddMovies }) { 
+export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, handleDeleteMovie, handleAddMovies, isCardLiked }) { 
   const moviesCard = movies
     .filter((item, number) => number < moviesNumber)
     .map((item) => {
@@ -13,6 +13,7 @@ export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, h
         handleSaveMovie={handleSaveMovie}
         handleDeleteMovie={handleDeleteMovie}
         key={item.id}
+        isCardLiked={isCardLiked}
       />
     )
   })
@@ -31,6 +32,10 @@ export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, h
           </button>
         </section>
       )}
+      {!movies.length && moviesNumber ? (
+        <p className='moviesCardList__text'>Ничего не найдено</p>
+      ) : undefined
+      }
     </section>
  );
 }

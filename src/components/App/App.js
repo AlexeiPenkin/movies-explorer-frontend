@@ -12,6 +12,7 @@ import { Profile } from '../Profile/Profile';
 import { Register } from '../Register/Register';
 import { Login } from '../Login/Login';
 import { PageNotFound } from '../PageNotFound/PageNotFound';
+import { Preloader } from '../Preloader/Preloader';
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
 import { Popup } from '../Popup/Popup';
@@ -52,7 +53,7 @@ export function App() {
   const [filteredMovies, setFilteredMovies] = useState([]); 
   const [savedFilteredMovies, setSavedMoviesFilter] = useState([]);
   // const [listLength, setListLength] = useState(0);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const localChecked = localStorage.getItem('saveCheck')
   const [filter, setFilter] = useState(localChecked ?? '0');
 
@@ -178,7 +179,7 @@ export function App() {
   // Изменение профиля пользователя
   function handleUserUpdate(user) {
     const token = localStorage.getItem('token');
-    // setIsLoading(true);
+    setIsLoading(true);
     mainApi.updateUserInfo(user, token)
     .then((res) =>{
       setPopupMessage('Вы успешно отредактировали профиль');
@@ -188,51 +189,57 @@ export function App() {
       setPopupMessage('Что-то пошло не так...');
       console.log(err);
     })
-    // .finally(() => {
-    //   setIsLoading(false);
-    // });
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
 /* ========================================================= */
   // Добавление фильмов на страницу 'Movies'
   useEffect(() => {
-    // setIsLoading(true);
+    setIsLoading(true);
     if (token) {
       moviesApi.getMovies()
         .then(res => {
           localStorage.setItem('filteredMovies', JSON.stringify(res));
           const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
           setFilteredMovies(filteredMovies)
-          // console.log(filteredMovies)
         })
         .catch((err) => {
           console.log(`Фильмы получить не удалось: ${err}`)
         })
-        // .finally(() => 
-        //   setIsLoading(false));
+        .finally(() => 
+          setIsLoading(false));
     }
   }, [token])
 
   // Добавление фильмов на страницу 'SavedMovies'
   useEffect(() => {
-    // setIsLoading(true);
+    setIsLoading(true);
     if (token && currentUser !== null) {
       mainApi.getSavedMovies(token)
         .then(res => {
           const { movies } = res;
-          console.log(movies) /* приходят сохраненные фильмы */
           localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
           setSavedMoviesFilter(savedFilteredMovies)
-          // console.log(savedFilteredMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы получить не удалось: ${err}`)
         })
-        // .finally(() => 
-        //   setIsLoading(false));
+        .finally(() => 
+          setIsLoading(false));
     }
   }, [token, currentUser])
+
+/* ========================================================= */
+  // Лайкаем фильм
+  function isCardLiked(movieId) {
+    const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
+    // тут поискали в массиве объект с таким же movieId
+    const cardLiked = savedFilteredMovies.some((item) => item.movieId === movieId);
+    return (cardLiked)
+  }
 
 /* ========================================================= */
   // Поиск 'Movies'
@@ -338,6 +345,11 @@ export function App() {
   return (
     <CurrentUserContext.Provider value={ currentUser }>
       <div className='App'>
+      {/* {isLoading ? (
+        <Preloader />
+        ) : (
+          <></>
+        )}  */}
         <Header
           loggedIn={loggedIn}
           isOpen={isBurgerMenuOpen}
@@ -345,7 +357,7 @@ export function App() {
           onOpen={handleBurgerMenuOpen}
           path={location.pathname}
         />
-        <Switch>  
+        <Switch>
           <ProtectedRoute path='/movies'
             component={Movies}
             filteredMovies={filteredMovies}
@@ -357,6 +369,7 @@ export function App() {
             handleAddMovies={handleAddMovies}
             handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
+            isCardLiked={isCardLiked}
           />
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
@@ -369,6 +382,7 @@ export function App() {
             handleAddMovies={handleAddMoviesSaved}
             handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
+            isCardLiked={isCardLiked}
           />
           <ProtectedRoute path='/profile'
             component={Profile}

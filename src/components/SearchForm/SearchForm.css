@@ -75,6 +75,20 @@
   opacity: 0.8;
 }
 
+.search-form__error {
+  display: flex;
+  flex-direction: row;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 12px;
+  margin-top: 10px;
+  height: 12px;
+  color: #EE3465;
+  align-self: flex-start;
+}
+
 .checkbox__label {
   font-style: normal;
   font-weight: 400;
@@ -188,6 +202,11 @@
 
   .search-form__find-button {
     margin-right: 19px;
+  }
+
+  .search-form__error {
+    font-size: 10px;
+    top: 60px;
   }
 
   .checkbox__label {
