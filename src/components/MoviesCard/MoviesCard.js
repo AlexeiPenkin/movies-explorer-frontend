@@ -24,7 +24,7 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
   if(duration < 60){
     time = duration % 60 + 'мин';
   }
-
+  console.log(liked)
   return(
     <div className='movies-card' id='card'>
       <div className='movies-card__info-block'>

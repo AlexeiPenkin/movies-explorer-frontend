@@ -235,11 +235,12 @@ export function App() {
 /* ========================================================= */
   // Лайкаем фильм
   function isCardLiked(movieId) {
+    console.log(movieId)
     const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
     // тут поискали в массиве объект с таким же movieId
     const cardLiked = savedFilteredMovies.some((item) => item.movieId === movieId);
     return (cardLiked)
-  }
+  } console.log(savedFilteredMovies)
 
 /* ========================================================= */
   // Поиск 'Movies'
