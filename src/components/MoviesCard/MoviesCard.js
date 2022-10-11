@@ -10,7 +10,7 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
     nameRU,
     trailerLink,
     trailer,
-    saved = false,
+    isActive = false,
   } = movie;
   
   const likeButton = (location.pathname === '/saved-movies') && 'none';
@@ -29,7 +29,7 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
         <div className='movies-card__info-block'>
           <p className='movies-card__title'>{nameRU}</p>
           <button className={`movies-card__like-button
-            ${ saved ? 'movies-card__like-button_active' : '' }`}
+            ${ isActive === true ? 'movies-card__like-button_active' : '' }`}
             style={{display: likeButton}}
             onClick={() => {
               if (location.pathname === '/movies') {
