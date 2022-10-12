@@ -11,9 +11,11 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
     trailerLink,
     trailer,
     saved = false,
+    movieId,
   } = movie;
 
-  const liked = isCardLiked(movie.movieId)
+  const liked = isCardLiked(movie)
+  console.log(movie)
   const likeButton = (location.pathname === '/saved-movies') && 'none';
   const deleteButton = (location.pathname === '/movies') && 'none';
   const movieUrl = 'https://api.nomoreparties.co';
@@ -24,14 +26,13 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
   if(duration < 60){
     time = duration % 60 + 'мин';
   }
-  console.log(liked)
+  // console.log(liked) /* 'Movies'-false; 'SavedMovies'-true */
   return(
     <div className='movies-card' id='card'>
       <div className='movies-card__info-block'>
         <p className='movies-card__title'>{nameRU}</p>
-        <button className={`movies-card__like-button
-          ${ liked === true ? 'movies-card__like-button_active' : 
-             liked === false ? 'movies-card__like-button' : ''}`}
+        <button className={`movies-card__like-button 
+        ${ liked ? 'movies-card__like-button_active' : ''}`}
           style={{display: likeButton}}
           onClick={() => {
             if (location.pathname === '/movies') {
@@ -43,7 +44,7 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
           ${ filteredMovies ? 'movies-card__delete-button' : '' }`}
           style={{display: deleteButton}}
           onClick={() => {
-            if (location.pathname === '/saved-movies') {
+            if (location.pathname === '/saved-movies'){
               handleDeleteMovie(movie)
             }
           }}
