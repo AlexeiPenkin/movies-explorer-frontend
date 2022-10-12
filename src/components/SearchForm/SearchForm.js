@@ -1,6 +1,4 @@
 import { React, useState, useEffect, useContext } from 'react';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { useLocation } from 'react-router-dom';
 import { FormWithValidation } from '../../utils/FormWithValidation';
 import './SearchForm.css';
 
@@ -10,8 +8,6 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   const [filter, setFilter] = useState(localChecked ?? '0');
   const { values, isValid, setIsValid } = FormWithValidation();
   const [errorQuery, setErrorQuery] = useState('');
-  const location = useLocation();
-  const currentUser = useContext(CurrentUserContext);
 
   function handleSearch(e) {
     setKeyword(e.target.value);
@@ -20,7 +16,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   function handleSubmit(e) {
     e.preventDefault();
     onSearch(keyword, filter)
-    isValid ? handleSearch(values.search) : setErrorQuery('Нужно ввести ключевое слово.');
+    isValid ? handleSearch(keyword.search) : setErrorQuery('Нужно ввести ключевое слово.');
   }
 
   useEffect(() => {
@@ -28,19 +24,19 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   }, [isValid]);
 
   // useEffect(() => {
-  //   if (location.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - movieSearch`)) {
-  //     const searchValue = localStorage.getItem(`${currentUser.email} - movieSearch`);
-  //     values.search = searchValue;
+  //   if (location.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - searchMovie`)) {
+  //     const searchValue = localStorage.getItem(`${currentUser.email} - searchMovie`);
+  //     keyword.search = searchValue;
   //     setIsValid(true);
   //   }
   // }, [currentUser]);
 
   return (
     <section className='search-form'>
-      <form className='search-form__form' onSubmit={(e) => handleSubmit(e)}>
+      <form className='search-form__form' noValidate onSubmit={handleSubmit}>
         <div className='search-form__bar'>
           <input className='search-form__input' id='search'
-            type='search'
+            type='text'
             name='search'
             onChange={handleSearch}
             placeholder='Фильм'

@@ -51,11 +51,13 @@ export function App() {
   const [localData, setLocalData] = useState([]);
   const [localSavedData, setLocalSavedData] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]); 
-  const [savedFilteredMovies, setSavedMoviesFilter] = useState([]);
+  const [savedFilteredMovies, setSavedFilteredMovies] = useState([]);
   // const [listLength, setListLength] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const localChecked = localStorage.getItem('saveCheck')
   const [filter, setFilter] = useState(localChecked ?? '0');
+
+  const {currentSavedMovies, setCurrentSavedMovies} = useState([])
 
 /* ========================================================= */
   // Определение количества фильмов на странице 'Movies'
@@ -215,31 +217,22 @@ export function App() {
 
   // Добавление фильмов на страницу 'SavedMovies'
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     if (token && currentUser !== null) {
       mainApi.getSavedMovies(token)
         .then(res => {
           const { movies } = res;
           localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
-          setSavedMoviesFilter(savedFilteredMovies)
+          setSavedFilteredMovies(savedFilteredMovies)
         })
         .catch((err) => {
           console.log(`Сохраненные фильмы получить не удалось: ${err}`)
         })
-        .finally(() => 
-          setIsLoading(false));
+        // .finally(() => 
+        //   setIsLoading(false));
     }
   }, [token, currentUser])
-
-/* ========================================================= */
-  // Лайкаем фильм
-  function isCardLiked(movie) {
-  console.log(movie)
-    // тут поискали в массиве объект с таким же id
-    const cardLiked = savedFilteredMovies.some((item) => item.movieId === movie.id || item.movieId === movie.movieId);
-    return (cardLiked)
-  }
 
 /* ========================================================= */
   // Поиск 'Movies'
@@ -266,47 +259,56 @@ export function App() {
         ? card : null
     });
     localStorage.setItem('savedFilteredMovies', JSON.stringify(savedSortedMovieSearch));
-    setSavedMoviesFilter(savedSortedMovieSearch.length !== 0 ? savedSortedMovieSearch : localSavedData);
+    setSavedFilteredMovies(savedSortedMovieSearch.length !== 0 ? savedSortedMovieSearch : savedFilteredMovies);
+    // setCurrentSavedMovies(currentSavedMovies)
   }
 
 /* ========================================================= */
   // Сортировка по длине фильмов 
   const durationSwitch = (checked) => {
-    const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
-    if (checked === '1' && filteredMovies) {
-      const shorts = filteredMovies.filter((item) => item.duration <= 40);
+    const filterMovies = JSON.parse(localStorage.getItem('filteredMovies'));
+    if (checked === '1' && filterMovies) {
+      const shorts = filterMovies.filter((item) => item.duration <= 40);
       setFilteredMovies(shorts);
     } else {
-      setFilteredMovies(filteredMovies);
+      setFilteredMovies(filterMovies);
     }
   };
   // Сортировка по длине сохраненных фильмов
   const savedDurationSwitch= (checked) => {
-    const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
-    if (checked === '1' && savedFilteredMovies) {
-      const savedShorts = savedFilteredMovies.filter((item) => item.duration <= 40);
-      setSavedMoviesFilter(savedShorts);
+    const savedFilterMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
+    if (checked === '1' && savedFilterMovies) {
+      const savedShorts = savedFilterMovies.filter((item) => item.duration <= 40);
+      setSavedFilteredMovies(savedShorts);
     } else {
-      setSavedMoviesFilter(savedFilteredMovies);
+      setSavedFilteredMovies(savedFilterMovies);
     }
   }
 
 /* ========================================================= */
   // Сохранение фильма
   function handleSaveMovie(movie) {
-    const likeCard = localSavedData
+    const likeCard = savedFilteredMovies
     .some((i) => i.movieId === movie.id
     );
     if (!likeCard) {
       mainApi.saveMovies(movie, token)
       .then(res => {
-        setLocalSavedData([...localSavedData, res])
+        setSavedFilteredMovies([...savedFilteredMovies, res])
+      // .catch(err => )
       })
     } else {
-      const deleteCard = localSavedData
+      const deleteCard = savedFilteredMovies
       .find((i) => i.movieId === movie.id)
       handleDeleteMovie(deleteCard)
     }
+  }
+
+/* ========================================================= */
+  // Лайкаем фильм
+  function isCardLiked(movie) {
+    const cardLiked = savedFilteredMovies.some((item) => item.movieId === movie.id || item.movieId === movie.movieId);
+    return (cardLiked)
   }
 
 /* ========================================================= */
@@ -314,7 +316,7 @@ export function App() {
   function handleDeleteMovie(movie) {
     mainApi.deleteMovie(movie._id, token)
       .then(() => {
-        setSavedMoviesFilter(savedFilteredMovies
+        setSavedFilteredMovies(savedFilteredMovies
           .filter((i) => i._id !== movie._id))
         setLocalSavedData(localSavedData
           .filter(i => i._id !== movie._id))
@@ -328,7 +330,7 @@ export function App() {
     localStorage.clear();
     setLoggedIn(false);
     setCurrentUser(null)
-    setSavedMoviesFilter([])
+    setSavedFilteredMovies([])
     setFilteredMovies([])
     setLocalSavedData([])
     history.push('/');
@@ -345,11 +347,6 @@ export function App() {
   return (
     <CurrentUserContext.Provider value={ currentUser }>
       <div className='App'>
-      {/* {isLoading ? (
-        <Preloader />
-        ) : (
-          <></>
-        )}  */}
         <Header
           loggedIn={loggedIn}
           isOpen={isBurgerMenuOpen}
@@ -358,6 +355,9 @@ export function App() {
           path={location.pathname}
         />
         <Switch>
+          {/* <Preloader
+            isLoading={isLoading}
+          /> */}
           <ProtectedRoute path='/movies'
             component={Movies}
             filteredMovies={filteredMovies}
@@ -371,6 +371,9 @@ export function App() {
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
           />
+          {/* <Preloader
+            isLoading={isLoading}
+          /> */}
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
             filteredMovies={savedFilteredMovies}
@@ -384,6 +387,9 @@ export function App() {
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
           />
+          {/* <Preloader
+            isLoading={isLoading}
+          /> */}
           <ProtectedRoute path='/profile'
             component={Profile}
             handleSignOut={handleSignOut}
