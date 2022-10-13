@@ -3,23 +3,22 @@ import {useLocation} from "react-router-dom";
 
 export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, filteredMovies, isCardLiked }) {
   const location = useLocation();
+
   const {
     country,
     director,
     duration,
+    image,
     year,
     description,
     trailerLink,
-    id,
     nameRU,
     nameEN,
-    trailer,
-    // saved = false,
-    image,
+    thumbnail,
     movieId,
   } = movie;
 
-  const liked = isCardLiked(movie)
+  const liked = isCardLiked(movie);
   const likeButton = (location.pathname === '/saved-movies') && 'none';
   const deleteButton = (location.pathname === '/movies') && 'none';
   const movieUrl = 'https://api.nomoreparties.co';
@@ -27,7 +26,7 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, f
 
   var time = Math.floor(movie.duration / 60) + 'ч ' + movie.duration % 60 + 'мин';
 
-  if(duration < 60){
+  if(duration < 60) {
     time = duration % 60 + 'мин';
   }
 

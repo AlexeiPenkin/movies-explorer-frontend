@@ -33,7 +33,7 @@ export function MoviesCardList ({ movies, moviesNumber, path, handleSaveMovie, h
         </section>
       )}
       {!movies.length && moviesNumber ? (
-        <p className='moviesCardList__text'>Ничего не найдено</p>
+        <p className='cards-list__message'>Ничего не найдено</p>
       ) : undefined
       }
     </section>

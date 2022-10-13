@@ -293,9 +293,11 @@ export function App() {
     );
     if (!likeCard) {
       mainApi.saveMovies(movie, token)
-      .then(res => {
-        setSavedFilteredMovies([...savedFilteredMovies, res])
-      // .catch(err => )
+      .then(res => {setSavedFilteredMovies([...savedFilteredMovies, res.movie])
+      .catch((err) => {
+        setPopupMessage('Фильм сохранить не удалось');
+        console.log(err);
+      })
       })
     } else {
       const deleteCard = savedFilteredMovies
@@ -346,6 +348,11 @@ export function App() {
   // Рендер
   return (
     <CurrentUserContext.Provider value={ currentUser }>
+      {isLoading ? (
+        <Preloader /> 
+        ) : (
+          <></>
+        )}
       <div className='App'>
         <Header
           loggedIn={loggedIn}
@@ -355,9 +362,6 @@ export function App() {
           path={location.pathname}
         />
         <Switch>
-          {/* <Preloader
-            isLoading={isLoading}
-          /> */}
           <ProtectedRoute path='/movies'
             component={Movies}
             filteredMovies={filteredMovies}
@@ -371,9 +375,6 @@ export function App() {
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
           />
-          {/* <Preloader
-            isLoading={isLoading}
-          /> */}
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
             filteredMovies={savedFilteredMovies}
@@ -387,9 +388,6 @@ export function App() {
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
           />
-          {/* <Preloader
-            isLoading={isLoading}
-          /> */}
           <ProtectedRoute path='/profile'
             component={Profile}
             handleSignOut={handleSignOut}
