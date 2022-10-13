@@ -1,47 +1,62 @@
-import { React, useState, useEffect, useContext } from 'react';
+import { React, useState, useEffect } from 'react';
 import { FormWithValidation } from '../../utils/FormWithValidation';
+import { useLocation } from "react-router-dom";
 import './SearchForm.css';
 
 export function SearchForm ({ onSearch, durationSwitch }) {
-  const [keyword, setKeyword] = useState('');
-  const localChecked = localStorage.getItem('saveCheck')
+  const localStorageValue = localStorage.getItem('saveSearchValue')
+  const localChecked = localStorage.getItem('saveCheckbox')
+  const location = useLocation()
+  const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
-  const { values, isValid, setIsValid } = FormWithValidation();
-  const [errorQuery, setErrorQuery] = useState('');
+  const { isValid } = FormWithValidation();
+  const [inputError, setInputError] = useState('');
 
-  function handleSearch(e) {
-    setKeyword(e.target.value);
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    onSearch(keyword, filter)
-    isValid ? handleSearch(keyword.search) : setErrorQuery('Нужно ввести ключевое слово.');
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setFilter('0')
+    onSearch(value)
+    isValid ? onSearch(e) : setInputError('Нужно ввести ключевое слово');
   }
 
   useEffect(() => {
-    setErrorQuery('')
-  }, [isValid]);
+    if (location.pathname === '/saved-movies') {
+      setFilter('0')
+      onSearch(value)
+      setValue('')
+    }
+  }, [location])
 
-  // useEffect(() => {
-  //   if (location.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - searchMovie`)) {
-  //     const searchValue = localStorage.getItem(`${currentUser.email} - searchMovie`);
-  //     keyword.search = searchValue;
-  //     setIsValid(true);
-  //   }
-  // }, [currentUser]);
+
+  useEffect(() => {
+    if (location.pathname === '/movies') {
+      localStorage.setItem('saveSearchValue', value)
+      localStorage.setItem('saveCheckbox', filter)
+    }
+  }, [value, filter])
+
+
+  useEffect(() => {
+    if (location.pathname === '/saved-movies') {
+      durationSwitch(filter)
+    }
+    if (location.pathname === '/movies') {
+      onSearch(localStorageValue ?? '')
+      durationSwitch(filter ?? '0')
+    }
+  }, [location, filter])
 
   return (
     <section className='search-form'>
-      <form className='search-form__form' noValidate onSubmit={handleSubmit}>
+      <form className='search-form__form' noValidate onSubmit={(e) => handleSubmit(e)}>
         <div className='search-form__bar'>
           <input className='search-form__input' id='search'
             type='text'
             name='search'
-            onChange={handleSearch}
+            onChange={(e) => setValue(e.target.value)}
             placeholder='Фильм'
             required
-            value={keyword || ''}
+            value={value}
           />
           <button 
             className='search-form__find-button'
@@ -59,8 +74,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
           Короткометражки
         </label>
       </form>
-      <span className="search-form__error">{errorQuery}</span>
+      <span className="search-form__error">{inputError}</span>
     </section>
   );
-
 }
