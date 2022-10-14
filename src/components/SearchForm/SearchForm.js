@@ -9,32 +9,30 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   const location = useLocation()
   const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
-  const { isValid, errors } = FormWithValidation();
   const validate = FormWithValidation();
   const [inputError, setInputError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault()
     setFilter('0')
-    onSearch(value)
-    isValid ? onSearch(e) : setInputError('Нужно ввести ключевое слово');
+    onSearch(validate.values.search)
+    validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
 
   useEffect(() => {
     if (location.pathname === '/saved-movies') {
       setFilter('0')
-      onSearch(value)
+      onSearch(validate.values.search)
       setValue('')
     }
   }, [location])
 
-
   useEffect(() => {
     if (location.pathname === '/movies') {
-      localStorage.setItem('saveSearchValue', value)
+      localStorage.setItem('saveSearchValue', validate.value)
       localStorage.setItem('saveCheckbox', filter)
     }
-  }, [value, filter])
+  }, [validate.value, filter])
 
 
   useEffect(() => {
@@ -42,7 +40,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       durationSwitch(filter)
     }
     if (location.pathname === '/movies') {
-      onSearch(localStorageValue ?? '')
+      onSearch(validate.values.search ?? '')
       durationSwitch(filter ?? '0')
     }
   }, [location, filter])
@@ -51,17 +49,16 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     <section className='search-form'>
       <form className='search-form__form' noValidate onSubmit={(e) => handleSubmit(e)}>
         <div className='search-form__bar'>
-          <input className={`search-form__input ${validate.errors.name ? 'search-form__error' : ''}`}
+          <input className={`search-form__input ${validate.errors.search ? 'search-form__error' : ''}`}
             id='search'
             type='text'
             name='search'
             onChange={validate.handleChange}
             placeholder='Фильм'
             required
-            value={validate.values.name || ''}
+            value={validate.values.search}
           />
-          <button 
-            className='search-form__find-button'
+          <button className='search-form__find-button'
             type='submit'>
           </button>
         </div>
