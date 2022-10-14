@@ -99,16 +99,6 @@ export function App() {
     setFilter(!filter);
   }
 /* ========================================================= */
-  const [searchText, setSearchText] = useState(false);
-
-  useEffect(() => {
-    if (localData && searchText) {
-      // вызвать твою функцию поиска заново
-      onSearch();
-    }
-  }, [localData]);
-
-/* ========================================================= */
   // Проверка токена
   useEffect(() => {
     if (token) {
@@ -127,7 +117,6 @@ export function App() {
 /* ========================================================= */
   // Регистрация
   function handleRegister(data) {
-    // setIsLoading(true);
     mainApi.register(data.password, data.email, data.name)
     .then((res) => {
       if (res.statusCode !== 400) {
@@ -139,15 +128,11 @@ export function App() {
       console.log(err);
         setPopupMessage('При авторизации произошла ошибка');
     })
-    // .finally(() => {
-    //   setIsLoading(false);
-    // });
   }
 
 /* ========================================================= */
   // Авторизация
   function handleLogin(data) {
-    // setIsLoading(true);
     mainApi.login(data.password, data.email)
     .then((res) => {
       // console.log(data.password, data.email)
@@ -161,9 +146,6 @@ export function App() {
       console.log(err);
         setPopupMessage('При авторизации произошла ошибка');
     })
-    // .finally(() => {
-    //   setIsLoading(false);
-    // });
   }
 
 /* ========================================================= */
@@ -182,7 +164,6 @@ export function App() {
   // Изменение профиля пользователя
   function handleUserUpdate(user) {
     const token = localStorage.getItem('token');
-    setIsLoading(true);
     mainApi.updateUserInfo(user, token)
     .then((res) =>{
       setPopupMessage('Вы успешно отредактировали профиль');
@@ -192,18 +173,30 @@ export function App() {
       setPopupMessage('Что-то пошло не так...');
       console.log(err);
     })
-    .finally(() => {
-      setIsLoading(false);
-    });
   }
+
+/* ========================================================= */
+  const [value, setValue] = useState(false);
+
+  useEffect(() => {
+    if (localData && value) {
+      const value = JSON.parse(localStorage.getItem('localData'));
+      setValue(value)
+      onSearch(localData);
+    }
+  }, [localData]);
 
 /* ========================================================= */
   // Добавление фильмов на страницу 'Movies'
   useEffect(() => {
-    setIsLoading(true);
     if (token) {
+      setIsLoading(true);
       moviesApi.getMovies()
         .then(res => {
+          localStorage.setItem('localData', JSON.stringify(res));
+          const allMovies = JSON.parse(localStorage.getItem('localData'));
+          setLocalData(allMovies)
+
           localStorage.setItem('filteredMovies', JSON.stringify(res));
           const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
           setFilteredMovies(filteredMovies)
@@ -215,30 +208,9 @@ export function App() {
           setIsLoading(false));
     }
   }, [token])
-
-  // Добавление фильмов на страницу 'SavedMovies'
-  useEffect(() => {
-    // setIsLoading(true);
-    if (token && currentUser !== null) {
-      mainApi.getSavedMovies(token)
-        .then(res => {
-          const { movies } = res;
-          localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
-          const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
-          setSavedFilteredMovies(savedFilteredMovies)
-        })
-        .catch((err) => {
-          console.log(`Сохраненные фильмы получить не удалось: ${err}`)
-        })
-        // .finally(() => 
-        //   setIsLoading(false));
-    }
-  }, [token, currentUser])
-
-/* ========================================================= */
   // Поиск 'Movies'
   function onSearch(value) {
-    const savedSortedMovieSearch = filteredMovies.filter((item) => {
+    const savedSortedMovieSearch = localData.filter((item) => {
       const values = value.toLowerCase();
       const nameEN = item.nameEN.toLowerCase();
       const nameRU = item.nameRU.toLowerCase();
@@ -249,6 +221,26 @@ export function App() {
     localStorage.setItem('filteredMovies', JSON.stringify(savedSortedMovieSearch));
     setFilteredMovies(savedSortedMovieSearch)
   }
+
+/* ========================================================= */
+  // Добавление фильмов на страницу 'SavedMovies'
+  useEffect(() => {
+    if (token && currentUser !== null) {
+      setIsLoading(true);
+      mainApi.getSavedMovies(token)
+        .then(res => {
+          const { movies } = res;
+          localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
+          const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
+          setSavedFilteredMovies(savedFilteredMovies)
+        })
+        .catch((err) => {
+          console.log(`Сохраненные фильмы получить не удалось: ${err}`)
+        })
+        .finally(() => 
+          setIsLoading(false));
+    }
+  }, [token, currentUser])
   // Поиск 'SavedMovies'
   function onSearchSaved(value) {
     const savedSortedMovieSearch = savedFilteredMovies.filter((card) => {
@@ -374,6 +366,7 @@ export function App() {
             handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
+            isLoading={isLoading}
           />
           <ProtectedRoute path='/saved-movies'
             component={SavedMovies}
@@ -387,6 +380,7 @@ export function App() {
             handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
+            isLoading={isLoading}
           />
           <ProtectedRoute path='/profile'
             component={Profile}
