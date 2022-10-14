@@ -185,6 +185,7 @@ export function App() {
     if (localData && value) {
       setValue(value)
       onSearch(localStorageValue)
+      durationSwitch(localChecked)
     }
   }, [localData, filter]);
 
