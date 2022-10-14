@@ -9,9 +9,7 @@ export function Profile({ handleSignOut, handleUserUpdate }) {
  
   useEffect(() => {
     validate.setValues(currentUser);
-    // console.log(currentUser);
   }, [currentUser]);
-  // console.log(currentUser);
 
   function handleSubmit(e){
     e.preventDefault();

@@ -9,7 +9,8 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   const location = useLocation()
   const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
-  const { isValid } = FormWithValidation();
+  const { isValid, errors } = FormWithValidation();
+  const validate = FormWithValidation();
   const [inputError, setInputError] = useState('');
 
   const handleSubmit = (e) => {
@@ -50,13 +51,14 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     <section className='search-form'>
       <form className='search-form__form' noValidate onSubmit={(e) => handleSubmit(e)}>
         <div className='search-form__bar'>
-          <input className='search-form__input' id='search'
+          <input className={`search-form__input ${validate.errors.name ? 'search-form__error' : ''}`}
+            id='search'
             type='text'
             name='search'
-            onChange={(e) => setValue(e.target.value)}
+            onChange={validate.handleChange}
             placeholder='Фильм'
             required
-            value={value}
+            value={validate.values.name || ''}
           />
           <button 
             className='search-form__find-button'
