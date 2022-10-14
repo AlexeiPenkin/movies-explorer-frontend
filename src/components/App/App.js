@@ -55,8 +55,8 @@ export function App() {
   const [savedFilteredMovies, setSavedFilteredMovies] = useState([]);
   // const [listLength, setListLength] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const localChecked = localStorage.getItem('saveCheck')
-  const [filter, setFilter] = useState(localChecked ?? '0');
+  // const localChecked = localStorage.getItem('saveCheckbox')
+  // const [filter, setFilter] = useState(localChecked ?? '0');
 
   const {currentSavedMovies, setCurrentSavedMovies} = useState([])
 
@@ -176,15 +176,17 @@ export function App() {
   }
 
 /* ========================================================= */
-  const [value, setValue] = useState(false);
+  const localStorageValue = localStorage.getItem('saveSearchValue')
+  const localChecked = localStorage.getItem('saveCheckbox')
+  const [value, setValue] = useState(localStorageValue ?? '');
+  const [filter, setFilter] = useState(localChecked ?? '0');
 
   useEffect(() => {
     if (localData && value) {
-      const value = JSON.parse(localStorage.getItem('localData'));
       setValue(value)
-      onSearch(localData);
+      onSearch(localStorageValue)
     }
-  }, [localData]);
+  }, [localData, filter]);
 
 /* ========================================================= */
   // Добавление фильмов на страницу 'Movies'
@@ -312,9 +314,9 @@ export function App() {
       .then(() => {
         setSavedFilteredMovies(savedFilteredMovies
           .filter((i) => i._id !== movie._id))
-        setLocalSavedData(localSavedData
-          .filter(i => i._id !== movie._id))
-          console.log(movie._id)
+        // setLocalSavedData(localSavedData
+        //   .filter(i => i._id !== movie._id))
+        //   console.log(movie._id)
       })
   }
 
@@ -326,7 +328,8 @@ export function App() {
     setCurrentUser(null)
     setSavedFilteredMovies([])
     setFilteredMovies([])
-    setLocalSavedData([])
+    setLocalData([])
+    // setLocalSavedData([])
     history.push('/');
   }
 
