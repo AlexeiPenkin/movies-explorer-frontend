@@ -1,6 +1,6 @@
 import './App.css';
 import { React, useState, useEffect } from 'react';
-import { Route } from 'react-router-dom';
+import { NavLink, Route } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
@@ -50,15 +50,13 @@ export function App() {
   const history = useHistory();
   const token = localStorage.getItem('token')
   const [localData, setLocalData] = useState([]);
-  const [localSavedData, setLocalSavedData] = useState([]);
+  // const [localSavedData, setLocalSavedData] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]); 
   const [savedFilteredMovies, setSavedFilteredMovies] = useState([]);
-  // const [listLength, setListLength] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  // const localChecked = localStorage.getItem('saveCheckbox')
-  // const [filter, setFilter] = useState(localChecked ?? '0');
-
-  const {currentSavedMovies, setCurrentSavedMovies} = useState([])
+  const {filter, setFilter} = useState([]); 
+  // const {currentSavedMovies, setCurrentSavedMovies} = useState([])
+  const [succesUpdate, setSuccesUpdate] = useState(false);
 
 /* ========================================================= */
   // Определение количества фильмов на странице 'Movies'
@@ -168,6 +166,7 @@ export function App() {
     .then((res) =>{
       setPopupMessage('Вы успешно отредактировали профиль');
       setCurrentUser(res);
+      setSuccesUpdate(true);
     }) 
     .catch((err) => {
       setPopupMessage('Что-то пошло не так...');
@@ -177,17 +176,15 @@ export function App() {
 
 /* ========================================================= */
   const localStorageValue = localStorage.getItem('saveSearchValue')
-  const localChecked = localStorage.getItem('saveCheckbox')
+  // const localChecked = localStorage.getItem('saveCheckbox')
   const [value, setValue] = useState(localStorageValue ?? '');
-  const [filter, setFilter] = useState(localChecked ?? '0');
+  // const [filter, setFilter] = useState(localChecked ?? '0');
 
   useEffect(() => {
     if (localData && value) {
-      setValue(value)
       onSearch(localStorageValue)
-      durationSwitch(localChecked)
     }
-  }, [localData, filter]);
+  }, [localData]);
 
 /* ========================================================= */
   // Добавление фильмов на страницу 'Movies'
@@ -390,6 +387,7 @@ export function App() {
             component={Profile}
             handleSignOut={handleSignOut}
             handleUserUpdate={handleUserUpdate}
+            setSuccesUpdate={setSuccesUpdate} /> : <NavLink to="/"
           />
           <Route exact path='/'>
             <Main 
