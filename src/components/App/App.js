@@ -16,7 +16,6 @@ import { Preloader } from '../Preloader/Preloader';
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
 import { Popup } from '../Popup/Popup';
-import e from 'cors';
 
 export function App() {
   const cardsDesktop = 12;
@@ -387,7 +386,8 @@ export function App() {
             component={Profile}
             handleSignOut={handleSignOut}
             handleUserUpdate={handleUserUpdate}
-            setSuccesUpdate={setSuccesUpdate} /> : <NavLink to="/"
+            succesUpdate={succesUpdate}
+            setSuccesUpdate={setSuccesUpdate} 
           />
           <Route exact path='/'>
             <Main 
