@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import validator from 'validator';
 
-export function FormWithValidation() {
-  const [values, setValues] = React.useState({});
-  const [errors, setErrors] = React.useState({});
-  const [isValid, setIsValid] = React.useState(false);
+export function FormWithValidation({ defaultValues = {} } = {}) {
+  const [values, setValues] = useState({ ...defaultValues });
+  const [errors, setErrors] = useState({});
+  const [isValid, setIsValid] = useState(false);
   
   const validEmail = (target, name, value) => {
     setValues({...values, [name]: value});

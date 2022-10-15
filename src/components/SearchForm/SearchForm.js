@@ -9,7 +9,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   const location = useLocation()
   const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
-  const validate = FormWithValidation();
+  const validate = FormWithValidation({defaultValues:{search: localStorageValue ?? ''}});
   const [inputError, setInputError] = useState('');
 
   const handleSubmit = (e) => {
@@ -20,7 +20,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     }
     setFilter('0')
     onSearch(validate.values.search)
-    validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
+    // validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
 
   useEffect(() => {
@@ -30,10 +30,6 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       setValue('')
     }
   }, [location])
-
-  // useEffect(() => {
-
-  // }, [validate.value, filter])
 
   useEffect(() => {
     if (location.pathname === '/saved-movies') {

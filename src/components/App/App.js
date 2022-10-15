@@ -1,6 +1,6 @@
 import './App.css';
 import { React, useState, useEffect } from 'react';
-import { NavLink, Route } from 'react-router-dom';
+import { NavLink, Route, Redirect } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
@@ -49,13 +49,14 @@ export function App() {
   const history = useHistory();
   const token = localStorage.getItem('token')
   const [localData, setLocalData] = useState([]);
+  const [localDataSaved, setLocalDataSaved] = useState([]);
   // const [localSavedData, setLocalSavedData] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]); 
   const [savedFilteredMovies, setSavedFilteredMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const {filter, setFilter} = useState([]); 
   // const {currentSavedMovies, setCurrentSavedMovies} = useState([])
-  const [succesUpdate, setSuccesUpdate] = useState(false);
+  const [successUpdate, setSuccessUpdate] = useState(false);
 
 /* ========================================================= */
   // Определение количества фильмов на странице 'Movies'
@@ -165,7 +166,7 @@ export function App() {
     .then((res) =>{
       setPopupMessage('Вы успешно отредактировали профиль');
       setCurrentUser(res);
-      setSuccesUpdate(true);
+      setSuccessUpdate(true);
     }) 
     .catch((err) => {
       setPopupMessage('Что-то пошло не так...');
@@ -175,9 +176,7 @@ export function App() {
 
 /* ========================================================= */
   const localStorageValue = localStorage.getItem('saveSearchValue')
-  // const localChecked = localStorage.getItem('saveCheckbox')
   const [value, setValue] = useState(localStorageValue ?? '');
-  // const [filter, setFilter] = useState(localChecked ?? '0');
 
   useEffect(() => {
     if (localData && value) {
@@ -228,6 +227,10 @@ export function App() {
       setIsLoading(true);
       mainApi.getSavedMovies(token)
         .then(res => {
+          localStorage.setItem('localDataSaved', JSON.stringify(res));
+          const userMovies = JSON.parse(localStorage.getItem('localDataSaved'));
+          setLocalDataSaved(userMovies)
+
           const { movies } = res;
           localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
           const savedFilteredMovies = JSON.parse(localStorage.getItem('savedFilteredMovies'));
@@ -326,6 +329,7 @@ export function App() {
     setSavedFilteredMovies([])
     setFilteredMovies([])
     setLocalData([])
+    setLocalDataSaved([])
     // setLocalSavedData([])
     history.push('/');
   }
@@ -355,6 +359,7 @@ export function App() {
         />
         <Switch>
           <ProtectedRoute path='/movies'
+            loggedIn={loggedIn}
             component={Movies}
             filteredMovies={filteredMovies}
             handleFilter={handleFilter}
@@ -369,6 +374,7 @@ export function App() {
             isLoading={isLoading}
           />
           <ProtectedRoute path='/saved-movies'
+            loggedIn={loggedIn}
             component={SavedMovies}
             filteredMovies={savedFilteredMovies}
             handleFilter={handleFilter}
@@ -383,27 +389,32 @@ export function App() {
             isLoading={isLoading}
           />
           <ProtectedRoute path='/profile'
+            loggedIn={loggedIn}
             component={Profile}
             handleSignOut={handleSignOut}
             handleUserUpdate={handleUserUpdate}
-            succesUpdate={succesUpdate}
-            setSuccesUpdate={setSuccesUpdate} 
+            successUpdate={successUpdate}
+            setSuccessUpdate={setSuccessUpdate} 
           />
           <Route exact path='/'>
             <Main 
               loggedIn={loggedIn} 
             />
           </Route>
-          <Route path='/signup'>
-            <Register
-              handleRegister={handleRegister}
-            />
-          </Route>
-          <Route path='/signin'>
-            <Login
-              handleLogin={handleLogin}
-            />
-          </Route>
+          <Route exact path='/signup'>
+              {!loggedIn ? (
+                <Register handleRegister={handleRegister} />
+              ) : (
+                <Redirect to='/' />
+              )}
+            </Route>
+          <Route exact path='/signin'>
+              {!loggedIn ? (
+                <Login handleLogin={handleLogin} />
+              ) : (
+                <Redirect to='/' />
+              )}
+            </Route>
           <Route path='*'>
             <PageNotFound/>
           </Route>
