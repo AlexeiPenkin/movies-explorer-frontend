@@ -7,7 +7,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   const localChecked = localStorage.getItem('saveCheckbox')
   const location = useLocation()
   const localStorageValue = location.pathname === '/movies' ? localStorage.getItem('saveSearchValue') : '';
-  const [value, setValue] = useState(localStorageValue ?? '')
+  // const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
   const validate = FormWithValidation({defaultValues:{search: localStorageValue ?? ''}});
   const [inputError, setInputError] = useState('');
@@ -19,10 +19,14 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       localStorage.setItem('saveCheckbox', filter)
     }
     setFilter('0')
-    onSearch(validate.values.search)
-    // validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
+    // onSearch(validate.values.search)
+    validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
 
+  // function handleSearch(e) {
+  //   onSearch(validate.values.search);
+  // }
+  
   // useEffect(() => {
   //   if (location.pathname === '/saved-movies') {
   //     setFilter('0')

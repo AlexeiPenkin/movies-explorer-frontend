@@ -3,14 +3,13 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
-export function Profile({ handleSignOut, handleUserUpdate }) {
+export function Profile({ handleSignOut, handleUserUpdate, setSuccessUpdate }) {
   const currentUser = useContext(CurrentUserContext);
   const validate = FormWithValidation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [existData, setExistData] = useState(false);
   const [failUpdate, setFailUpdate] = useState(true);
-  const [successUpdate, setSuccessUpdate] = useState(false);
 
   function handleNameChange(e) {
     const name = e.target.value;
@@ -49,18 +48,18 @@ export function Profile({ handleSignOut, handleUserUpdate }) {
 
   return (
     <section className='profile'>
-      <form className='profile__form' noValidate>
-        <h3 className='profile__title'>Привет, {currentUser.name}!</h3>
+      <form className='profile__form' noValidate onSubmit={handleSubmit}>
+        <h3 className='profile__title'>{`Привет, ${name}!`}</h3>
         <div className='profile__input-list'>
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
               <label className='profile__label'>Имя</label>
-              <input className={`profile__input ${validate.errors.name ? 'profile__input-error' : ''}`}
+              <input className='profile__input'
                 required
                 name='name'
                 type='text'
-                value={validate.values.name}
-                placeholder={currentUser.name}
+                value={name}
+                placeholder={name}
                 minLength='2'
                 maxLength='30'
                 onChange={handleNameChange}
@@ -71,12 +70,12 @@ export function Profile({ handleSignOut, handleUserUpdate }) {
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
             <label className='profile__label'>E-mail</label>
-            <input className={`profile__input ${validate.errors.email ? 'profile__input-error' : ''}`}
+            <input className='profile__input'
                 required
                 name='email'
                 type='email'
-                value={validate.values.email}
-                placeholder={currentUser.email}
+                value={email}
+                placeholder={email}
                 onChange={handleEmailChange}
               >
               </input>
