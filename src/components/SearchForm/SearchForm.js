@@ -4,9 +4,9 @@ import { useLocation } from "react-router-dom";
 import './SearchForm.css';
 
 export function SearchForm ({ onSearch, durationSwitch }) {
-  const localStorageValue = localStorage.getItem('saveSearchValue')
   const localChecked = localStorage.getItem('saveCheckbox')
   const location = useLocation()
+  const localStorageValue = location.pathname === '/movies' ? localStorage.getItem('saveSearchValue') : '';
   const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
   const validate = FormWithValidation({defaultValues:{search: localStorageValue ?? ''}});
@@ -23,23 +23,23 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     // validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
 
-  useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      setFilter('0')
-      onSearch(validate.values.search)
-      setValue('')
-    }
-  }, [location])
+  // useEffect(() => {
+  //   if (location.pathname === '/saved-movies') {
+  //     setFilter('0')
+  //     onSearch(validate.values.search)
+  //     setValue('')
+  //   }
+  // }, [location])
 
-  useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      durationSwitch(filter)
-    }
-    if (location.pathname === '/movies') {
-      onSearch(validate.values.search ?? '')
-      durationSwitch(filter ?? '0')
-    }
-  }, [location, filter])
+  // useEffect(() => {
+  //   if (location.pathname === '/saved-movies') {
+  //     durationSwitch(filter)
+  //   }
+  //   if (location.pathname === '/movies') {
+  //     onSearch(validate.values.search ?? '')
+  //     durationSwitch(filter ?? '0')
+  //   }
+  // }, [location, filter])
 
   return (
     <section className='search-form'>
@@ -51,7 +51,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
             name='search'
             onChange={validate.handleChange}
             placeholder='Фильм'
-            required
+            // required
             value={validate.values.search}
           />
           <button className='search-form__find-button'
