@@ -5,9 +5,10 @@ import './SearchForm.css';
 
 export function SearchForm ({ onSearch, durationSwitch }) {
   const localChecked = localStorage.getItem('saveCheckbox')
+  console.log(localChecked)
   const location = useLocation()
   const localStorageValue = location.pathname === '/movies' ? localStorage.getItem('saveSearchValue') : '';
-  // const [value, setValue] = useState(localStorageValue ?? '')
+  const [value, setValue] = useState(localStorageValue ?? '')
   const [filter, setFilter] = useState(localChecked ?? '0');
   const validate = FormWithValidation({defaultValues:{search: localStorageValue ?? ''}});
   const [inputError, setInputError] = useState('');
@@ -18,7 +19,7 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       localStorage.setItem('saveSearchValue', validate.values.search)
       localStorage.setItem('saveCheckbox', filter)
     }
-    setFilter('0')
+    // setFilter('0')
     // onSearch(validate.values.search)
     validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
@@ -27,23 +28,23 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   //   onSearch(validate.values.search);
   // }
   
-  // useEffect(() => {
-  //   if (location.pathname === '/saved-movies') {
-  //     setFilter('0')
-  //     onSearch(validate.values.search)
-  //     setValue('')
-  //   }
-  // }, [location])
+  useEffect(() => {
+    if (location.pathname === '/saved-movies') {
+      setFilter('0')
+      onSearch(validate.values.search)
+      setValue('')
+    }
+  }, [location])
 
-  // useEffect(() => {
-  //   if (location.pathname === '/saved-movies') {
-  //     durationSwitch(filter)
-  //   }
-  //   if (location.pathname === '/movies') {
-  //     onSearch(validate.values.search ?? '')
-  //     durationSwitch(filter ?? '0')
-  //   }
-  // }, [location, filter])
+  useEffect(() => {
+    if (location.pathname === '/saved-movies') {
+      durationSwitch(filter)
+    }
+    // if (location.pathname === '/movies') {
+    //   onSearch(validate.values.search ?? '')
+    //   durationSwitch(filter ?? '0')
+    // }
+  }, [location, filter])
 
   return (
     <section className='search-form'>

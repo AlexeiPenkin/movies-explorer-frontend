@@ -195,6 +195,7 @@ export function App() {
           localStorage.setItem('localData', JSON.stringify(res));
           const allMovies = JSON.parse(localStorage.getItem('localData'));
           setLocalData(allMovies)
+          // console.log(localData)
 
           localStorage.setItem('filteredMovies', JSON.stringify(res));
           const filteredMovies = JSON.parse(localStorage.getItem('filteredMovies'));
@@ -209,8 +210,9 @@ export function App() {
   }, [token])
   // Поиск 'Movies'
   function onSearch(value) {
-    console.log(value)
-    const sortedMovieSearch = localData.filter((item) => {
+    const shortMovies = JSON.parse(localStorage.getItem('shortMovies'));
+    if (shortMovies) {
+    const sortedMovieSearch = shortMovies.filter((item) => {
       const values = value.toLowerCase();
       const nameEN = item.nameEN.toLowerCase();
       const nameRU = item.nameRU.toLowerCase();
@@ -220,6 +222,29 @@ export function App() {
     });
     localStorage.setItem('filteredMovies', JSON.stringify(sortedMovieSearch));
     setFilteredMovies(sortedMovieSearch)
+    } else {
+      const sortedMovieSearch = localData.filter((item) => {
+      const values = value.toLowerCase();
+      const nameEN = item.nameEN.toLowerCase();
+      const nameRU = item.nameRU.toLowerCase();
+      return (nameEN && nameEN.toLowerCase().includes(values) && (values !== ''))
+      || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
+        ? item : null
+    });
+    localStorage.setItem('filteredMovies', JSON.stringify(sortedMovieSearch));
+    setFilteredMovies(sortedMovieSearch)
+    }
+
+    // const sortedMovieSearch = localData.filter((item) => {
+    //   const values = value.toLowerCase();
+    //   const nameEN = item.nameEN.toLowerCase();
+    //   const nameRU = item.nameRU.toLowerCase();
+    //   return (nameEN && nameEN.toLowerCase().includes(values) && (values !== ''))
+    //   || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
+    //     ? item : null
+    // });
+    // localStorage.setItem('filteredMovies', JSON.stringify(sortedMovieSearch));
+    // setFilteredMovies(sortedMovieSearch)
   }
 
 /* ========================================================= */
@@ -232,7 +257,6 @@ export function App() {
           // localStorage.setItem('localDataSaved', JSON.stringify(res));
           // const userMovies = JSON.parse(localStorage.getItem('localDataSaved'));
           // setLocalDataSaved(userMovies)
-
           const { movies } = res;
           // const savedFilteredMovies = movies.filter((i) => i.owner === currentUser._id)
           localStorage.setItem('savedFilteredMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
@@ -256,7 +280,7 @@ export function App() {
       return ((nameEN && nameEN.toLowerCase().includes(values)) 
       || (nameRU && nameRU.toLowerCase().includes(value)))
         ? card : null
-    });
+    }); 
     // localStorage.setItem('savedFilteredMovies', JSON.stringify(savedSortedMovieSearch));
     setSavedFilteredMovies(savedSortedMovieSearch.length !== 0 ? savedSortedMovieSearch : savedFilteredMovies);
   }
@@ -266,21 +290,26 @@ export function App() {
   const durationSwitch = (checked) => {
     const moviesFilter = JSON.parse(localStorage.getItem('filteredMovies'));
     if (checked === '1' && moviesFilter) {
-      const shorts = moviesFilter.filter((item) => item.duration <= 40);
-      setFilteredMovies(shorts);
+      const shortMovies = moviesFilter.filter((item) => item.duration <= 40);
+      localStorage.setItem('shortMovies', JSON.stringify(shortMovies));
+      setFilteredMovies(shortMovies);
     } else {
       setFilteredMovies(moviesFilter);
+      // console.log(moviesFilter)
     }
+    // const shortMovies = JSON.parse(localStorage.getItem('shortMovies'));
+
   };
   // Сортировка по длине сохраненных фильмов
   const savedDurationSwitch= (checked) => {
     const moviesFilterSaved = JSON.parse(localStorage.getItem('savedFilteredMovies'));
-    if (checked === '1' && savedFilteredMovies) {
+    if (checked === '1' && moviesFilterSaved) {
       const shorts = savedFilteredMovies.filter((item) => item.duration <= 40);
+      // console.log(shorts)
       setSavedFilteredMovies(shorts);
     } else {
       setSavedFilteredMovies(moviesFilterSaved);
-    }
+     }
   }
 
 /* ========================================================= */
@@ -318,9 +347,6 @@ export function App() {
       .then(() => {
         setSavedFilteredMovies(savedFilteredMovies
           .filter((i) => i._id !== movie._id))
-        // setLocalSavedData(localSavedData
-        //   .filter(i => i._id !== movie._id))
-        //   console.log(movie._id)
       })
   }
 
