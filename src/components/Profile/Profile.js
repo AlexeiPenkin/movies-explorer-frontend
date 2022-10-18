@@ -1,92 +1,69 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Profile.css';
 
-export function Profile({ handleSignOut, handleUserUpdate, setSuccessUpdate }) {
+export function Profile({ handleSignOut, handleUserUpdate }) {
   const currentUser = useContext(CurrentUserContext);
-  const validate = FormWithValidation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [existData, setExistData] = useState(false);
-  const [failUpdate, setFailUpdate] = useState(true);
-
-  function handleNameChange(e) {
-    const name = e.target.value;
-    setFailUpdate(name === existData.name && email === existData.email);
-    setName(name);
-  }
-
-  function handleEmailChange(e) {
-    const email = e.target.value;
-    setFailUpdate(email === existData.email && name === existData.name);
-    setEmail(email);
-  }
-
-  useEffect(() => {
-    if (currentUser.name) {
-      setExistData({name: currentUser.name, email: currentUser.email})
-    }
-    setName(currentUser.name);
-    setEmail(currentUser.email);
-  }, [currentUser]);
-
+  const { resetForm, isValid, errors, values, handleChange} = FormWithValidation();
+  
   function handleSubmit(e) {
     e.preventDefault();
-    handleUserUpdate({
-      name: name,
-      email: email,
-    });
-    setFailUpdate(true);
+    handleUserUpdate(values);
+    console.log(values);
   }
-  
+
   useEffect(() => {
-    return () => {
-      setSuccessUpdate(false)
+    if (currentUser) {
+      resetForm(currentUser, {}, true);
+      // console.log(currentUser);
     }
-  }, [])
+  }, [currentUser, resetForm]);
+  // console.log(currentUser);
+
+  const checkInputValidity = (!isValid || (currentUser.name === values.name && currentUser.email === values.email));
+  // console.log(currentUser.name, currentUser.email);
 
   return (
     <section className='profile'>
       <form className='profile__form' noValidate onSubmit={handleSubmit}>
-        <h3 className='profile__title'>{`Привет, ${name}!`}</h3>
+        <h3 className='profile__title'>{`Привет, ${currentUser.name || ''}!`}</h3>
         <div className='profile__input-list'>
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
               <label className='profile__label'>Имя</label>
-              <input className='profile__input'
+              <input className={`profile__input ${errors.name && 'profile__input_error'}`}
                 required
                 name='name'
                 type='text'
-                value={name}
-                placeholder={name}
+                value={values.name || ''}
+                placeholder={values.name}
                 minLength='2'
                 maxLength='30'
-                onChange={handleNameChange}
+                onChange={handleChange}
               />
             </fieldset>
-            <span className='profile__input-error'>{validate.errors.name || ''}</span>
+            <span className='profile__input-error'>{errors.name || ''}</span>
           </div>
           <div className='profile__input-container'>
             <fieldset className='profile__fieldset'>
             <label className='profile__label'>E-mail</label>
-            <input className='profile__input'
+            <input className={`profile__input ${errors.email && 'profile__input_error'}`}
                 required
                 name='email'
                 type='email'
-                value={email}
-                placeholder={email}
-                onChange={handleEmailChange}
+                value={values.email || ''}
+                placeholder={values.email}
+                onChange={handleChange}
               >
               </input>
-            </fieldset>
-            <span className='profile__input-error'>{validate.errors.email || ''}</span>
+            </fieldset> 
+            <span className='profile__input-error'>{errors.email || ''}</span>
           </div>
         </div>
-        <button className='profile__submit-button'
+        <button className={`profile__submit-button ${checkInputValidity ? 'profile__submit-button_disabled' : ''}`}
           type='submit'
-          onClick={handleSubmit}
-          disabled={failUpdate}>
+          disabled={checkInputValidity ? true : false}>
             Редактировать
         </button>
         <button className='profile__signout-button'
@@ -97,76 +74,3 @@ export function Profile({ handleSignOut, handleUserUpdate, setSuccessUpdate }) {
     </section>
   );
 };
-
-// import React, { useContext, useEffect } from 'react';
-// import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-// import { FormWithValidation } from '../../utils/FormWithValidation';
-// import './Profile.css';
-
-// export function Profile({ handleSignOut, handleUserUpdate }) {
-//   const currentUser = useContext(CurrentUserContext);
-//   const validate = FormWithValidation();
- 
-  // useEffect(() => {
-  //   validate.setValues(currentUser);
-  //   // console.log(currentUser);
-  // }, [currentUser]);
-  // // console.log(currentUser);
-
-//   function handleSubmit(e){
-//     e.preventDefault();
-//     handleUserUpdate(validate.values);
-//   }
-
-//   return (
-//     <section className='profile'>
-//       <form className='profile__form'>
-//         <h3 className='profile__title'>Привет, {currentUser.name}!</h3>
-//         <div className='profile__input-list'>
-//           <div className='profile__input-container'>
-//             <fieldset className='profile__fieldset'>
-//               <label className='profile__label'>Имя</label>
-//               <input
-//                 required
-//                 name='name'
-//                 value={validate.values.name || ''}
-//                 className='profile__input'
-//                 placeholder={currentUser.name}
-//                 minLength='2'
-//                 maxLength='30'
-//                 onChange={validate.handleChange}
-//               />
-//             </fieldset>
-//             <span className='profile__error'>{validate.errors.name || ''}</span>
-//           </div>
-//           <div className='profile__input-container'>
-//             <fieldset className='profile__fieldset'>
-//             <label className='profile__label'>E-mail</label>
-//               <input
-//                 required
-//                 name='email'
-//                 value={validate.values.email || ''}
-//                 className='profile__input'
-//                 placeholder={currentUser.email}
-//                 type='email'
-//                 onChange={validate.handleChange}
-//               >
-//               </input>
-//             </fieldset>
-//             <span className='profile__error'>{validate.errors.email || ''}</span>
-//           </div>
-//         </div>
-//         <button className='profile__submit-button'
-//           type='submit'
-//           onClick={handleSubmit}
-//           disabled={!validate.isValid}>
-//             Редактировать
-//         </button>
-//         <button className='profile__signout-button'
-//           onClick={handleSignOut}>
-//             Выйти из аккаунта
-//         </button>
-//       </form>
-//     </section>
-//   );
-// };

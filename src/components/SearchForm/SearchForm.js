@@ -5,7 +5,7 @@ import './SearchForm.css';
 
 export function SearchForm ({ onSearch, durationSwitch }) {
   const localChecked = localStorage.getItem('saveCheckbox')
-  console.log(localChecked)
+  // console.log(localChecked)
   const location = useLocation()
   const localStorageValue = location.pathname === '/movies' ? localStorage.getItem('saveSearchValue') : '';
   const [value, setValue] = useState(localStorageValue ?? '')
@@ -24,6 +24,10 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
   }
 
+  useEffect(() => { /* управляем сообщением об ошибке при пустом поиске */
+    setInputError('')
+  }, [validate.isValid]);
+
   // function handleSearch(e) {
   //   onSearch(validate.values.search);
   // }
@@ -31,8 +35,8 @@ export function SearchForm ({ onSearch, durationSwitch }) {
   useEffect(() => {
     if (location.pathname === '/saved-movies') {
       setFilter('0')
-      onSearch(validate.values.search)
       setValue('')
+      onSearch(validate.values.search)
     }
   }, [location])
 
@@ -51,12 +55,11 @@ export function SearchForm ({ onSearch, durationSwitch }) {
       <form className='search-form__form' noValidate onSubmit={(e) => handleSubmit(e)}>
         <div className='search-form__bar'>
           <input className={`search-form__input ${validate.errors.search ? 'search-form__error' : ''}`}
-            // id='search'
             type='text'
             name='search'
             onChange={validate.handleChange}
             placeholder='Фильм'
-            // required
+            required
             value={validate.values.search}
           />
           <button className='search-form__find-button'

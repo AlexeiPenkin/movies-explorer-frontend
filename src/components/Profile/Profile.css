@@ -63,7 +63,7 @@
   margin: 0 0 220px;
 }
 
-.profile__submit-button{
+/* .profile__submit-button{
   cursor: pointer;
   background: none;
   border: none;
@@ -77,7 +77,35 @@
   display: flex;
   align-items: center;
   text-align: center;
+} */
+
+.profile__submit-button {
+  margin-top: auto;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.23;
+  transition: all .3s ease;
+  cursor: pointer;
 }
+
+/* .profile__submit-button:hover {
+  opacity: 0.8;
+} */
+
+.profile__submit-button_disabled {
+  color: #8b8b8b;
+  cursor: default;
+}
+
+.profile__submit-button_disabled:hover {
+  opacity: 1;
+}
+
+
+
 
 .profile__signout-button{
   cursor: pointer;
@@ -133,10 +161,15 @@
     margin-bottom: 40px;
   }
 
-  .profile__submit-button{
+  .profile__submit-button {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  /* .profile__submit-button{
     font-size: 12px;
     line-height: 15px;
-  }
+  } */
   
   .profile__signout-button{
     font-size: 12px;
