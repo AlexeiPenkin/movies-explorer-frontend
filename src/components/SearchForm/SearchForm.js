@@ -28,10 +28,6 @@ export function SearchForm ({ onSearch, durationSwitch }) {
     setInputError('')
   }, [validate.isValid]);
 
-  // function handleSearch(e) {
-  //   onSearch(validate.values.search);
-  // }
-  
   useEffect(() => {
     if (location.pathname === '/saved-movies') {
       setFilter('0')

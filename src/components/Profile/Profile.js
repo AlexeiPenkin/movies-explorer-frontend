@@ -16,13 +16,10 @@ export function Profile({ handleSignOut, handleUserUpdate }) {
   useEffect(() => {
     if (currentUser) {
       resetForm(currentUser, {}, true);
-      // console.log(currentUser);
     }
   }, [currentUser, resetForm]);
-  // console.log(currentUser);
 
   const checkInputValidity = (!isValid || (currentUser.name === values.name && currentUser.email === values.email));
-  // console.log(currentUser.name, currentUser.email);
 
   return (
     <section className='profile'>
