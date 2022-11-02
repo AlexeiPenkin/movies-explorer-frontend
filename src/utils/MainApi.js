@@ -1,10 +1,10 @@
-class MainApi{
-  constructor(options){
+class MainApi {
+  constructor(options) {
     this._baseUrl = options.baseUrl;
     this.headers = options.headers;
   }
 
-  _checkResponse(res){
+  _checkResponse(res) {
     if(res.ok){
       return res.json();
     } else {
@@ -36,9 +36,9 @@ class MainApi{
       }),
     })
       .then(this._checkResponse);
-    }
+  }
 
-  getUserInfo(token){
+  getUserInfo(token) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
       headers: {
@@ -106,6 +106,7 @@ class MainApi{
           : `https://www.youtube.com/results?search_query=трейлер+${movie.nameRU}`,
         year: movie.year,
         thumbnail: `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`,
+        // thumbnail: movie.thumbnail,
         movieId: movie.id,
       })
     })

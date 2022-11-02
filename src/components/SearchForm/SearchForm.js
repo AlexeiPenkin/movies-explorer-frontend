@@ -1,79 +1,51 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FilterCheckbox } from '../FilterCheckbox/FilterCheckbox';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { FormWithValidation } from '../../utils/FormWithValidation';
-import { useLocation } from "react-router-dom";
 import './SearchForm.css';
-
-export function SearchForm ({ onSearch, durationSwitch }) {
-  const localChecked = localStorage.getItem('saveCheckbox')
-  // console.log(localChecked)
-  const location = useLocation()
-  const localStorageValue = location.pathname === '/movies' ? localStorage.getItem('saveSearchValue') : '';
-  const [value, setValue] = useState(localStorageValue ?? '')
-  const [filter, setFilter] = useState(localChecked ?? '0');
-  const validate = FormWithValidation({defaultValues:{search: localStorageValue ?? ''}});
+ 
+export function SearchForm({ onSearch, handleShortFilms, shortMovies }) {
+  const currentUser = useContext(CurrentUserContext);
+  const location = useLocation();
+  const { values, handleChange, isValid, setIsValid } = FormWithValidation();
   const [inputError, setInputError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (location.pathname === '/movies') {
-      localStorage.setItem('saveSearchValue', validate.values.search)
-      localStorage.setItem('saveCheckbox', filter)
-    }
-    // setFilter('0')
-    // onSearch(validate.values.search)
-    validate.isValid ? onSearch(validate.values.search) : setInputError('Нужно ввести ключевое слово');
-  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    isValid ? onSearch(values.search) : setInputError('Нужно ввести ключевое слово.');
+  };
 
-  useEffect(() => { /* управляем сообщением об ошибке при пустом поиске */
+  useEffect(() => {
     setInputError('')
-  }, [validate.isValid]);
+  }, [isValid]);
 
   useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      setFilter('0')
-      setValue('')
-      onSearch(validate.values.search)
+    if (location.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - movieSearch`)) {
+      const searchValue = localStorage.getItem(`${currentUser.email} - movieSearch`);
+      values.search = searchValue;
+      setIsValid(true);
     }
-  }, [location])
-
-  useEffect(() => {
-    if (location.pathname === '/saved-movies') {
-      durationSwitch(filter)
-    }
-    // if (location.pathname === '/movies') {
-    //   onSearch(validate.values.search ?? '')
-    //   durationSwitch(filter ?? '0')
-    // }
-  }, [location, filter])
+  }, [currentUser]);
 
   return (
-    <section className='search-form'>
-      <form className='search-form__form' noValidate onSubmit={(e) => handleSubmit(e)}>
+    <section className="search-form">
+      <form className="search-form__form" name="search" noValidate onSubmit={handleSubmit}>
         <div className='search-form__bar'>
-          <input className={`search-form__input ${validate.errors.search ? 'search-form__error' : ''}`}
-            type='text'
-            name='search'
-            onChange={validate.handleChange}
-            placeholder='Фильм'
+          <input
+            className="search-form__input"
+            name="search"
+            type="text"
+            placeholder="Фильм"
+            value={values.search || ''}
+            onChange={handleChange}
             required
-            value={validate.values.search}
           />
-          <button className='search-form__find-button'
-            type='submit'>
-          </button>
+          <button className="search-form__find-button" type="submit"></button>
         </div>
-        <label className='checkbox__label'>
-          <button className={`checkbox__selector checkbox__selector${filter === '1' ? '_on' : '_off'}`}
-            type='button'
-            onClick={() => {
-              setFilter(filter === '0' ? '1' : '0')
-              durationSwitch(filter === '0' ? '1' : '0')
-            }}
-          />
-          Короткометражки
-        </label>
+        <FilterCheckbox shortMovies={shortMovies} handleShortFilms={handleShortFilms} />
       </form>
       <span className="search-form__error">{inputError}</span>
     </section>
-  );
+  )
 }

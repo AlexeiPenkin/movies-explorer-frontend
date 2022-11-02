@@ -16,7 +16,7 @@ import { Preloader } from '../Preloader/Preloader';
 import mainApi from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
 import { Popup } from '../Popup/Popup';
-
+ 
 export function App() {
   const cardsDesktop = 12;
   const cardsTablet = 8;
@@ -41,22 +41,17 @@ export function App() {
     : cardsMobile
     );
 
+  const location = useLocation();
+  const history = useHistory();
+  const token = localStorage.getItem('token')
   const [currentUser, setCurrentUser] = useState({});
   const [isBurgerMenuOpen, toggleBurgerMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
-  const location = useLocation();
-  const history = useHistory();
-  const token = localStorage.getItem('token')
-  const [localData, setLocalData] = useState([]);
-  const [localDataSaved, setLocalDataSaved] = useState([]);
-  // const [localSavedData, setLocalSavedData] = useState([]);
-  const [initialMovies, setInitialMovies] = useState([]); 
-  const [savedMovies, setSavedMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const {filter, setFilter} = useState([]); 
-  // const {currentSavedMovies, setCurrentSavedMovies} = useState([])
+  const {filter, setFilter} = useState([]);
   const [successUpdate, setSuccessUpdate] = useState(false);
+  const [savedMoviesList, setSavedMoviesList] = useState([]);
 
 /* ========================================================= */
   // Определение количества фильмов на странице 'Movies'
@@ -80,9 +75,6 @@ export function App() {
       : addCardsMobile)
     )
   }
-// const addMovies = () => {
-//   setListLength(listLength + moviesNumber);
-// }
 
 /* ========================================================= */
   function handleBurgerMenuOpen() {
@@ -149,13 +141,13 @@ export function App() {
   // Получения профиля пользователя
   useEffect(() => {
     if (token) {
-      // console.log(token); /* приходит текущий токен */
       mainApi.getUserInfo(token)
         .then((userInfo) => 
           setCurrentUser(userInfo))
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
     } 
   }, [token])
+
   // Изменение профиля пользователя
   function handleUserUpdate(user) {
     const token = localStorage.getItem('token');
@@ -172,203 +164,78 @@ export function App() {
   }
 
 /* ========================================================= */
-  // проверка полученных изображений
-  // function transformMovies(movies) {
-  //   movies.forEach(movie => {
-  //     if (!movie.image) {
-  //       movie.image = 'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1940&q=80';
-  //       movie.thumbnail = 'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1940&q=80';
-  //     } else {
-  //       movie.thumbnail = `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`
-  //       movie.image = `https://api.nomoreparties.co${movie.image.url}`
-  //     }
-  //     if(!movie.country) {
-  //       movie.country = 'Russia';
-  //     }
-  //     if(!movie.nameEN) {
-  //       movie.nameEN = movie.nameRU;
-  //     }
-  //   });
-  //   return movies
-  // }
-
-/* ========================================================= */
-  const localStorageValue = localStorage.getItem('saveSearchValue')
-  const [value, setValue] = useState(localStorageValue ?? '');
-
-  useEffect(() => {
-    if (localData && value) {
-      // console.log(value)
-      onSearch(localStorageValue)
-    }
-  }, [localData]);
-
-/* ========================================================= */
-  // Добавление фильмов на страницу 'Movies'
-  useEffect(() => {
-    if (token) {
-      setIsLoading(true);
-      moviesApi.getMovies()
-        .then(res => {
-          localStorage.setItem('localData', JSON.stringify(res));
-          const allMovies = JSON.parse(localStorage.getItem('localData'));
-          setLocalData(allMovies)
-          // console.log(localData)
-          localStorage.setItem('initialMovies', JSON.stringify(res));
-          const initialMovies = JSON.parse(localStorage.getItem('initialMovies'));
-          setInitialMovies(initialMovies)
-        })
-        .catch((err) => {
-          console.log(`Фильмы получить не удалось: ${err}`)
-        })
-        .finally(() => 
-          setIsLoading(false));
-    }
-  }, [token])
-  // Поиск 'Movies'
-  function onSearch(value) {
-    const shortMovies = JSON.parse(localStorage.getItem('shortMovies'));
-    if (shortMovies) {
-    const movieSearch = shortMovies.filter((item) => {  
-      const values = value.toLowerCase();
-      const nameEN = item.nameEN.toLowerCase();
-      const nameRU = item.nameRU.toLowerCase();
-      return (nameEN && nameEN.toLowerCase().includes(values) && (values !== ''))
-      || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
-        ? item : null
-    });
-    localStorage.setItem('initialMovies', JSON.stringify(movieSearch));
-    setInitialMovies(movieSearch)
-    console.log(shortMovies)
-    } else {
-      const movieSearch = localData.filter((item) => {
-        const values = value.toLowerCase();
-        const nameEN = item.nameEN.toLowerCase();
-        const nameRU = item.nameRU.toLowerCase();
-        return (nameEN && nameEN.toLowerCase().includes(values) && (values !== ''))
-        || (nameRU && nameRU.toLowerCase().includes(value) && (values !== ''))
-          ? item : null
-      });
-    localStorage.setItem('initialMovies', JSON.stringify(movieSearch));
-    setInitialMovies(movieSearch)
-    }
-  }
-  // Сортировка по длине фильмов 'Movies'
-  const durationSwitch = (checked) => {
-    const moviesFilter = JSON.parse(localStorage.getItem('initialMovies'));
-    if (checked === '1' && moviesFilter) {
-      const shortMovies = moviesFilter.filter((item) => item.duration <= 40);
-      localStorage.setItem('shortMovies', JSON.stringify(shortMovies));
-      setInitialMovies(shortMovies);
-    } else {
-      setInitialMovies(moviesFilter);
-    }
-  };
-
-/* ========================================================= */
-  // Добавление фильмов на страницу 'SavedMovies'
-  useEffect(() => {
-    if (token && currentUser !== null) {
-      setIsLoading(true);
-      mainApi.getSavedMovies(token)
-        .then(res => {
-          const { movies } = res;
-          localStorage.setItem('savedMovies', JSON.stringify(movies.filter((i) => i.owner === currentUser._id)))
-          const savedMovies = JSON.parse(localStorage.getItem('savedMovies'));
-          setSavedMovies(savedMovies)
-        })
-        .catch((err) => {
-          console.log(`Сохраненные фильмы получить не удалось: ${err}`)
-        })
-        .finally(() => 
-          setIsLoading(false));
-    }
-  }, [token, currentUser])
-  // Поиск 'SavedMovies'
-  function onSearchSaved(value) {
-    const shortMoviesSaved = JSON.parse(localStorage.getItem('shortMoviesSaved'));
-    if (shortMoviesSaved) {
-    const movieSearchSaved = shortMoviesSaved.filter((card) => {
-      const values = value.toLowerCase();
-      const nameEN = card.nameEN.toLowerCase();
-      const nameRU = card.nameRU.toLowerCase();
-      return ((nameEN && nameEN.toLowerCase().includes(values)) 
-      || (nameRU && nameRU.toLowerCase().includes(value)))
-        ? card : null
-    }); 
-    setSavedMovies(movieSearchSaved.length !== 0 ? movieSearchSaved : shortMoviesSaved);
-    } else {
-      const movieSearchSaved = savedMovies.filter((card) => {
-        const values = value.toLowerCase();
-        const nameEN = card.nameEN.toLowerCase();
-        const nameRU = card.nameRU.toLowerCase();
-        return ((nameEN && nameEN.toLowerCase().includes(values)) 
-        || (nameRU && nameRU.toLowerCase().includes(value)))
-          ? card : null
-    }); 
-    setSavedMovies(movieSearchSaved.length !== 0 ? movieSearchSaved : savedMovies);
-    }
-
-    // старый код
-    // const savedSortedMovieSearch = savedMovies.filter((card) => {
-    //   const values = value.toLowerCase();
-    //   const nameEN = card.nameEN.toLowerCase();
-    //   const nameRU = card.nameRU.toLowerCase();
-    //   return ((nameEN && nameEN.toLowerCase().includes(values)) 
-    //   || (nameRU && nameRU.toLowerCase().includes(value)))
-    //     ? card : null
-    // }); 
-    // setSavedMovies(savedSortedMovieSearch.length !== 0 ? savedSortedMovieSearch : savedMovies);
-  }
-  // Сортировка по длине сохраненных фильмов 'SavedMovies'
-  const savedDurationSwitch= (checked) => {
-    const moviesFilterSaved = JSON.parse(localStorage.getItem('savedMovies'));
-    if (checked === '1' && moviesFilterSaved) {
-      const shortMoviesSaved = savedMovies.filter((item) => item.duration <= 40);
-      localStorage.setItem('shortMoviesSaved', JSON.stringify(shortMoviesSaved));
-      setSavedMovies(shortMoviesSaved);
-    } else {
-      setSavedMovies(moviesFilterSaved);
-     }
-  }
-
-/* ========================================================= */
   // Сохранение фильма
   function handleSaveMovie(movie) {
-    const likeCard = savedMovies
+    console.log(movie);
+    const likeCard = savedMoviesList
     .some((i) => i.movieId === movie.id
     );
     if (!likeCard) {
       mainApi.saveMovies(movie, token)
-      .then(res => {setSavedMovies([...savedMovies, res.movie])
+      .then((res) => {
+        setSavedMoviesList([...savedMoviesList, res.movie]);
+      })
       .catch((err) => {
         setPopupMessage('Фильм сохранить не удалось');
         console.log(err);
       })
-      })
     } else {
-      const deleteCard = savedMovies
+      const deleteCard = savedMoviesList
       .find((i) => i.movieId === movie.id)
       handleDeleteMovie(deleteCard)
     }
-  }
+  } 
+  // console.log(savedMoviesList)
 
 /* ========================================================= */
   // Лайкаем фильм
   function isCardLiked(movie) {
-    const cardLiked = savedMovies.some((item) => item.movieId === movie.id || item.movieId === movie.movieId);
+    const cardLiked = savedMoviesList.some((item) => 
+    (item.movieId === movie.id || item.movieId === movie.movieId));
     return (cardLiked)
+  }
+
+  // Удаляем лайк
+  function isCardDisliked(movie) {
+    const cardDisliked = savedMoviesList
+    .filter((i) => i._id !== movie._id);
+    return (cardDisliked)
   }
 
 /* ========================================================= */
   // Удаление фильма
   function handleDeleteMovie(movie) {
-    mainApi.deleteMovie(movie._id, token)
+    let deleteSavedMovie = savedMoviesList.find(item => item.movieId === movie.movieId)
+    return mainApi.deleteMovie(deleteSavedMovie)
       .then(() => {
-        setSavedMovies(savedMovies
-          .filter((i) => i._id !== movie._id))
+        setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.movieId));
+        setPopupMessage("");
+      })
+      .catch(err => {
+        setPopupMessage(err);
+        console.log(err);
       })
   }
+
+  function handleDislikeMovie(movie) {
+    let deleteSavedMovie = savedMoviesList.find(item => item.movieId === movie.id)
+    return mainApi.deleteMovie(deleteSavedMovie)
+      .then(() => {
+        setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.id));
+        setPopupMessage("");
+      })
+      .catch(err => {
+        setPopupMessage(err);
+      })
+  }
+
+  // function handleDeleteMovie(movie) {
+  //   mainApi.deleteMovie(movie._id, token)
+  //     .then(() => {
+  //       setSavedMoviesList(savedMoviesList
+  //         .filter((i) => i._id !== movie._id))
+  //     })
+  // }
 
 /* ========================================================= */
   // Выход из аккаунта
@@ -376,11 +243,7 @@ export function App() {
     localStorage.clear();
     setLoggedIn(false);
     setCurrentUser(null)
-    setSavedMovies([])
-    setInitialMovies([])
-    setLocalData([])
-    setLocalDataSaved([])
-    // setLocalSavedData([])
+    setSavedMoviesList([])
     history.push('/');
   }
 
@@ -411,31 +274,29 @@ export function App() {
           <ProtectedRoute path='/movies'
             loggedIn={loggedIn}
             component={Movies}
-            initialMovies={initialMovies}
+            savedMoviesList={savedMoviesList}
             handleFilter={handleFilter}
             filter={filter}
-            durationSwitch={durationSwitch}
-            onSearch={onSearch}
             moviesNumber={moviesNumber}
             handleAddMovies={handleAddMovies}
             handleSaveMovie={handleSaveMovie}
-            handleDeleteMovie={handleDeleteMovie}
+            handleDeleteMovie={handleDislikeMovie}
             isCardLiked={isCardLiked}
+            isCardDisliked={isCardDisliked}
             isLoading={isLoading}
           />
           <ProtectedRoute path='/saved-movies'
             loggedIn={loggedIn}
             component={SavedMovies}
-            initialMovies={savedMovies}
+            savedMoviesList={savedMoviesList}
             handleFilter={handleFilter}
             filter={filter}
-            durationSwitch={savedDurationSwitch}
-            onSearch={onSearchSaved}
             moviesNumber={savedMoviesNumber}
             handleAddMovies={handleAddMoviesSaved}
             handleSaveMovie={handleSaveMovie}
             handleDeleteMovie={handleDeleteMovie}
             isCardLiked={isCardLiked}
+            isCardDisliked={isCardDisliked}
             isLoading={isLoading}
           />
           <ProtectedRoute path='/profile'

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import validator from 'validator';
 
 export function FormWithValidation({ defaultValues = {} } = {}) {
@@ -34,5 +34,5 @@ export function FormWithValidation({ defaultValues = {} } = {}) {
     [setValues, setErrors, setIsValid]
   );
 
-  return { values, handleChange, errors, isValid, resetForm, setValues };
+  return { values, handleChange, errors, isValid, setIsValid, resetForm, setValues };
 }
