@@ -3,6 +3,7 @@ import { React, useState, useEffect } from 'react';
 import { NavLink, Route, Redirect } from 'react-router-dom';
 import { Switch, useLocation, useHistory } from 'react-router';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { SavedUserContext } from '../../contexts/SavedUserContext';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
@@ -111,6 +112,7 @@ export function App() {
     .then((res) => {
       if (res.statusCode !== 400) {
         handleLogin({ password: data.password, email: data.email });
+        setPopupMessage('Вы успешно зарегистрировались');
         history.push('/signin');
       }
     })
@@ -142,8 +144,10 @@ export function App() {
   useEffect(() => {
     if (token) {
       mainApi.getUserInfo(token)
-        .then((userInfo) => 
-          setCurrentUser(userInfo))
+        .then((userInfo) => {
+          setCurrentUser(userInfo);
+          getUserFilms();
+        })
         .catch(err => console.log(`Имя пользователя не получено: ${err}`))
     } 
   }, [token])
@@ -163,6 +167,17 @@ export function App() {
     })
   }
 
+  // получение списка сохранённых фильмов
+  const getUserFilms = () => {
+    if (!token) { return }
+
+    mainApi.getSavedMovies(token)
+    .then((res) => {
+      const { movies } = res;
+      setSavedMoviesList(movies)
+    })
+  }
+
 /* ========================================================= */
   // Сохранение фильма
   function handleSaveMovie(movie) {
@@ -174,6 +189,7 @@ export function App() {
       mainApi.saveMovies(movie, token)
       .then((res) => {
         setSavedMoviesList([...savedMoviesList, res.movie]);
+        setPopupMessage('Фильм сохраниён');
       })
       .catch((err) => {
         setPopupMessage('Фильм сохранить не удалось');
@@ -205,11 +221,14 @@ export function App() {
 /* ========================================================= */
   // Удаление фильма
   function handleDeleteMovie(movie) {
-    let deleteSavedMovie = savedMoviesList.find(item => item.movieId === movie.movieId)
-    return mainApi.deleteMovie(deleteSavedMovie)
+    let deleteSavedMovie = savedMoviesList.find(item => item.movieId === movie.movieId);
+    if (!deleteSavedMovie) { return } 
+    deleteSavedMovie = deleteSavedMovie._id;
+    
+    return mainApi.deleteMovie(deleteSavedMovie, token)
       .then(() => {
         setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.movieId));
-        setPopupMessage("");
+        setPopupMessage('Фильм удалён');
       })
       .catch(err => {
         setPopupMessage(err);
@@ -222,20 +241,12 @@ export function App() {
     return mainApi.deleteMovie(deleteSavedMovie)
       .then(() => {
         setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.id));
-        setPopupMessage("");
+        setPopupMessage('');
       })
       .catch(err => {
         setPopupMessage(err);
       })
   }
-
-  // function handleDeleteMovie(movie) {
-  //   mainApi.deleteMovie(movie._id, token)
-  //     .then(() => {
-  //       setSavedMoviesList(savedMoviesList
-  //         .filter((i) => i._id !== movie._id))
-  //     })
-  // }
 
 /* ========================================================= */
   // Выход из аккаунта
@@ -257,11 +268,9 @@ export function App() {
   // Рендер
   return (
     <CurrentUserContext.Provider value={ currentUser }>
-      {isLoading ? (
-        <Preloader /> 
-        ) : (
-          <></>
-        )}
+    <SavedUserContext.Provider value={ savedMoviesList }>
+      { isLoading && <Preloader /> } 
+
       <div className='App'>
         <Header
           loggedIn={loggedIn}
@@ -335,6 +344,7 @@ export function App() {
           onSubmit={popupOnSubmit}
         />
       </div>
+    </SavedUserContext.Provider>
     </CurrentUserContext.Provider>
   );
 }

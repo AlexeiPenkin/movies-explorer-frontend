@@ -5,47 +5,54 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { FormWithValidation } from '../../utils/FormWithValidation';
 import './SearchForm.css';
  
-export function SearchForm({ onSearch, handleShortFilms, shortMovies }) {
-  const currentUser = useContext(CurrentUserContext);
-  const location = useLocation();
-  const { values, handleChange, isValid, setIsValid } = FormWithValidation();
-  const [inputError, setInputError] = useState('');
+export function SearchForm({ 
+  // search value
+  searchValue,
+  searchInputOnChangeCB,
+  // short
+  shortValue,
+  shortInputOnChangeCB,
+  // submit
+  onSubmitCB,
+ }) {
 
-  function handleSubmit(e) {
+  const [checked, setChecked] = useState(shortValue || false);
+
+  const onChangeInputHandler = (e)=>{
     e.preventDefault();
-    isValid ? onSearch(values.search) : setInputError('Нужно ввести ключевое слово.');
-  };
+    searchInputOnChangeCB(e.target.value);
+  }
 
-  useEffect(() => {
-    setInputError('')
-  }, [isValid]);
+  const onChangeCheckboxHandler = (e)=>{
+    const isChecked = e.target.checked;
+    shortInputOnChangeCB(isChecked);
+  }
 
-  useEffect(() => {
-    if (location.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - movieSearch`)) {
-      const searchValue = localStorage.getItem(`${currentUser.email} - movieSearch`);
-      values.search = searchValue;
-      setIsValid(true);
-    }
-  }, [currentUser]);
+  const submitHandler = (e)=>{
+    e.preventDefault();
+    onSubmitCB();
+  }
 
   return (
     <section className="search-form">
-      <form className="search-form__form" name="search" noValidate onSubmit={handleSubmit}>
+      <form className="search-form__form" name="search" noValidate onSubmit={submitHandler}>
         <div className='search-form__bar'>
           <input
             className="search-form__input"
             name="search"
             type="text"
             placeholder="Фильм"
-            value={values.search || ''}
-            onChange={handleChange}
+            value={searchValue}
+            onChange={onChangeInputHandler}
             required
           />
           <button className="search-form__find-button" type="submit"></button>
         </div>
-        <FilterCheckbox shortMovies={shortMovies} handleShortFilms={handleShortFilms} />
+        <FilterCheckbox 
+          shortMovies={shortValue} 
+          handleShortFilms={onChangeCheckboxHandler} 
+        />
       </form>
-      <span className="search-form__error">{inputError}</span>
     </section>
   )
 }

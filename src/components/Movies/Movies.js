@@ -1,111 +1,145 @@
 import { useState, useContext, useEffect } from 'react';
-import { transformMovies, filterMovies, filterShortMovies } from '../../utils/utils';
-import { Footer } from '../Footer/Footer'
+import { filterMovies } from '../../utils/utils';
+import {
+  setSearchToStorage,
+  getSearchFromStorage,
+  setShortToStorage,
+  getAllMoviesFromStorage,
+  getShortFromStorage,
+  setAllMoviesToStorage,
+} from '../../utils/localStorage';
+import { Footer } from '../Footer/Footer';
 import moviesApi from '../../utils/MoviesApi';
 import { SearchForm } from '../SearchForm/SearchForm';
 import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { Popup } from '../Popup/Popup';
+import { SavedUserContext } from '../../contexts/SavedUserContext';
 import './Movies.css';
 
-export function Movies({ savedMoviesList, isCardLiked, handleAddMovies, handleSaveMovie, handleDeleteMovie, moviesNumber, isCardDisliked }) {
+export function Movies({
+  isCardLiked,
+  handleAddMovies,
+  handleSaveMovie,
+  handleDeleteMovie,
+  moviesNumber,
+  isCardDisliked,
+}) {
+
+  const savedMoviesList = useContext(SavedUserContext); 
   const currentUser = useContext(CurrentUserContext);
-  const [shortMovies, setShortMovies] = useState(false);
-  const [initialMovies, setInitialMovies] = useState([]);
+  const userEmail = currentUser && currentUser.email;
+
+  const [userLoading, setUserloading] = useState(true);
+  useEffect(() => {
+    if (userEmail) {
+      const movies = getAllMoviesFromStorage(userEmail);
+      const search = getSearchFromStorage(userEmail);
+      const short = getShortFromStorage(userEmail);
+      setAllMovies(movies);
+      setSearchValue(search);
+      setShortValue(short);
+      handleSetFilteredMovies(movies, search, short);
+      setUserloading(false);
+    }
+  }, [currentUser]);
+
+  const [searchValue, setSearchValue] = useState(getSearchFromStorage(userEmail));
+  const [shortValue, setShortValue] = useState(getShortFromStorage(userEmail));
+
+  const onShortChange = (isChecked) => {
+    setShortValue(isChecked);
+    setShortToStorage(userEmail, isChecked);
+    handleSetFilteredMovies(allMovies, searchValue, isChecked);
+  };
+
+  const [allMovies, setAllMovies] = useState(getAllMoviesFromStorage(userEmail));
+  const [isLoading, setIsLoading] = useState(false);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [nothingFound, setNothingFound] = useState(false);
-  const [allMovies, setAllMovies] = useState([]);
   const [popupMessage, setPopupMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSetFilteredMovies(movies, userQuery, shortMoviesCheckbox) {
-    const moviesList = filterMovies(movies, userQuery, shortMoviesCheckbox);
-    if (moviesList.length === 0) {
+  useEffect(() => {
+    return () => {
+      setSearchValue('');
+      setShortValue(false);
+      setAllMovies([]);
+      setFilteredMovies([]);
+    };
+  }, []);
+
+  function onSearch() {
+    setSearchToStorage(userEmail, searchValue);
+    setShortToStorage(userEmail, shortValue);
+    setIsLoading(true);
+
+    if (allMovies.length === 0) {
+      moviesApi
+        .getMovies()
+        .then((movies) => {
+          setAllMoviesToStorage(userEmail, movies);
+          setAllMovies(movies);
+          handleSetFilteredMovies(movies, searchValue, shortValue);
+        })
+        .catch(() =>
+          setPopupMessage(
+            'Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз.'
+          )
+        )
+        .finally(() => setIsLoading(false));
+    } else {
+      handleSetFilteredMovies(allMovies, searchValue, shortValue);
+      setIsLoading(false);
+    }
+  }
+
+  const handleSetFilteredMovies = (movies, search, short) => {
+    const filteredList = filterMovies(movies, search, short);
+    if (filteredList.length === 0) {
       setPopupMessage('Ничего не найдено');
       setNothingFound(true);
     } else {
       setNothingFound(false);
     }
-    setInitialMovies(moviesList);
-    setFilteredMovies(
-      shortMoviesCheckbox ? filterShortMovies(moviesList) : moviesList
-    );
-    localStorage.setItem(`${currentUser.email} - movies`, JSON.stringify(moviesList)
-    );
+    setFilteredMovies(filteredList);
   }
 
-  function onSearch(inputValue) {
-    localStorage.setItem(`${currentUser.email} - movieSearch`, inputValue);
-    localStorage.setItem(`${currentUser.email} - shortMovies`, shortMovies);
-    if (allMovies.length === 0) {
-      setIsLoading(true);
-      moviesApi.getMovies()
-        .then(movies => {
-          setAllMovies(movies);
-          handleSetFilteredMovies(
-          // transformMovies(movies),
-            inputValue,
-            shortMovies
-          );
-        })
-        .catch(() =>
-          setPopupMessage('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз.')
-        )
-        .finally(() => setIsLoading(false));
-    } else {
-      handleSetFilteredMovies(allMovies, inputValue, shortMovies);
-    }
+  // Попап с сообщениями
+  function popupOnSubmit() {
+    setPopupMessage('');
   }
 
-  function handleShortFilms() {
-    setShortMovies(!shortMovies);
-    if (!shortMovies) {
-      setFilteredMovies(filterShortMovies(initialMovies));
-    } else {
-      setFilteredMovies(initialMovies);
-    }
-    localStorage.setItem(`${currentUser.email} - shortMovies`, !shortMovies);
-  }
-
-  useEffect(() => {
-    if (localStorage.getItem(`${currentUser.email} - shortMovies`) === 'true') {
-      setShortMovies(true);
-    } else {
-      setShortMovies(false);
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (localStorage.getItem(`${currentUser.email} - movies`)) {
-      const movies = JSON.parse(
-        localStorage.getItem(`${currentUser.email} - movies`)
-      ); 
-      setInitialMovies(movies);
-      if (localStorage.getItem(`${currentUser.email} - shortMovies`) === 'true') {
-        setFilteredMovies(filterShortMovies(movies));
-      } else {
-        setFilteredMovies(movies);
-      }
-    }
-  }, [currentUser]);
-
-  return(
-    <section className='movies'>
-      <SearchForm 
-        onSearch={onSearch}
-        handleShortFilms={handleShortFilms}
-        shortMovies={shortMovies}
-      ></SearchForm>
-      <MoviesCardList 
-        moviesList={filteredMovies}
-        savedMoviesList={savedMoviesList}
-        moviesNumber={moviesNumber}
-        handleAddMovies={handleAddMovies}
-        handleSaveMovie={handleSaveMovie}
-        handleDeleteMovie={handleDeleteMovie}
-        isCardLiked={isCardLiked}
-        isCardDisliked={isCardDisliked}
-      ></MoviesCardList>
-      <Footer></Footer>
-    </section>
+  return (
+    <>
+      {!userLoading && (
+        <>
+          <section className='movies'>
+            <SearchForm
+              searchInputOnChangeCB={setSearchValue}
+              searchValue={searchValue}
+              shortInputOnChangeCB={onShortChange}
+              shortValue={shortValue}
+              onSubmitCB={onSearch}
+            />
+            <MoviesCardList
+              moviesList={filteredMovies}
+              isLoading={isLoading}
+              savedMoviesList={savedMoviesList}
+              moviesNumber={moviesNumber}
+              handleAddMovies={handleAddMovies}
+              handleSaveMovie={handleSaveMovie}
+              handleDeleteMovie={handleDeleteMovie}
+              isCardLiked={isCardLiked}
+              isCardDisliked={isCardDisliked}
+            />
+            <Footer/>
+            <Popup
+              message={popupMessage}
+              onSubmit={popupOnSubmit}
+            />
+          </section>
+        </>
+      )}
+    </>
   );
 }

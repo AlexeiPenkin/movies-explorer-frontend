@@ -1,81 +1,114 @@
 import { useState, useContext, useEffect } from 'react';
-import { filterMovies, filterShortMovies } from '../../utils/utils';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
-import { SearchForm } from '../SearchForm/SearchForm';
+import { filterMovies } from '../../utils/utils';
 import { Footer } from '../Footer/Footer';
+import { SearchForm } from '../SearchForm/SearchForm';
+import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { SavedUserContext } from '../../contexts/SavedUserContext';
+import { Popup } from '../Popup/Popup';
 import './SavedMovies.css';
 
-export function SavedMovies({ handleAddMovies, handleSaveMovie, handleDeleteMovie, savedMoviesList, isCardLiked, moviesNumber, moviesList, isCardDisliked }) {
+export function SavedMovies({
+  isCardLiked,
+  handleAddMovies,
+  handleSaveMovie,
+  handleDeleteMovie,
+  moviesNumber,
+  isCardDisliked,
+}) {
+
+  const savedMoviesList = useContext(SavedUserContext); 
   const currentUser = useContext(CurrentUserContext);
-  const [shortMovies, setShortMovies] = useState(false);
-  const [nothingFound, setNothingFound] = useState(false);
-  const [showedMovies, setShowedMovies] = useState(savedMoviesList);
+  const userEmail = currentUser && currentUser.email;
+
+  const [userLoading, setUserloading] = useState(true);
+  useEffect(() => {
+    if (userEmail) {
+      const movies = savedMoviesList;
+      const search = ('');
+      const short = (false);
+      setSearchValue(search);
+      setShortValue(short);
+      handleSetFilteredMovies(movies, search, short);
+      setUserloading(false);
+    }
+  }, [currentUser, savedMoviesList]);
+
+  const [searchValue, setSearchValue] = useState('');
+  const [shortValue, setShortValue] = useState(false);
+
+  const onShortChange = (isChecked) => {
+    setShortValue(isChecked);
+    handleSetFilteredMovies(savedMoviesList, searchValue, isChecked);
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
   const [filteredMovies, setFilteredMovies] = useState([]);
+  const [nothingFound, setNothingFound] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
-  
-  function onSearch(inputValue) {
-    const moviesList = filterMovies(savedMoviesList, inputValue, shortMovies);
-    if (moviesList.length === 0) {
-      setNothingFound(true);
+
+  useEffect(() => {
+    return () => {
+      setSearchValue('');
+      setShortValue(false);
+      setFilteredMovies([]);
+    };
+  }, []);
+
+  function onSearch() {
+    setIsLoading(true);
+    handleSetFilteredMovies(savedMoviesList, searchValue, shortValue);
+    setIsLoading(false);
+  }
+
+  const handleSetFilteredMovies = (movies, search, short) => {
+    const filteredList = filterMovies(movies, search, short);
+    if (filteredList.length === 0) {
       setPopupMessage('Ничего не найдено');
+      setNothingFound(true);
     } else {
       setNothingFound(false);
-      setFilteredMovies(savedMoviesList);
-      setShowedMovies(moviesList)
-      console.log(moviesList)
     }
+
+    setFilteredMovies(filteredList);
+      console.log(filteredList)
   }
 
-  function handleShortFilms() {
-    if (!shortMovies) {
-      setShortMovies(true);
-      localStorage.setItem(`${currentUser.email} - shortSavedMovies`, true);
-      setShowedMovies(filterShortMovies(filteredMovies));
-      filterShortMovies(filteredMovies).length === 0 ? setNothingFound(true) : setNothingFound(false);
-    } else {
-      setShortMovies(false);
-      localStorage.setItem(`${currentUser.email} - shortSavedMovies`, false);
-      filteredMovies.length === 0 ? setNothingFound(true) : setNothingFound(false);
-      setShowedMovies(filteredMovies);
-    }
+  function popupOnSubmit() {
+    setPopupMessage('');
   }
-  
-  useEffect(() => {
-    if (localStorage.getItem(`${currentUser.email} - shortSavedMovies`) === 'true') {
-      setShortMovies(true);
-      setShowedMovies(filterShortMovies(savedMoviesList));
-    } else {
-      setShortMovies(false);
-      setShowedMovies(savedMoviesList);
-    }
-  }, [savedMoviesList, currentUser]);
-  
-  useEffect(() => {
-    setFilteredMovies(savedMoviesList);
-    console.log(savedMoviesList)
-    savedMoviesList.length !== 0 ? setNothingFound(false) : setNothingFound(true);
-  }, [savedMoviesList]);
 
-  return(
-    <section className='savedMovies'>
-      <SearchForm 
-        onSearch={onSearch}
-        handleShortFilms={handleShortFilms}
-        shortMovies={shortMovies}
-      ></SearchForm>
-      <MoviesCardList 
-        moviesList={showedMovies}
-        savedMoviesList={savedMoviesList}
-        moviesNumber={moviesNumber}
-        handleAddMovies={handleAddMovies}
-        handleSaveMovie={handleSaveMovie}
-        handleDeleteMovie={handleDeleteMovie}
-        isCardLiked={isCardLiked}
-        isCardDisliked={isCardDisliked}
-      >
-      </MoviesCardList>
-      <Footer></Footer>
-    </section>
+  return (
+    <>
+      {!userLoading && (
+        <>
+          <section className='movies'>
+            <SearchForm
+              searchInputOnChangeCB={setSearchValue}
+              searchValue={searchValue}
+              shortInputOnChangeCB={onShortChange}
+              shortValue={shortValue}
+              onSubmitCB={onSearch}
+            />
+            <MoviesCardList
+              moviesList={filteredMovies}
+              isLoading={isLoading}
+              savedMoviesList={savedMoviesList}
+              moviesNumber={moviesNumber}
+              handleAddMovies={handleAddMovies}
+              handleSaveMovie={handleSaveMovie}
+              handleDeleteMovie={handleDeleteMovie}
+              isCardLiked={isCardLiked}
+              isCardDisliked={isCardDisliked}
+            />
+            <Footer/>
+            <Popup
+              message={popupMessage}
+              onSubmit={popupOnSubmit}
+            />
+          </section>
+        </>
+      )}
+    </>
   );
 }
