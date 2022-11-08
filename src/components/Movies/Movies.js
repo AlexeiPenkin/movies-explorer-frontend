@@ -1,5 +1,5 @@
-import { useState, useContext, useEffect } from 'react';
-import { filterMovies } from '../../utils/utils';
+import { useState, useContext, useEffect } from "react";
+import { filterMovies } from "../../utils/utils";
 import {
   setSearchToStorage,
   getSearchFromStorage,
@@ -7,15 +7,14 @@ import {
   getAllMoviesFromStorage,
   getShortFromStorage,
   setAllMoviesToStorage,
-} from '../../utils/localStorage';
-import { Footer } from '../Footer/Footer';
-import moviesApi from '../../utils/MoviesApi';
-import { SearchForm } from '../SearchForm/SearchForm';
-import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { Popup } from '../Popup/Popup';
-import { SavedUserContext } from '../../contexts/SavedUserContext';
-import './Movies.css';
+} from "../../utils/localStorage";
+import { Footer } from "../Footer/Footer";
+import moviesApi from "../../utils/MoviesApi";
+import { SearchForm } from "../SearchForm/SearchForm";
+import { MoviesCardList } from "../MoviesCardList/MoviesCardList";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { SavedUserContext } from "../../contexts/SavedUserContext";
+import "./Movies.css";
 
 export function Movies({
   isCardLiked,
@@ -24,9 +23,12 @@ export function Movies({
   handleDeleteMovie,
   moviesNumber,
   isCardDisliked,
+  setPopupMessage,
 }) {
-
+  // saved state
   const savedMoviesList = useContext(SavedUserContext); 
+
+  // user state
   const currentUser = useContext(CurrentUserContext);
   const userEmail = currentUser && currentUser.email;
 
@@ -44,25 +46,30 @@ export function Movies({
     }
   }, [currentUser]);
 
-  const [searchValue, setSearchValue] = useState(getSearchFromStorage(userEmail));
+  // search inputs states
+  const [searchValue, setSearchValue] = useState(
+    getSearchFromStorage(userEmail)
+  );
   const [shortValue, setShortValue] = useState(getShortFromStorage(userEmail));
 
   const onShortChange = (isChecked) => {
     setShortValue(isChecked);
     setShortToStorage(userEmail, isChecked);
-    handleSetFilteredMovies(allMovies, searchValue, isChecked);
+    handleSetFilteredMovies(allMovies, searchValue, isChecked, true);
   };
 
+  // search
   const [allMovies, setAllMovies] = useState(getAllMoviesFromStorage(userEmail));
   const [isLoading, setIsLoading] = useState(false);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [nothingFound, setNothingFound] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
 
   useEffect(() => {
     return () => {
-      setSearchValue('');
+      // clear inputs states on unmount
+      setSearchValue("");
       setShortValue(false);
+      // clear films 
       setAllMovies([]);
       setFilteredMovies([]);
     };
@@ -71,6 +78,7 @@ export function Movies({
   function onSearch() {
     setSearchToStorage(userEmail, searchValue);
     setShortToStorage(userEmail, shortValue);
+
     setIsLoading(true);
 
     if (allMovies.length === 0) {
@@ -79,41 +87,41 @@ export function Movies({
         .then((movies) => {
           setAllMoviesToStorage(userEmail, movies);
           setAllMovies(movies);
-          handleSetFilteredMovies(movies, searchValue, shortValue);
+          handleSetFilteredMovies(movies, searchValue, shortValue, true);
         })
         .catch(() =>
           setPopupMessage(
-            'Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз.'
+            "Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз."
           )
         )
         .finally(() => setIsLoading(false));
     } else {
-      handleSetFilteredMovies(allMovies, searchValue, shortValue);
+      handleSetFilteredMovies(allMovies, searchValue, shortValue, true);
       setIsLoading(false);
     }
   }
 
-  const handleSetFilteredMovies = (movies, search, short) => {
+  const handleSetFilteredMovies = (movies, search, short, isSearch) => {
     const filteredList = filterMovies(movies, search, short);
     if (filteredList.length === 0) {
-      setPopupMessage('Ничего не найдено');
-      setNothingFound(true);
+      if (isSearch) {
+        setPopupMessage("Ничего не найдено");
+        setNothingFound(true);
+      }
     } else {
-      setNothingFound(false);
+      if (isSearch) {
+        setNothingFound(false);
+      }
     }
-    setFilteredMovies(filteredList);
-  }
 
-  // Попап с сообщениями
-  function popupOnSubmit() {
-    setPopupMessage('');
+    setFilteredMovies(filteredList);
   }
 
   return (
     <>
       {!userLoading && (
         <>
-          <section className='movies'>
+          <section className="movies">
             <SearchForm
               searchInputOnChangeCB={setSearchValue}
               searchValue={searchValue}
@@ -131,12 +139,9 @@ export function Movies({
               handleDeleteMovie={handleDeleteMovie}
               isCardLiked={isCardLiked}
               isCardDisliked={isCardDisliked}
+              nothingFound={nothingFound}
             />
             <Footer/>
-            <Popup
-              message={popupMessage}
-              onSubmit={popupOnSubmit}
-            />
           </section>
         </>
       )}

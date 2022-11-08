@@ -112,7 +112,6 @@ export function App() {
     .then((res) => {
       if (res.statusCode !== 400) {
         handleLogin({ password: data.password, email: data.email });
-        setPopupMessage('Вы успешно зарегистрировались');
         history.push('/signin');
       }
     })
@@ -189,7 +188,6 @@ export function App() {
       mainApi.saveMovies(movie, token)
       .then((res) => {
         setSavedMoviesList([...savedMoviesList, res.movie]);
-        setPopupMessage('Фильм сохраниён');
       })
       .catch((err) => {
         setPopupMessage('Фильм сохранить не удалось');
@@ -228,7 +226,7 @@ export function App() {
     return mainApi.deleteMovie(deleteSavedMovie, token)
       .then(() => {
         setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.movieId));
-        setPopupMessage('Фильм удалён');
+        setPopupMessage("");
       })
       .catch(err => {
         setPopupMessage(err);
@@ -241,7 +239,7 @@ export function App() {
     return mainApi.deleteMovie(deleteSavedMovie)
       .then(() => {
         setSavedMoviesList(savedMoviesList.filter(item => item.movieId !== movie.id));
-        setPopupMessage('');
+        setPopupMessage("");
       })
       .catch(err => {
         setPopupMessage(err);
@@ -293,6 +291,7 @@ export function App() {
             isCardLiked={isCardLiked}
             isCardDisliked={isCardDisliked}
             isLoading={isLoading}
+            setPopupMessage={setPopupMessage}
           />
           <ProtectedRoute path='/saved-movies'
             loggedIn={loggedIn}
@@ -307,6 +306,7 @@ export function App() {
             isCardLiked={isCardLiked}
             isCardDisliked={isCardDisliked}
             isLoading={isLoading}
+            setPopupMessage={setPopupMessage}
           />
           <ProtectedRoute path='/profile'
             loggedIn={loggedIn}

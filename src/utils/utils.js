@@ -1,3 +1,4 @@
+// проверка изображений полученных от сервера
 export function transformMovies(movies) {
   movies.forEach(movie => {
     if (!movie.image) {
@@ -20,10 +21,12 @@ export function transformMovies(movies) {
   return movies
 }
 
+// фильтрация по длительности
 export function filterShortMovies(movies) {
   return movies.filter(movie => movie.duration < 40);
 }
 
+// фильтрация по запросу
 export function filterMovies(movies, userRequest, shortMoviesCheckbox) {
   const userMovieRequest = movies.filter((movie) => {
     const movieRu = String(movie.nameRU).toLowerCase().trim();
@@ -39,6 +42,7 @@ export function filterMovies(movies, userRequest, shortMoviesCheckbox) {
   }
 }
 
+// преобразование длительности
 export function transformDuration(duration) {
   const hours = Math.trunc(duration / 60);
   const minutes = duration % 60;
@@ -49,7 +53,9 @@ export function transformDuration(duration) {
   }
 }
 
+// cравнение сохраненных фильмов
 export function getSavedMovieCard(arr, movie) {
+  // console.log(arr) /* приходит пустой массив */
   return arr.find((item) => {
     return item.movieId === (movie.id || movie.movieId);
   }); 

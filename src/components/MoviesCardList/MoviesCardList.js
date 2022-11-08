@@ -2,7 +2,19 @@ import './MoviesCardList.css';
 import { getSavedMovieCard } from '../../utils/utils';
 import { MoviesCard } from '../MoviesCard/MoviesCard';
 
-export function MoviesCardList ({ moviesList, moviesNumber, path, savedMoviesList, handleSaveMovie, handleDeleteMovie, handleAddMovies, isCardLiked, isLoading }) {
+
+export function MoviesCardList ({
+  moviesList,
+  moviesNumber,
+  path,
+  savedMoviesList,
+  handleSaveMovie,
+  handleDeleteMovie,
+  handleAddMovies,
+  isCardLiked,
+  isLoading,
+  nothingFound,
+}) {
 
   const moviesCard = moviesList
     .filter((item, number) => number < moviesNumber)
@@ -38,8 +50,7 @@ export function MoviesCardList ({ moviesList, moviesNumber, path, savedMoviesLis
       }
       {
         !isLoading 
-        && !moviesList.length 
-        && moviesNumber 
+        && nothingFound
         && (<p className='cards-list__message'></p>)
       }
     </section>

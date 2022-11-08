@@ -40,3 +40,29 @@ export const getShortFromStorage = (user)=>{
   const value = localStorage.getItem(localStorageShortMoviesKey(user));
   return parseInt(value) ? true : false;
 }
+
+
+// saved movies storage
+const localStorageSavedSearchKey = (user) => {
+  return `${user}-saved-movieSearch`;
+}
+
+export const setSearchSavedToStorage = (user, value)=>{
+  localStorage.setItem(localStorageSavedSearchKey(user), value);
+}
+export const getSearchSavedFromStorage = (user)=>{
+  return localStorage.getItem(localStorageSavedSearchKey(user)) || '';
+}
+
+const localStorageSavedShortMoviesKey = (user) => {
+  return `${user}-saved-shortMovies`;
+}
+
+export const setShortSavedToStorage = (user, state)=>{
+  const value = state ? 1 : 0;
+  localStorage.setItem(localStorageSavedShortMoviesKey(user), value);
+}
+export const getShortSavedFromStorage = (user)=>{
+  const value = localStorage.getItem(localStorageSavedShortMoviesKey(user));
+  return parseInt(value) ? true : false;
+}

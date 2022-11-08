@@ -1,12 +1,17 @@
-import { useState, useContext, useEffect } from 'react';
-import { filterMovies } from '../../utils/utils';
-import { Footer } from '../Footer/Footer';
-import { SearchForm } from '../SearchForm/SearchForm';
-import { MoviesCardList } from '../MoviesCardList/MoviesCardList';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { SavedUserContext } from '../../contexts/SavedUserContext';
-import { Popup } from '../Popup/Popup';
-import './SavedMovies.css';
+import { useState, useContext, useEffect } from "react";
+import { filterMovies } from "../../utils/utils";
+import {
+  setSearchSavedToStorage,
+  getSearchSavedFromStorage,
+  setShortSavedToStorage,
+  getShortSavedFromStorage,
+} from "../../utils/localStorage";
+import { Footer } from "../Footer/Footer";
+import { SearchForm } from "../SearchForm/SearchForm";
+import { MoviesCardList } from "../MoviesCardList/MoviesCardList";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { SavedUserContext } from "../../contexts/SavedUserContext";
+import "./SavedMovies.css";
 
 export function SavedMovies({
   isCardLiked,
@@ -15,9 +20,11 @@ export function SavedMovies({
   handleDeleteMovie,
   moviesNumber,
   isCardDisliked,
+  setPopupMessage,
 }) {
 
   const savedMoviesList = useContext(SavedUserContext); 
+
   const currentUser = useContext(CurrentUserContext);
   const userEmail = currentUser && currentUser.email;
 
@@ -25,8 +32,8 @@ export function SavedMovies({
   useEffect(() => {
     if (userEmail) {
       const movies = savedMoviesList;
-      const search = ('');
-      const short = (false);
+      const search = getSearchSavedFromStorage(userEmail);
+      const short = getShortSavedFromStorage(userEmail);
       setSearchValue(search);
       setShortValue(short);
       handleSetFilteredMovies(movies, search, short);
@@ -34,55 +41,59 @@ export function SavedMovies({
     }
   }, [currentUser, savedMoviesList]);
 
-  const [searchValue, setSearchValue] = useState('');
-  const [shortValue, setShortValue] = useState(false);
+  const [searchValue, setSearchValue] = useState(
+    getSearchSavedFromStorage(userEmail)
+  );
+  const [shortValue, setShortValue] = useState(getShortSavedFromStorage(userEmail));
 
   const onShortChange = (isChecked) => {
     setShortValue(isChecked);
-    handleSetFilteredMovies(savedMoviesList, searchValue, isChecked);
+    setShortSavedToStorage(userEmail, isChecked);
+    handleSetFilteredMovies(savedMoviesList, searchValue, isChecked, true);
   };
 
   const [isLoading, setIsLoading] = useState(false);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [nothingFound, setNothingFound] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
 
   useEffect(() => {
     return () => {
-      setSearchValue('');
+      setSearchValue("");
       setShortValue(false);
       setFilteredMovies([]);
     };
   }, []);
 
   function onSearch() {
+    setSearchSavedToStorage(userEmail, searchValue);
+    setShortSavedToStorage(userEmail, shortValue);
+
     setIsLoading(true);
-    handleSetFilteredMovies(savedMoviesList, searchValue, shortValue);
+    handleSetFilteredMovies(savedMoviesList, searchValue, shortValue, true);
     setIsLoading(false);
   }
 
-  const handleSetFilteredMovies = (movies, search, short) => {
+  const handleSetFilteredMovies = (movies, search, short, isSearch) => {
     const filteredList = filterMovies(movies, search, short);
     if (filteredList.length === 0) {
-      setPopupMessage('Ничего не найдено');
-      setNothingFound(true);
+      if (isSearch) {
+        setPopupMessage("Ничего не найдено");
+        setNothingFound(true);
+      }
     } else {
-      setNothingFound(false);
+      if (isSearch) {
+        setNothingFound(false);
+      }
     }
 
     setFilteredMovies(filteredList);
-      console.log(filteredList)
-  }
-
-  function popupOnSubmit() {
-    setPopupMessage('');
   }
 
   return (
     <>
       {!userLoading && (
         <>
-          <section className='movies'>
+          <section className="movies">
             <SearchForm
               searchInputOnChangeCB={setSearchValue}
               searchValue={searchValue}
@@ -100,12 +111,9 @@ export function SavedMovies({
               handleDeleteMovie={handleDeleteMovie}
               isCardLiked={isCardLiked}
               isCardDisliked={isCardDisliked}
+              nothingFound={nothingFound}
             />
             <Footer/>
-            <Popup
-              message={popupMessage}
-              onSubmit={popupOnSubmit}
-            />
           </section>
         </>
       )}
