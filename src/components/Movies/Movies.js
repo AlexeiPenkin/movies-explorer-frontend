@@ -25,10 +25,8 @@ export function Movies({
   isCardDisliked,
   setPopupMessage,
 }) {
-  // saved state
-  const savedMoviesList = useContext(SavedUserContext); 
 
-  // user state
+  const savedMoviesList = useContext(SavedUserContext); 
   const currentUser = useContext(CurrentUserContext);
   const userEmail = currentUser && currentUser.email;
 
@@ -46,7 +44,6 @@ export function Movies({
     }
   }, [currentUser]);
 
-  // search inputs states
   const [searchValue, setSearchValue] = useState(
     getSearchFromStorage(userEmail)
   );
@@ -58,7 +55,6 @@ export function Movies({
     handleSetFilteredMovies(allMovies, searchValue, isChecked, true);
   };
 
-  // search
   const [allMovies, setAllMovies] = useState(getAllMoviesFromStorage(userEmail));
   const [isLoading, setIsLoading] = useState(false);
   const [filteredMovies, setFilteredMovies] = useState([]);
@@ -66,10 +62,8 @@ export function Movies({
 
   useEffect(() => {
     return () => {
-      // clear inputs states on unmount
       setSearchValue("");
       setShortValue(false);
-      // clear films 
       setAllMovies([]);
       setFilteredMovies([]);
     };

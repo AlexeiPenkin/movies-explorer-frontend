@@ -43,7 +43,7 @@
   right: 0;
 }
 
-.filter__tumbler {
+.filter__switcher {
   position: absolute;
   background-color: #fff;
   width: 16px;
@@ -55,7 +55,7 @@
   transition: all .3s ease;
 }
 
-.filter__checkbox:checked + .filter__tumbler {
+.filter__checkbox:checked + .filter__switcher {
   left: 18px;
 }
 

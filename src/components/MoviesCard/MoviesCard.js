@@ -18,15 +18,10 @@ export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, i
     thumbnail,
     movieId,
   } = movie;
-  // console.log(movie)
-  const liked = isCardLiked(movie); /* лайкнутые фильмы */
+
+  const liked = isCardLiked(movie);
   const likeButton = (location.pathname === '/saved-movies') && 'none';
   const deleteButton = (location.pathname === '/movies') && 'none';
-
-  // const movieUrl = 'https://api.nomoreparties.co';
-  // const moviePoster = movieUrl + movie.image;
-
-  // console.log(moviePoster)
 
   var time = Math.floor(movie.duration / 60) + 'ч ' + movie.duration % 60 + 'мин';
 

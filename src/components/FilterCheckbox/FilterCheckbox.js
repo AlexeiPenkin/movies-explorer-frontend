@@ -9,7 +9,7 @@ export function FilterCheckbox({ shortMovies, handleShortFilms }) {
         onChange={handleShortFilms}
         checked={shortMovies ? true : false}
       />
-      <span className="filter__tumbler"></span>
+      <span className="filter__switcher"></span>
       <span className="filter__text">Короткометражки</span>
     </label>
   );

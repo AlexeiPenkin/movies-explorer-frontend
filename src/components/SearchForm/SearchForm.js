@@ -1,18 +1,12 @@
-import { React, useState, useEffect, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { React, useState } from 'react';
 import { FilterCheckbox } from '../FilterCheckbox/FilterCheckbox';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { FormWithValidation } from '../../utils/FormWithValidation';
 import './SearchForm.css';
  
 export function SearchForm({ 
-  // search value
   searchValue,
   searchInputOnChangeCB,
-  // short
   shortValue,
   shortInputOnChangeCB,
-  // submit
   onSubmitCB,
  }) {
 
