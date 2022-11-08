@@ -1,0 +1,38 @@
+.navigation-homepage{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation-homepage__link{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 0 30px;
+  text-decoration: none;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000;
+}
+
+.navigation-homepage__link_button{
+  color: #000;
+  background-color: #3DDC84;
+  height: 32px;
+  width: 76px;
+  border-radius: 3px;
+}
+
+@media (max-width:767px) {
+  .navigation-homepage__link{
+    margin-left: 14px;
+  }
+
+  .navigation-homepage__link_button{
+    height: 26px;
+    width: 54px;
+  }
+}

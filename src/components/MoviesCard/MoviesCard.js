@@ -1,35 +1,66 @@
 import './MoviesCard.css';
+import {useLocation} from 'react-router-dom';
 
-export const MoviesCard = ({ movie, type }) => {
-  const { image, nameRU, save } = movie;
+export function MoviesCard ({ path, movie, handleSaveMovie, handleDeleteMovie, initialMovies, isCardLiked }) {
+  const location = useLocation();
 
-  return (
-    <section className='movie-card'>
-      <div className='movie__info'>
-        <div className='movie__description'>
-          <h1 className='movie__title'>{nameRU}</h1>
-          <p className='movie__duration'>1ч 42м</p>
-        </div>
-        {type === 'all' ? (
-          save ? (
-            <button
-              type='button'
-              className='movie__button movie__button_type_active'
-            ></button>
-          ) : (
-            <button
-              type='button'
-              className='movie__button movie__button_type_disabled'
-            ></button>
-          )
-        ) : (
-          <button
-            type='button'
-            className='movie__button movie__button_type_close'
-          ></button>
-        )}
+  const {
+    country,
+    director,
+    duration,
+    image,
+    url,
+    year,
+    description,
+    trailerLink,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
+  } = movie;
+
+  const liked = isCardLiked(movie);
+  const likeButton = (location.pathname === '/saved-movies') && 'none';
+  const deleteButton = (location.pathname === '/movies') && 'none';
+
+  var time = Math.floor(movie.duration / 60) + 'ч ' + movie.duration % 60 + 'мин';
+
+  if(duration < 60) {
+    time = duration % 60 + 'мин';
+  }
+
+  return(
+    <div className='movies-card' id='card'>
+      <div className='movies-card__info-block'>
+        <p className='movies-card__title'>{nameRU}</p>
+        <button className={`movies-card__like-button 
+        ${ liked ? 'movies-card__like-button_active' : ''}`}
+          style={{display: likeButton}}
+          onClick={() => {
+            if (location.pathname === '/movies') {
+              handleSaveMovie(movie)
+            }
+          }}
+        />
+        <button className={`movies-card__delete-button
+          ${ initialMovies ? 'movies-card__delete-button' : '' }`}
+          style={{display: deleteButton}}
+          onClick={() => {
+            if (location.pathname === '/saved-movies'){
+              handleDeleteMovie(movie)
+            }
+          }}
+        />
       </div>
-      <img className='movie__image' src={image} alt={nameRU} />
-    </section>
+      <p className='movies-card__duration'>{time}</p>
+      <a
+        href={movie.trailerLink || 'https://www.youtube.com'}
+        target='_blank'
+        rel='noreferrer'>
+          <img className='movies-card__image'
+          src={location.pathname === '/movies' ? `https://api.nomoreparties.co${movie.image.url}` : movie.image}
+          alt={movie.nameRU}/>
+      </a>
+    </div>
   );
-};
+}

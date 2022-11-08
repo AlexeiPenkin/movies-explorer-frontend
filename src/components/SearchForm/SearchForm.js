@@ -1,25 +1,52 @@
+import { React, useState } from 'react';
+import { FilterCheckbox } from '../FilterCheckbox/FilterCheckbox';
 import './SearchForm.css';
+ 
+export function SearchForm({ 
+  searchValue,
+  searchInputOnChangeCB,
+  shortValue,
+  shortInputOnChangeCB,
+  onSubmitCB,
+ }) {
 
-export const SearchForm = () => {
+  const [checked, setChecked] = useState(shortValue || false);
+
+  const onChangeInputHandler = (e)=>{
+    e.preventDefault();
+    searchInputOnChangeCB(e.target.value);
+  }
+
+  const onChangeCheckboxHandler = (e)=>{
+    const isChecked = e.target.checked;
+    shortInputOnChangeCB(isChecked);
+  }
+
+  const submitHandler = (e)=>{
+    e.preventDefault();
+    onSubmitCB();
+  }
+
   return (
-    <section className='search-form'>
-      <form className='search-form__form'>
-        <div className='search-form__movie'>
+    <section className="search-form">
+      <form className="search-form__form" name="search" noValidate onSubmit={submitHandler}>
+        <div className='search-form__bar'>
           <input
-            className='search-form__input'
-            type='text'
-            placeholder={`Фильм`}
+            className="search-form__input"
+            name="search"
+            type="text"
+            placeholder="Фильм"
+            value={searchValue}
+            onChange={onChangeInputHandler}
             required
           />
-        <button className='search-form__button' type='button'></button>
+          <button className="search-form__find-button" type="submit"></button>
         </div>
-        <label className='checkbox__label'>
-          <input className='checkbox' type='checkbox' value='short' />
-          <span className='checkbox__pseudo-element'></span>
-          Короткометражки
-        </label>
-        {/* <div className='search-form__bottom-line'></div> */}
+        <FilterCheckbox 
+          shortMovies={shortValue} 
+          handleShortFilms={onChangeCheckboxHandler} 
+        />
       </form>
     </section>
-  );
-};
+  )
+}

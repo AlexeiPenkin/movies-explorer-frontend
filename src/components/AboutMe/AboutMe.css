@@ -13,6 +13,7 @@
   padding-bottom: 23px;
   border-bottom: 1px solid rgb(181, 181, 181);
   letter-spacing: -0.04em;
+  text-align: left;
 }
 
 .about-me__content {
@@ -25,6 +26,7 @@
 
 .content-description {
   width: 52%;
+  text-align: left;
 }
 
 .about-me__name {

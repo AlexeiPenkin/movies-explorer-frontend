@@ -1,14 +1,9 @@
 .search-form {
-  /* width: 1280px; */
   box-sizing: border-box;
   position: relative;
   margin-bottom: 10px;
   padding: 70px;
 }
-
-/* .search-form__bottom-line {
-  border-bottom: 1px solid #e8e8e8;
-} */
 
 .search-form:before {
   position: absolute;
@@ -19,7 +14,7 @@
   content: '';
 }
 
-.search-form__form {
+.search-form__form{
   width: 100%;
   height: 72px;
   display: flex;
@@ -32,10 +27,8 @@
   padding-right: 30px;
 }
 
-.search-form__movie {
+.search-form__bar{
   margin: 0;
-  /* padding: 0; */
-  padding-right: 30px;
   border-right: 1px solid #e8e8e8;
   height: 40px;
   width: 82%;
@@ -45,7 +38,7 @@
   box-sizing: border-box;
 }
 
-.search-form__input {
+.search-form__input{
   height: 100%;
   width: 87%;
   border: none;
@@ -54,42 +47,58 @@
 }
 
 .search-form__input::placeholder {
-  background-image: url('../../image/magnifier-glass.svg');
+  background-image: url('../../images/magnifying-glass.svg');
+  width: 60px;
+  height: 34px;
   background-repeat: no-repeat;
-  padding-left: 38px;
+  padding-left: 53px;
   font-weight: 400;
   font-size: 18px;
   line-height: 20px;
   color: #A0A0A0;
 }
-/* .search-form__button_type_find */
-.search-form__button {
+
+.search-form__find-button {
   padding: 0;
-  /* margin-right: -157px; */
-  background-image: url('../../image/find.svg');
+  /* padding-right: 40px; */
+  background-image: url('../../images/find-button.svg');
   background-repeat: no-repeat;
   width: 34px;
   height: 34px;
   border: none;
   background-color: unset;
   cursor: pointer;
+  margin-right: 30px;
 }
 
-.search-form__button:hover {
+.search-form__find-button:hover {
   opacity: 0.8;
 }
 
-.checkbox {
-  margin-left: 29px;
-  /* margin-right: 14px; */
+/* .search-form__error {
+  color: #EE3465;
+  font-size: 10px;
+  line-height: 1.2;
   position: absolute;
-  z-index: -1;
-  opacity: 0;
-  cursor: pointer;
+  top: 50px;
+} */
+
+.search-form__error {
+  display: flex;
+  flex-direction: row;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 20px;
+  margin-top: 10px;
+  padding-left: 25px;
+  height: 12px;
+  color: #EE3465;
+  align-self: flex-start;
 }
 
 .checkbox__label {
-  /* width: 100px; */
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
@@ -99,39 +108,43 @@
   justify-content: center;
 }
 
-.checkbox__pseudo-element {
+.checkbox__selector {
   display: inline-block;
   width: 36px;
   height: 20px;
-  background-image: url('../../image/smalltumb_disabled.svg');
-  background-repeat: no-repeat;
-  background-size: cover;
+  margin: 0;
+  padding: 0;
+  margin-left: 29px;
+  margin-right: 14px;
+  vertical-align: top;
+  background: #ffffff;
+  border: none;
+  border-radius: 20px;
+  outline: none;
   cursor: pointer;
-  margin-right: 12px;
+  transition: all 0.3s cubic-bezier(0.2, 0.85, 0.32, 1.2);
 }
 
-.checkbox__pseudo-element:hover {
+.checkbox__selector:hover {
   opacity: 0.8;
 }
 
-.checkbox:checked + .checkbox__pseudo-element {
-  background-image: url('../../image/smalltumb_checked.svg');
+.checkbox__selector_on {
+  background: center center no-repeat url('../../images/checkbox-selector_active.svg');
 }
 
-.checkbox:checked + .checkbox__pseudo-element:hover {
-  opacity: 0.8;
+.checkbox__selector_off {
+  background: center center no-repeat url('../../images/checkbox-selector_disabled.svg');
 }
 
-/* @media screen and (max-width: 1170px) {
-  .search-form__movie {
-    width: 78%;
-  }
+/* .search-form__error:hover {
+  cursor: pointer;
 } */
 
-/* @media screen and (max-width: 1000px) {
-  .search-form__movie {
-    width: 75%;
-  }
+/* .search__text {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-left: 12px;
 } */
 
 @media screen and (max-width: 900px) {
@@ -179,6 +192,13 @@
     border-bottom: 1px solid #e8e8e8;
   }
 
+  .search-form__bar{
+    width: 300px;
+    background: #F9F9F9;
+    border-radius: 9px;
+    border-right: none;
+  }
+
   .search-form__movie {
     border: none;
     background-color: #f9f9f9;
@@ -190,7 +210,7 @@
 
   .search-form__input::placeholder {
     background: unset;
-    padding-left: 0;
+    padding-left: 19px;
     font-size: 14px;
   }
 
@@ -199,18 +219,21 @@
     height: 72px;
   }
 
-  .search-form__button {
-    width: 13%;
+  .search-form__find-button {
+    margin-right: 19px;
+  }
+
+  .search-form__error {
+    font-size: 10px;
+    top: 60px;
   }
 
   .checkbox__label {
     font-size: 11px;
     line-height: 18px;
-    margin-left: 2px;
-    padding-bottom: 45px;
-  }
-
-  .checkbox__pseudo-element {
-    margin-right: 11px;
+    margin-top: 45px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 44px;
   }
 }

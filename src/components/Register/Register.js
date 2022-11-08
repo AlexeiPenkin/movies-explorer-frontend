@@ -1,191 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../../image/logo.svg';
-import classNames from 'classnames';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { FormWithValidation } from '../../utils/FormWithValidation';
 import './Register.css';
 
-const type = 'signup';
-const title = 'Добро пожаловать!';
-const button = 'Зарегистрироваться';
-const text = `Уже зарегистрированы? `;
-
-export const Register = () => {
-  const [messageError, setMessageError] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [value, setValue] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const classErrorName = classNames(`register__input`, {
-    error: messageError.name,
-  });
-  const classErrorEmail = classNames(`register__input`, {
-    error: messageError.email,
-  });
-  const classErrorPassword = classNames(`register__input`, {
-    error: messageError.password,
-  });
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [ inputEmailErrorText, setInputEmailErrorText ] = useState('Вы пропустили это поле.');
-  const [ inputPasswordErrorText, setInputPasswordErrorText ] = useState('Вы пропустили это поле.');
-  const [ inputEmailValid, setInputEmailValid ] = useState(true);
-  const [ inputPasswordValid, setInputPasswordValid ] = useState(true);
-  const [ formValid, setFormValid ] = useState(false);
-
-  const submitButtonClassName = `register__button ${formValid ? '' : 'register__submit_disabled'}`;
-  const inputEmailClassName = `register__input register__input_type_email ${inputEmailValid ? '' : 'register__input_type_error'}`;
-  const inputEmailErrorClassName = `register__input-error ${inputEmailValid ? '' : 'register__input-error_visible'}`;
-  const inputPasswordClassName = `register__input register__input_type_password ${inputPasswordValid ? '' : 'register__input_type_error'}`;
-  const inputPasswordErrorClassName = `register__input-error ${inputPasswordValid ? '' : 'register__input-error_visible'}`;
-
-  // const handleInputChange = (evt) => {
-  //   const { name, value } = evt.target;
-  //   setValue((prev) => ({ ...prev, [name]: value }));
-  //   setMessageError((prev) => ({
-  //     ...prev,
-  //     [name]: evt.target.validationMessage,
-  //   }));
-  // };
-
-  function handleNameChange(e) {
-    setEmail(e.target.value);
-    setInputEmailValid(e.target.validity.valid);
-    setInputEmailErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputPasswordValid && password !== '') {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }
-
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-    setInputEmailValid(e.target.validity.valid);
-    setInputEmailErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputPasswordValid && password !== '') {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }
-
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-    setInputPasswordValid(e.target.validity.valid);
-    setInputPasswordErrorText(e.target.validationMessage);
-    if (e.target.validity.valid && inputEmailValid && email !== '') {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }
-
-  useEffect(() => {
-    setFormValid(false);
-  }, []);
-
-  function handleSubmit(e) {
+export function Register({ handleRegister }) {
+  const validate = FormWithValidation();
+  
+  function handleSubmit(e){
     e.preventDefault();
-    Register({email, password});
-    // if (props.regStatus) {
-    //   setEmail('');
-    //   setPassword('');
-    // }
+    handleRegister(validate.values);
   }
 
-  return (
+  return(
     <section className='register'>
-      <form className='register__form'>
+      <div className='register__wrapper'>
+        <NavLink to='/' className='register__logo'></NavLink>
+        <h2 className='register__title'>Добро пожаловать!</h2>
+        <form className='register__form' onSubmit={handleSubmit}>
 
-        <Link to='/' className='register__link'>
-          <img className='register__logo' src={logo} alt='logo' />
-        </Link>
+          <label className='register__label'>Имя</label>
+          <input 
+            className={`register__input ${validate.errors.name ? 'register__input-error' : ''}`}
+            name='name'
+            type='text'
+            required 
+            minLength='2'
+            maxLength='30'
+            value={validate.values.name || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.name || ''}</span>
 
-        <h1 className='register__title'>{title}</h1>
+          <label className='register__label'>E-mail</label>
+          <input 
+            className={`register__input ${validate.errors.email ? 'register__input-error' : ''}`}
+            name='email'
+            type='email'
+            required
+            value={validate.values.email || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.email || ''}</span>
 
-        <div className='register-fieldsets__wrapper'>
-          {type === 'signup' && (
+          <label className='register__label'>Пароль</label>
+          <input 
+            className={`register__input ${validate.errors.password ? 'register__input-error' : ''}`}
+            name='password'
+            type='password'
+            required 
+            minLength='8'
+            maxLength='30'
+            value={validate.values.password || ''}
+            onChange={validate.handleChange}
+          ></input>
+          <span className='register__error'>{validate.errors.password || ''}</span>
 
-            <fieldset className='register__fieldset'>
-              <label className='register__label'>Имя</label>
-              <input
-                className={classErrorName}
-                type='text'
-                name='name'
-                pattern='^[A-Za-zА-Яа-яЁё /s -]+$'
-                required
-                minLength={2}
-                maxLength={100}
-                value={value.name}
-                onChange={handleNameChange}
-              />
-              {messageError.name && (
-                <span className='register__span-error'>{inputEmailErrorText}</span>
-              )}
-            </fieldset>
-          )}
+          <button 
+            className={`register__button ${
+              validate.isValid ? '' : 'register__button_disabled'
+            }`}
+            disabled={!validate.isValid}
+          >Зарегистрироваться</button>
 
-          <fieldset className='register__fieldset'>
-            <label className='register__label'>E-mail</label>
-            <input
-              className={classErrorEmail}
-              type='email'
-              name='email'
-              required
-              value={value.email}
-              onChange={handleEmailChange}
-            />
-            {messageError.email && (
-              <span className='register__span-error'>{messageError.email}</span>
-            )}
-          </fieldset>
-
-          <fieldset className='register__fieldset'>
-            <label className='register__label'>Пароль</label>
-            <input
-              className={classErrorPassword}
-              type='password'
-              name='password'
-              value={value.password}
-              required
-              minLength={8}
-              onChange={handlePasswordChange}
-            />
-            {messageError.password && (
-              <span className='register__span-error'>{inputPasswordErrorText}</span>
-            )}
-          </fieldset>
-
-        </div>
-
-        <button className={submitButtonClassName} type="submit" disabled={formValid ? false : true}></button>
+        </form>
 
         <p className='register__text'>
-          {text}
-          {type === 'signup' ? (
-
-            <Link className='register-link__text' to='/signin'>
-              Войти
-            </Link>
-
-          ) : (
-            
-            <Link className='register-link__text' to='/signup'>
-              Регистрация
-            </Link>
-
-          )}
+          Уже зарегистрированы? 
+          <NavLink to='/signin' className='register__link'>
+            Войти
+          </NavLink>
         </p>
 
-      </form>
-      
+      </div>
     </section>
   );
-};
+}
