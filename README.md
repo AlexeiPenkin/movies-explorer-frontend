@@ -46,8 +46,8 @@
 # Ссылка на бэкенд:
 https://backend.movie.project.nomoredomains.xyz 
 
-#Ссылка на фронтенд:
+# Ссылка на фронтенд:
 https://frontend.movie.project.nomoredomains.xyz 
 
-#IP адрес (публичный):
+# IP адрес (публичный):
 51.250.97.245
