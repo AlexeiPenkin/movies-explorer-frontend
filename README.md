@@ -43,10 +43,12 @@
 19.	MongoDB.
 20.	Webpack.
 
-Ссылка на бэкенд:
+# Ссылки:
+
+Бэкенд:
 https://backend.movie.project.nomoredomains.xyz 
 
-Ссылка на фронтенд:
+Фронтенд:
 https://frontend.movie.project.nomoredomains.xyz 
 
 IP адрес (публичный):
